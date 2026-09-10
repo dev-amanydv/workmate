@@ -1,0 +1,23 @@
+# dependencies
+/node_modules
+
+# build output
+/dist
+
+# tests
+/coverage
+
+# env files (see .env.example)
+.env
+.env.local
+.env.*.local
+
+# logs
+*.log
+npm-debug.log*
+
+# local uploads (dev)
+/uploads
+
+# typescript
+*.tsbuildinfo
