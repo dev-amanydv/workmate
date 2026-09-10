@@ -38,7 +38,21 @@
       "Shell(curl -s http://localhost:4123/api/nope)",
       "Shell(curl -s -o /dev/null -w %{http_code}\\n http://localhost:4123/api/health)",
       "Shell(curl -s -X POST -o /dev/null -w %{http_code}\\n http://localhost:4123/health)",
-      "Shell(cd /Users/amanyadav/workmate && git status --short && echo \"--- backend config diff ---\" && git diff --stat -- apps/backend 2>/dev/null; echo \"--- port check ---\"; lsof -ti :4123 || echo \"port 4123 free\")"
+      "Shell(cd /Users/amanyadav/workmate && git status --short && echo \"--- backend config diff ---\" && git diff --stat -- apps/backend 2>/dev/null; echo \"--- port check ---\"; lsof -ti :4123 || echo \"port 4123 free\")",
+      "Shell(docker:*)",
+      "Shell(which docker colima orbstack mysql mysqld 2>/dev/null; brew services list 2>/dev/null | head -10; ls /Applications | grep -i -E \"docker|orbstack\" 2>/dev/null)",
+      "Shell(brew:*)",
+      "Shell(sleep:*)",
+      "Shell(mysql:*)",
+      "Shell(export:*)",
+      "Shell(npx prisma migrate dev --name init 2 >& 1)",
+      "Shell(npx prisma --help 2 >& 1)",
+      "Shell(npx prisma --version 2 >& 1)",
+      "Shell(ls node_modules/prisma/package.json 2>/dev/null && node -e \"console.log(require('/Users/amanyadav/workmate/node_modules/prisma/package.json').version)\" 2>&1; ls node_modules/.bin | grep -i prisma 2>&1; ls node_modules/prisma/build 2>/dev/null | head)",
+      "Shell(node node_modules/prisma/build/index.js --version 2 >& 1)",
+      "Shell(node ../../node_modules/prisma/build/index.js migrate dev --name init 2 >& 1)",
+      "Shell(mysql -u root -e \"GRANT ALL PRIVILEGES ON \\`prisma_migrate_shadow\\_db\\_%\\`.* TO 'workmate'@'localhost'; GRANT ALL PRIVILEGES ON \\`prisma_migrate_shadow\\_db\\_%\\`.* TO 'workmate'@'%'; FLUSH PRIVILEGES;\" && export DATABASE_URL=\"mysql://workmate:workmate@localhost:3306/connecthub\" && node ../../node_modules/prisma/build/index.js migrate dev --name init 2>&1 | tail -20)",
+      "Shell(node ../../node_modules/prisma/build/index.js generate 2 >& 1)"
     ],
     "deny": [],
     "defaultMode": "default"

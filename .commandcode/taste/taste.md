@@ -1,0 +1,1 @@
+- Prefers secrets and credentials (e.g. OAuth client tokens/secret) left as env placeholders rather than hardcoded or generated — expects to fill them in later. Confidence: 0.6
