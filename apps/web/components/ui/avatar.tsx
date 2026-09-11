@@ -7,12 +7,14 @@ export interface AvatarProps {
   src?: string | null;
   alt?: string;
   name?: string;
+  fallbackName?: string;
   size?: number;
   width?: number;
   height?: number;
   className?: string;
   fallbackSrc?: string;
   priority?: boolean;
+  rounded?: "full" | "md" | "lg" | "xl" | "none";
 }
 
 export const DEFAULT_AVATAR_FALLBACK = "/default-avatar.svg";
@@ -21,12 +23,14 @@ export function Avatar({
   src,
   alt = "Avatar",
   name,
+  fallbackName,
   size = 40,
   width,
   height,
   className = "h-full w-full object-cover",
   fallbackSrc = DEFAULT_AVATAR_FALLBACK,
   priority = false,
+  rounded,
 }: AvatarProps) {
   const [hasError, setHasError] = useState(false);
   const finalWidth = width ?? size;
@@ -42,13 +46,15 @@ export function Avatar({
   const isSvg = effectiveSrc.endsWith(".svg");
   const isHttp = effectiveSrc.startsWith("http://") || effectiveSrc.startsWith("https://");
 
+  const roundedClass = rounded === "full" ? "rounded-full" : rounded ? `rounded-${rounded}` : "";
+
   return (
     <Image
       src={effectiveSrc}
-      alt={alt || name || "Avatar"}
+      alt={alt || name || fallbackName || "Avatar"}
       width={finalWidth}
       height={finalHeight}
-      className={className}
+      className={`object-cover overflow-hidden ${roundedClass} ${className}`.trim()}
       unoptimized={isHttp || isSvg}
       priority={priority}
       onError={() => {

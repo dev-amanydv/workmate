@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "../ui/avatar";
 import { apiFetch } from "../../lib/api/client";
 import { formatRelativeTime } from "../../lib/utils/time";
 import type { Post } from "../../types/post";

@@ -8,7 +8,7 @@ import {
   type FormEvent,
   type KeyboardEvent,
 } from "react";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "../ui/avatar";
 import type { Socket } from "socket.io-client";
 import { ChatBubble } from "./chat-bubble";
 import { TypingIndicator } from "./typing-indicator";

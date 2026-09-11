@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Avatar } from "../ui/avatar";
 import { LeftSidebar } from "../feed/left-sidebar";
 import { RightSidebar, type SuggestedUser } from "../feed/right-sidebar";
 import { FeedPostCard } from "../feed/feed-post-card";
@@ -52,7 +52,6 @@ export function ProfileView({
   const [isTogglingFollow, setIsTogglingFollow] = useState(false);
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [showUnfollowModal, setShowUnfollowModal] = useState(false);
-  const [imageError, setImageError] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
   // Tabs state: 'posts' | 'followers' | 'following'
@@ -88,6 +87,16 @@ export function ProfileView({
     bio && bio.length > 0 && !bio.includes("\n") && bio.length < 60
       ? bio
       : "Workmate Member";
+
+  // Sync state if profileUser or initialPosts props change
+  useEffect(() => {
+    setName(profileUser.name || "User");
+    setBio(profileUser.bio ?? null);
+    setIsFollowing(profileUser.isFollowing);
+    setFollowersCount(profileUser.followersCount ?? 0);
+    setFollowingCount(profileUser.followingCount ?? 0);
+    setPosts(initialPosts);
+  }, [profileUser, initialPosts]);
 
   // Fetch followers or following when tabs are activated
   useEffect(() => {
@@ -300,14 +309,14 @@ export function ProfileView({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start h-full overflow-hidden">
+    <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 h-full min-h-0 overflow-hidden">
       {/* Left Navigation Sidebar */}
-      <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pr-1 shrink-0">
+      <div className="hidden lg:block h-full min-h-0 overflow-y-auto no-scrollbar py-6 pr-1 shrink-0">
         <LeftSidebar userId={currentUser?.id} />
       </div>
 
       {/* Main Profile Center Column: Scrolls independently without viewport clipping */}
-      <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 flex flex-col gap-6 pb-16">
+      <div className="h-full min-h-0 overflow-y-auto py-6 px-1 min-w-0 flex flex-col gap-6 pb-24">
         {/* Profile Card */}
         <div className="overflow-hidden rounded-xl border border-[#E6E5E0] bg-white shadow-xs">
           {/* Cover Header Banner: Refined Deep Mineral Pine with architectural watermark */}
@@ -350,23 +359,13 @@ export function ProfileView({
             {/* Avatar Row with overlapping layout & Action Buttons */}
             <div className="flex flex-wrap items-end justify-between gap-4 -mt-14 sm:-mt-16 mb-5">
               {/* Profile Avatar */}
-              <div className="relative h-28 w-28 sm:h-32 sm:w-32 rounded-xl border-4 border-white bg-[#EEF4F3] shadow-md overflow-hidden flex items-center justify-center shrink-0">
-                {profileUser.avatarUrl && !imageError ? (
-                  <Image
-                    src={profileUser.avatarUrl}
-                    alt={name}
-                    width={128}
-                    height={128}
-                    className="h-full w-full object-cover"
-                    unoptimized={profileUser.avatarUrl.startsWith("http")}
-                    onError={() => setImageError(true)}
-                  />
-                ) : (
-                  <span className="text-3xl sm:text-4xl font-bold text-[#184A45]">
-                    {userInitial}
-                  </span>
-                )}
-              </div>
+              <Avatar
+                src={profileUser.avatarUrl}
+                alt={name}
+                fallbackName={name}
+                size={128}
+                className="h-28 w-28 sm:h-32 sm:w-32 rounded-xl border-4 border-white shadow-md shrink-0"
+              />
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2.5">
@@ -721,22 +720,13 @@ export function ProfileView({
                       href={`/profile/${userItem.id}`}
                       className="flex items-center gap-3 min-w-0 group"
                     >
-                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center">
-                        {userItem.avatarUrl ? (
-                          <Image
-                            src={userItem.avatarUrl}
-                            alt={userItem.name}
-                            width={40}
-                            height={40}
-                            className="h-full w-full object-cover"
-                            unoptimized={userItem.avatarUrl.startsWith("http")}
-                          />
-                        ) : (
-                          <span className="text-sm font-semibold text-[#184A45]">
-                            {userItem.name.charAt(0).toUpperCase()}
-                          </span>
-                        )}
-                      </div>
+                      <Avatar
+                        src={userItem.avatarUrl}
+                        alt={userItem.name}
+                        fallbackName={userItem.name}
+                        size={40}
+                        className="h-10 w-10 rounded-md border border-[#E6E5E0] shrink-0"
+                      />
                       <div className="min-w-0">
                         <h4 className="text-sm font-semibold text-[#17191A] group-hover:text-[#184A45] transition truncate">
                           {userItem.name}
@@ -808,35 +798,27 @@ export function ProfileView({
                       href={`/profile/${userItem.id}`}
                       className="flex items-center gap-3 min-w-0 group"
                     >
-                      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center">
-                        {userItem.avatarUrl ? (
-                          <Image
-                            src={userItem.avatarUrl}
-                            alt={userItem.name}
-                            width={40}
-                            height={40}
-                            className="h-full w-full object-cover"
-                            unoptimized={userItem.avatarUrl.startsWith("http")}
-                          />
-                        ) : (
-                          <span className="text-sm font-semibold text-[#184A45]">
-                            {userItem.name.charAt(0).toUpperCase()}
-                          </span>
-                        )}
-                      </div>
+                      <Avatar
+                        src={userItem.avatarUrl}
+                        alt={userItem.name}
+                        fallbackName={userItem.name}
+                        size={40}
+                        className="h-10 w-10 rounded-md border border-[#E6E5E0] shrink-0"
+                      />
                       <div className="min-w-0">
                         <h4 className="text-sm font-semibold text-[#17191A] group-hover:text-[#184A45] transition truncate">
                           {userItem.name}
                         </h4>
                         <p className="text-xs text-[#6C6F71] truncate">
-                          {userItem.bio || "Workmate Member"}
+                          {userItem.bio || "Member"}
                         </p>
                       </div>
                     </Link>
 
-                    <div>
+                    {/* Right: Following Action / You Badge */}
+                    <div className="shrink-0">
                       {userItem.isSelf ? (
-                        <span className="rounded-md bg-[#F5F4F0] border border-[#E6E5E0] px-3 py-1.5 text-xs font-medium text-[#6C6F71]">
+                        <span className="rounded bg-[#F5F4F0] px-2.5 py-1 text-xs font-medium text-[#6C6F71] border border-[#E6E5E0]">
                           You
                         </span>
                       ) : (
@@ -862,7 +844,7 @@ export function ProfileView({
       </div>
 
       {/* Right Sidebar */}
-      <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pl-1 shrink-0">
+      <div className="hidden lg:block h-full min-h-0 overflow-y-auto no-scrollbar py-6 pl-1 shrink-0">
         <RightSidebar
           userName={currentUser?.name}
           suggestedUsers={suggestedUsers}

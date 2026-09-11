@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "../ui/avatar";
 import { apiFetch } from "../../lib/api/client";
 import type { Post } from "../../types/post";
 

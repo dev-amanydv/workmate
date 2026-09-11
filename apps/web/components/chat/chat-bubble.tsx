@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "../ui/avatar";
 import type { ChatMessage } from "../../lib/socket";
 
 interface ChatBubbleProps {

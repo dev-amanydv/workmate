@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "../ui/avatar";
 
 interface CreatePostPromptProps {
   userAvatar?: string | null;
