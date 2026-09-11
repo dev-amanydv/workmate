@@ -2,7 +2,9 @@ import { headers } from "next/headers";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { LogoutButton } from "../../../components/logout-button";
+import { FeedPosts } from "../../../components/posts/feed-posts";
 import { ApiError, apiFetch } from "../../../lib/api/client";
+import type { Post } from "../../../types/post";
 
 interface UserProfile {
   id: string;
@@ -31,6 +33,18 @@ export default async function FeedPage() {
     }
     // Also redirect on missing token or unauthenticated error
     redirect("/login");
+  }
+
+  let initialPosts: Post[] = [];
+  try {
+    initialPosts = await apiFetch<Post[]>("/posts", {
+      headers: {
+        Cookie: cookieHeader,
+      },
+      cache: "no-store",
+    });
+  } catch {
+    initialPosts = [];
   }
 
   const initial = (user.name || user.email || "U").charAt(0).toUpperCase();
@@ -101,15 +115,7 @@ export default async function FeedPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-dashed border-gray-300 p-8 text-center dark:border-neutral-800">
-        <h3 className="font-medium text-gray-700 dark:text-gray-300">
-          Feed Coming Soon
-        </h3>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          This is the authenticated placeholder page proving your session is
-          active.
-        </p>
-      </div>
+      <FeedPosts initialPosts={initialPosts} />
     </div>
   );
 }

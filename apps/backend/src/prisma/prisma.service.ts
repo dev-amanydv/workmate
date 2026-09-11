@@ -19,7 +19,7 @@ export class PrismaService
     const databaseUrl = config.get<string>("DATABASE_URL", "");
     const connectionString = databaseUrl
       ? databaseUrl.replace(/^mysql:\/\//, "mariadb://")
-      : "mariadb://localhost:3306/connecthub";
+      : "mariadb://localhost:3306/workmate";
     const adapter = new PrismaMariaDb(connectionString);
 
     super({ adapter });

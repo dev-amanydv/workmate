@@ -16,6 +16,13 @@ export const envSchema = z.object({
   GOOGLE_CALLBACK_URL: z
     .string()
     .default("http://localhost:4000/api/auth/google/callback"),
+  R2_ACCOUNT_ID: z.string().default("placeholder_account_id"),
+  R2_ACCESS_KEY_ID: z.string().default("placeholder_access_key"),
+  R2_SECRET_ACCESS_KEY: z.string().default("placeholder_secret_key"),
+  R2_BUCKET_NAME: z.string().default("workmate"),
+  R2_PUBLIC_URL: z.string().default("https://pub-workmate.r2.dev"),
+  UPLOADS_DIR: z.string().default("./uploads"),
+  LOCAL_STORAGE_BASE_URL: z.string().default("http://localhost:4000"),
 });
 
 export type Env = z.infer<typeof envSchema>;

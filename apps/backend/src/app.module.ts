@@ -5,7 +5,9 @@ import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./common/guards/jwt-auth.guard";
 import { validateEnv } from "./config/env.validation";
 import { HealthModule } from "./health/health.module";
+import { PostsModule } from "./posts/posts.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { StorageModule } from "./storage/storage.module";
 import { UsersModule } from "./users/users.module";
 
 @Module({
@@ -17,8 +19,10 @@ import { UsersModule } from "./users/users.module";
       validate: validateEnv,
     }),
     PrismaModule,
+    StorageModule,
     AuthModule,
     UsersModule,
+    PostsModule,
     HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],

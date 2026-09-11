@@ -1,4 +1,4 @@
-# ConnectHub — Product & Engineering Reference
+Workmate — Product & Engineering Reference
 
 > This file is the single source of truth for any human or coding agent working in this
 > repository. Read it fully before making changes. Keep it updated whenever architecture,
@@ -45,7 +45,7 @@ the _sender_ following the recipient, see §7).
 | ORM          | Prisma (recommended) — see §5                                  |
 | Real-time    | Socket.IO (via `@nestjs/platform-socket.io`)                   |
 | Auth         | Google OAuth 2.0 + JWT (access + refresh cookies)              |
-| File storage | Local `/uploads` in dev, Cloudflare R2 for prod                |
+| File storage | Cloudflare R2 (S3-compatible, bucket: `workmate`), dev simulation for placeholders |
 | Validation   | `class-validator` / `class-transformer` DTOs on every endpoint |
 | Styling      | Tailwind CSS                                                   |
 
@@ -83,7 +83,7 @@ the _sender_ following the recipient, see §7).
 │   │   │   │   ├── chat.gateway.ts    ← Socket.IO gateway (WS)
 │   │   │   │   ├── chat.service.ts
 │   │   │   │   └── dto/
-│   │   │   └── uploads/           ← static file serving / storage adapter
+│   │   │   └── storage/           ← Cloudflare R2 object storage service
 │   │   ├── prisma/
 │   │   │   ├── schema.prisma
 │   │   │   └── migrations/
@@ -305,14 +305,18 @@ body with a DTO class (`class-validator`) and reject unknown/invalid fields
 
 ```
 # backend
-DATABASE_URL=mysql://user:pass@localhost:3306/connecthub
+DATABASE_URL=mysql://user:pass@localhost:3306/workmate
 JWT_ACCESS_SECRET=
 JWT_REFRESH_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_CALLBACK_URL=
 FRONTEND_URL=http://localhost:3000
-UPLOADS_DIR=./uploads
+R2_ACCOUNT_ID=placeholder_account_id
+R2_ACCESS_KEY_ID=placeholder_access_key
+R2_SECRET_ACCESS_KEY=placeholder_secret_key
+R2_BUCKET_NAME=workmate
+R2_PUBLIC_URL=https://pub-workmate.r2.dev
 
 # web
 NEXT_PUBLIC_API_URL=http://localhost:4000/api
@@ -336,3 +340,6 @@ A feature is complete only when:
 - **Auth (Google OAuth + Session):** Completed end-to-end.
   - Backend: `passport-google-oauth20`, JWT access + refresh tokens in `httpOnly, secure, sameSite=lax` cookies, global `JwtAuthGuard` with `@Public()` opt-out, Prisma `User` model, `/users/me` endpoint, and local MySQL `docker-compose.yml`.
   - Frontend: Tailwind CSS configured in `apps/web`, single "Sign in with Google" button login screen at `/login`, authenticated `/feed` placeholder showing user profile + logout, and `middleware.ts` cookie presence guard.
+- **Posts (Creation & Storage):** Completed end-to-end.
+  - Backend: Prisma `Post` model & migration with `User` relation, `StorageService` using `@aws-sdk/client-s3` targeting Cloudflare R2 bucket `workmate` (with development simulation fallback for placeholder credentials), `PostsService` and `PostsController` supporting `POST /api/posts` (multipart text + optional image), `GET /api/posts`, `GET /api/posts/:id`, DTO validation (`CreatePostDto`, `PostResponseDto`), and unit tests (`src/posts/posts.service.spec.ts`).
+  - Frontend: `CreatePostForm` with live image preview and removal, `PostCard`, and `FeedPosts` reactive list on `/feed`; `apiFetch` updated to natively handle `FormData` uploads.

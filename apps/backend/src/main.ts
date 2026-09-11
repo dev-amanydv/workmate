@@ -4,6 +4,8 @@ import { Logger, RequestMethod, ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
+import fs from "node:fs";
+import path from "node:path";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
@@ -17,11 +19,27 @@ async function bootstrap(): Promise<void> {
   const config = app.get(ConfigService);
   const port = config.getOrThrow<number>("PORT");
   const frontendUrl = config.getOrThrow<string>("FRONTEND_URL");
+  const uploadsDir = path.resolve(
+    process.cwd(),
+    config.get<string>("UPLOADS_DIR", "./uploads"),
+  );
+
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
 
   app.set("trust proxy", 1);
-  app.use(helmet());
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: "cross-origin" },
+    }),
+  );
   app.use(compression());
   app.use(cookieParser());
+
+  app.useStaticAssets(uploadsDir, {
+    prefix: "/uploads/",
+  });
 
   app.enableCors({ origin: frontendUrl, credentials: true });
 
