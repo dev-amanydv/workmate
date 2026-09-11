@@ -31,7 +31,9 @@ services:
       NODE_ENV: production
       PORT: 4000
       DATABASE_URL: mysql://${MYSQL_USER:-workmate}:${MYSQL_PASSWORD:-workmate}@mysql:3306/${MYSQL_DATABASE:-workmate}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      FRONTEND_URL: ${FRONTEND_URL:-https://workmate.amanydv.in}
+      COOKIE_SAME_SITE: ${COOKIE_SAME_SITE:-none}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-workmate_jwt_access_secret}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-workmate_jwt_refresh_secret}
       JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-900}

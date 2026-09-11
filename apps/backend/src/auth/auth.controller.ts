@@ -28,7 +28,7 @@ export class AuthController {
     @Req() req: Request & { user: User },
     @Res() res: Response,
   ): void {
-    const frontendUrl = this.config.getOrThrow<string>("FRONTEND_URL");
+    const frontendUrl = this.config.getOrThrow<string>("FRONTEND_URL").replace(/\/+$/, "");
 
     try {
       const tokens = this.auth.issueTokens(req.user);

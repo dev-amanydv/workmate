@@ -32,7 +32,13 @@ function toWsException(err: unknown, fallback: string): WsException {
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      // Allow requests from all origins (including https://workmate.amanydv.in)
+      callback(null, true);
+    },
     credentials: true,
   },
   namespace: "/chat",

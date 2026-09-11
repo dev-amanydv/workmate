@@ -23,6 +23,8 @@ export const envSchema = z.object({
   R2_PUBLIC_URL: z.string().default("https://pub-workmate.r2.dev"),
   UPLOADS_DIR: z.string().default("./uploads"),
   LOCAL_STORAGE_BASE_URL: z.string().default("http://localhost:4000"),
+  COOKIE_SAME_SITE: z.enum(["none", "lax", "strict"]).optional(),
+  COOKIE_DOMAIN: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

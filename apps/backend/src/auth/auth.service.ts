@@ -130,10 +130,15 @@ export class AuthService {
         ? this.config.getOrThrow<number>("JWT_ACCESS_TTL") * 1000
         : this.config.getOrThrow<number>("JWT_REFRESH_TTL") * 1000;
 
+    const sameSiteEnv = this.config.get<string>("COOKIE_SAME_SITE");
+    const sameSite = (sameSiteEnv as "none" | "lax" | "strict") || (isProd ? "none" : "lax");
+    const domain = this.config.get<string>("COOKIE_DOMAIN") || undefined;
+
     return {
       httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
+      secure: isProd || sameSite === "none",
+      sameSite,
+      domain,
       path,
       maxAge,
     };

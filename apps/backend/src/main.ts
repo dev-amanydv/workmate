@@ -44,7 +44,25 @@ async function bootstrap(): Promise<void> {
     prefix: "/uploads/",
   });
 
-  app.enableCors({ origin: frontendUrl, credentials: true });
+  app.enableCors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (curl, server-to-server) or any origin (e.g., https://workmate.amanydv.in)
+      // Reflecting the incoming origin satisfies browser credentials mode requirement
+      callback(null, true);
+    },
+    credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Accept",
+      "Authorization",
+      "Cookie",
+      "Set-Cookie",
+    ],
+    exposedHeaders: ["Set-Cookie"],
+  });
 
   app.setGlobalPrefix("api", {
     exclude: [{ path: "health", method: RequestMethod.GET }],
