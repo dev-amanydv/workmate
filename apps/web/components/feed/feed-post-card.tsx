@@ -29,7 +29,6 @@ export function FeedPostCard({
   const isAuthor = Boolean(currentUserId && post.authorId === currentUserId);
   const displayTime = formatRelativeTime(post.createdAt);
 
-  // Differentiate role instead of generic "Workmate Member"
   const rawRole = post.author.role;
   const authorRole = (!rawRole || rawRole === "Workmate Member")
     ? "Systems & Software Engineer"
@@ -95,7 +94,6 @@ export function FeedPostCard({
     }
   };
 
-  // Simple, human attribution
   let appreciationProof: string;
   if (isLiked) {
     if (likesCount <= 1) {
@@ -114,7 +112,6 @@ export function FeedPostCard({
 
   return (
     <article className="rounded-xl border-px border-[#e7e7e7] bg-white p-5 sm:p-6 transition-colors hover:border-[#D5D3CC]">
-      {/* Header: Author Info and Overflow Menu */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <Link
@@ -144,7 +141,6 @@ export function FeedPostCard({
           </div>
         </div>
 
-        {/* Options Menu */}
         <div className="relative">
           <button
             type="button"
@@ -191,14 +187,12 @@ export function FeedPostCard({
         </div>
       </div>
 
-      {/* Content Text: 15px editorial reading size, 1.6 line height */}
       <div className="mt-4 space-y-3 text-[15px] text-[#17191A] leading-[1.6] font-normal">
         {paragraphs.map((paragraph, idx) => (
           <p key={idx}>{paragraph}</p>
         ))}
       </div>
 
-      {/* Media Image if present */}
       {post.imageUrl && (
         <div className="mt-4 overflow-hidden rounded-lg border border-[#E6E5E0] bg-[#F5F4F0]">
           <Image
@@ -212,7 +206,6 @@ export function FeedPostCard({
         </div>
       )}
 
-      {/* Restrained Social Proof Bar (Replacing the 4-emoji Slack row) */}
       <div className="mt-5 flex items-center justify-between border-b border-[#EDECE8] pb-3 text-xs text-[#6C6F71]">
         <div className="flex items-center gap-2">
           {likesCount > 0 && (
@@ -233,7 +226,6 @@ export function FeedPostCard({
         </Link>
       </div>
 
-      {/* Action Affordances: Like + Share */}
       <div className="relative mt-2 flex items-center justify-between pt-1">
         <button
           type="button"

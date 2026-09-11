@@ -18,7 +18,6 @@ import { ChatService } from "./chat.service";
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  /** GET /api/chat/conversations */
   @Get("conversations")
   async getConversations(@Req() req: Request & { user: User }) {
     return this.chatService.getConversations(req.user.id);
@@ -40,7 +39,6 @@ export class ChatController {
     return this.chatService.getOrCreateConversation(req.user.id, body.recipientId);
   }
 
-  /** GET /api/chat/conversations/:id/messages */
   @Get("conversations/:id/messages")
   async getMessages(
     @Req() req: Request & { user: User },

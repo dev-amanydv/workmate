@@ -46,7 +46,6 @@ export function ProfileView({
 }: ProfileViewProps) {
   const router = useRouter();
 
-  // Core profile state
   const [name, setName] = useState<string>(profileUser.name || "User");
   const [bio, setBio] = useState<string | null>(profileUser.bio ?? null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(
@@ -64,24 +63,20 @@ export function ProfileView({
     profileUser.postsCount ?? initialPosts?.length ?? 0,
   );
 
-  // Interaction states
   const [isTogglingFollow, setIsTogglingFollow] = useState(false);
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [showUnfollowModal, setShowUnfollowModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Tabs state: 'posts' | 'followers' | 'following'
   const [activeTab, setActiveTab] = useState<
     "posts" | "followers" | "following"
   >("posts");
 
-  // Followers / Following list data
   const [followersList, setFollowersList] = useState<FollowUserItem[] | null>(null);
   const [followingList, setFollowingList] = useState<FollowUserItem[] | null>(null);
   const [isLoadingList, setIsLoadingList] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
 
-  // Edit Profile Modal state
   const [showEditModal, setShowEditModal] = useState(false);
   const [editName, setEditName] = useState(name);
   const [editBio, setEditBio] = useState(bio || "");
@@ -93,7 +88,6 @@ export function ProfileView({
     profileUser.isSelf ||
     (Boolean(currentUser?.id) && currentUser?.id === profileUser.id);
 
-  // Format joined date
   const joinedDate = profileUser.createdAt
     ? new Date(profileUser.createdAt).toLocaleDateString("en-US", {
         month: "long",
@@ -101,14 +95,12 @@ export function ProfileView({
       })
     : "Recently";
 
-  // User handle: @amanyadav (derived from email prefix or name)
   const userHandle = profileUser.email
     ? (profileUser.email.split("@")[0] ?? "").replace(/[^a-zA-Z0-9_]/g, "").toLowerCase()
     : name.toLowerCase().replace(/[^a-zA-Z0-9_]/g, "") || "user";
 
   const userBio = bio || "Building products, exploring ideas, and learning in public.";
 
-  // Sync state if profileUser or initialPosts props change
   useEffect(() => {
     setName(profileUser.name || "User");
     setBio(profileUser.bio ?? null);
@@ -122,7 +114,6 @@ export function ProfileView({
     setFollowingList(null);
   }, [profileUser, initialPosts]);
 
-  // Fetch followers or following when tabs are activated
   useEffect(() => {
     if (activeTab === "followers" && followersList === null) {
       loadFollowers();
@@ -169,7 +160,6 @@ export function ProfileView({
     }
   };
 
-  // Follow / Unfollow profile header button
   const handleFollowButtonClick = () => {
     if (isSelf || isTogglingFollow) return;
     if (isFollowing) {
@@ -223,7 +213,6 @@ export function ProfileView({
     }
   };
 
-  // Follow toggle in followers/following list
   const toggleFollowListItem = async (userItem: FollowUserItem) => {
     const currentlyFollowing = userItem.isFollowing;
     const nextState = !currentlyFollowing;
@@ -246,7 +235,6 @@ export function ProfileView({
         method: currentlyFollowing ? "DELETE" : "POST",
       });
     } catch {
-      // Revert on error
       const revertList = (list: FollowUserItem[] | null) =>
         list?.map((u) =>
           u.id === userItem.id ? { ...u, isFollowing: currentlyFollowing } : u,
@@ -261,7 +249,6 @@ export function ProfileView({
     }
   };
 
-  // Message Button click: start or continue 1:1 conversation
   const handleMessageClick = async () => {
     if (isStartingChat || !isFollowing) return;
     setIsStartingChat(true);
@@ -343,18 +330,13 @@ export function ProfileView({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start h-full overflow-hidden">
-      {/* Left Navigation Column */}
       <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pr-1 shrink-0">
         <LeftSidebar userId={currentUser?.id} />
       </div>
 
-      {/* Center Profile Viewport Column */}
       <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 flex flex-col gap-6">
-        {/* Main Profile Showcase Card */}
         <div className="rounded-2xl border border-[#E6E5E0] bg-white overflow-hidden shadow-xs">
-          {/* Architectural Textured Banner */}
           <div className="relative h-36 sm:h-44 w-full bg-gradient-to-r from-[#184A45] via-[#1E5650] to-[#123B37] overflow-hidden">
-            {/* Subtle architectural geometric line texture overlay */}
             <div className="absolute inset-0 opacity-15 pointer-events-none">
               <svg className="w-full h-full" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -366,11 +348,9 @@ export function ProfileView({
               </svg>
             </div>
 
-            {/* Ambient Lighting Gradient */}
             <div className="absolute -top-12 -right-12 h-48 w-48 rounded-full bg-[#3FA89B]/20 blur-2xl pointer-events-none" />
             <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-[#0E2E2A]/60 blur-xl pointer-events-none" />
 
-            {/* Top-Right Quick Actions: Share / Copy Link */}
             <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
               <button
                 type="button"
@@ -397,11 +377,8 @@ export function ProfileView({
             </div>
           </div>
 
-          {/* Profile Core Information & Actions Container */}
           <div className="px-5 sm:px-8 pb-6">
-            {/* Avatar & Hero Action Row */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-14 sm:-mt-16 mb-5">
-              {/* Avatar with Elevation and Self-Edit Indicator */}
               <div className="relative group shrink-0">
                 <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-2xl border-4 border-white shadow-md bg-[#EEF4F3] overflow-hidden flex items-center justify-center">
                   <Avatar
@@ -428,7 +405,6 @@ export function ProfileView({
                 )}
               </div>
 
-              {/* Action Buttons */}
               <div className="flex items-center gap-2.5 pt-1 sm:pt-0">
                 {isSelf ? (
                   <>
@@ -454,7 +430,6 @@ export function ProfileView({
                   </>
                 ) : (
                   <>
-                    {/* Follow / Following Button */}
                     <button
                       type="button"
                       onClick={handleFollowButtonClick}
@@ -484,7 +459,6 @@ export function ProfileView({
                       )}
                     </button>
 
-                    {/* Direct Message Action */}
                     {isFollowing ? (
                       <button
                         type="button"
@@ -519,7 +493,6 @@ export function ProfileView({
               </div>
             </div>
 
-            {/* Profile Identity Details: Name, Handle, Bio, Metadata */}
             <div className="space-y-2">
               <div>
                 <div className="flex items-center gap-2.5 flex-wrap">
@@ -538,12 +511,10 @@ export function ProfileView({
                 </p>
               </div>
 
-              {/* Bio description */}
               <p className="text-sm text-[#484B4D] leading-relaxed pt-0.5">
                 {userBio}
               </p>
 
-              {/* Identity Metadata Badges: Joined Date & Email */}
               <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-[#6C6F71] pt-1">
                 <div className="flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-[#8A8D90]" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
@@ -566,12 +537,9 @@ export function ProfileView({
               </div>
             </div>
 
-            {/* Horizontal Divider Line */}
             <div className="border-t border-[#EDECE8] my-5" />
 
-            {/* User Stats Row: Followers, Following, Posts */}
             <div className="flex items-center gap-10 sm:gap-14 pt-0.5">
-              {/* Followers Stat */}
               <div className="flex flex-col">
                 <span className="text-2xl font-bold text-[#17191A] leading-tight">
                   {followersCount}
@@ -581,10 +549,8 @@ export function ProfileView({
                 </span>
               </div>
 
-              {/* Vertical Divider */}
               <div className="h-8 w-px bg-[#E6E5E0] self-center" />
 
-              {/* Following Stat */}
               <div className="flex flex-col">
                 <span className="text-2xl font-bold text-[#17191A] leading-tight">
                   {followingCount}
@@ -594,10 +560,8 @@ export function ProfileView({
                 </span>
               </div>
 
-              {/* Vertical Divider */}
               <div className="h-8 w-px bg-[#E6E5E0] self-center" />
 
-              {/* Posts Stat */}
               <div className="flex flex-col">
                 <span className="text-2xl font-bold text-[#17191A] leading-tight">
                   {postsCount}
@@ -610,9 +574,7 @@ export function ProfileView({
           </div>
         </div>
 
-        {/* Profile Navigation Tabs (Explicitly Outside Main Showcase Card) */}
         <div className="flex items-center gap-1 sm:gap-2 border-b border-[#E6E5E0] px-1">
-          {/* Posts Tab */}
           <button
             type="button"
             onClick={() => setActiveTab("posts")}
@@ -658,7 +620,6 @@ export function ProfileView({
         </div>
       </div>
 
-      {/* Right Column: Suggested Peers & Network Invitations */}
       <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pl-1 shrink-0">
         <RightSidebar
           userName={currentUser?.name}
@@ -666,7 +627,6 @@ export function ProfileView({
         />
       </div>
 
-      {/* Edit Profile Modal */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-xs p-4 animate-fade-in">
           <div
@@ -700,7 +660,6 @@ export function ProfileView({
 
               
 
-              {/* Name Field */}
               <div>
                 <label className="block text-xs font-semibold text-[#17191A] mb-1.5">
                   Full Name <span className="text-[#9E3B27]">*</span>
@@ -716,7 +675,6 @@ export function ProfileView({
                 />
               </div>
 
-              {/* Bio Field */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-semibold text-[#17191A]">
@@ -736,7 +694,6 @@ export function ProfileView({
                 />
               </div>
 
-              {/* Actions */}
               <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#EDECE8]">
                 <button
                   type="button"
@@ -758,21 +715,18 @@ export function ProfileView({
         </div>
       )}
 
-      {/* Unfollow Confirmation Modal */}
       {showUnfollowModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-xs p-4 animate-fade-in">
           <div
             className="w-full max-w-sm rounded-2xl border border-[#E6E5E0] bg-white p-6 shadow-2xl transition-all"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Warning Icon */}
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#FAF0EE] text-[#9E3B27] mb-4">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.765z" />
               </svg>
             </div>
 
-            {/* Modal Copy */}
             <div className="text-center space-y-1.5">
               <h3 className="text-base font-bold text-[#17191A]">
                 Unfollow {name}?
@@ -782,7 +736,6 @@ export function ProfileView({
               </p>
             </div>
 
-            {/* Confirmation Actions */}
             <div className="mt-6 flex flex-col gap-2">
               <button
                 type="button"

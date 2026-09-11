@@ -106,8 +106,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
 
         {imagePreview && (
           <div className="relative inline-block max-w-full overflow-hidden rounded-lg border border-[#E6E5E0]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+                        <img
               src={imagePreview}
               alt="Selected preview"
               className="max-h-64 w-auto max-w-full rounded-lg object-contain"

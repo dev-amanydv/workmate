@@ -27,7 +27,6 @@ export function CreatePostView({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Audience selector state
   const [audience, setAudience] = useState<"Everyone" | "Connections">("Everyone");
   const [isAudienceOpen, setIsAudienceOpen] = useState(false);
   const audienceRef = useRef<HTMLDivElement>(null);
@@ -37,7 +36,6 @@ export function CreatePostView({
   const displayName = currentUser?.name || "Aman Yadav";
   const userAvatar = currentUser?.avatarUrl || "/mock/avatar-aman.jpg";
 
-  // Close audience dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (audienceRef.current && !audienceRef.current.contains(event.target as Node)) {
@@ -119,14 +117,11 @@ export function CreatePostView({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start h-full overflow-hidden">
-      {/* Left Sidebar: Fixed navigation column */}
       <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pr-1 shrink-0">
         <LeftSidebar userId={currentUser?.id} />
       </div>
 
-      {/* Center Column: Create Post Area */}
       <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 pb-12">
-        {/* Header with Back Button */}
         <div className="mb-5 flex items-start gap-3.5">
           
           <div>
@@ -139,14 +134,11 @@ export function CreatePostView({
           </div>
         </div>
 
-        {/* Main Card */}
         <form
           onSubmit={handleSubmit}
           className="rounded-2xl border border-slate-200 bg-white shadow-2xs overflow-hidden"
         >
-          {/* Card Upper Body */}
           <div className="p-6 sm:p-7">
-            {/* User Row */}
             <div className="flex items-center gap-3.5 mb-5">
               <div className="h-11 w-11 rounded-full overflow-hidden shrink-0 border border-[#E6E5E0] bg-[#EEF4F3]">
                 <Avatar
@@ -165,7 +157,6 @@ export function CreatePostView({
               </div>
             </div>
 
-            {/* Error Message */}
             {error && (
               <div className="mb-4 rounded-xl bg-red-50 p-3 text-xs text-[#9E3B27] border border-red-100 flex items-center justify-between">
                 <span>{error}</span>
@@ -179,7 +170,6 @@ export function CreatePostView({
               </div>
             )}
 
-            {/* Textarea Container Box */}
             <div className="rounded-xl  border-slate-200 bg-white p-4 focus-within:border-slate-400  focus-within:ring-slate-300/40 transition-all relative">
               <textarea
                 value={content}
@@ -200,7 +190,6 @@ export function CreatePostView({
               </div>
             </div>
 
-            {/* Add a photo Section */}
             <div className="mt-5">
               <input
                 ref={fileInputRef}
@@ -244,10 +233,8 @@ export function CreatePostView({
                 </div>
               </button>
 
-              {/* Image Preview if selected */}
               {imagePreview && (
                 <div className="mt-4 relative inline-block max-w-full rounded-xl overflow-hidden border border-slate-200">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={imagePreview}
                     alt="Selected preview"
@@ -266,10 +253,8 @@ export function CreatePostView({
             </div>
           </div>
 
-          {/* Card Divider Line */}
           <div className="border-t border-slate-100" />
 
-          {/* Card Footer */}
           <div className="px-6 py-4 sm:px-7 sm:py-5 flex justify-end items-center bg-white">
             <button
               type="submit"
@@ -282,7 +267,6 @@ export function CreatePostView({
         </form>
       </div>
 
-      {/* Right Sidebar: Fixed suggested follows column */}
       <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pl-1 shrink-0">
         <RightSidebar userName={currentUser?.name} suggestedUsers={suggestedUsers} />
       </div>

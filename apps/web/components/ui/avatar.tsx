@@ -36,7 +36,6 @@ export function Avatar({
   const finalWidth = width ?? size;
   const finalHeight = height ?? size;
 
-  // Reset error state if src changes
   useEffect(() => {
     setHasError(false);
   }, [src]);

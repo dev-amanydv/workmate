@@ -19,7 +19,7 @@ const ALLOWED_MIME_TYPES = new Set([
   "image/gif",
 ]);
 
-const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
 @Injectable()
 export class StorageService {
@@ -144,13 +144,12 @@ export class StorageService {
 
   async resolveImageUrl(
     storedUrlOrKey: string | null,
-    expiresIn = 86400, // 24 hours
+    expiresIn = 86400,
   ): Promise<string | null> {
     if (!storedUrlOrKey) {
       return null;
     }
 
-    // Local uploads URL or relative URL
     if (
       storedUrlOrKey.startsWith("http://localhost:") ||
       storedUrlOrKey.startsWith("http://127.0.0.1:") ||
@@ -159,7 +158,6 @@ export class StorageService {
       return storedUrlOrKey;
     }
 
-    // Placeholder or offline fallback mode
     if (this.isPlaceholder || !this.s3Client) {
       if (
         storedUrlOrKey.startsWith("http://") ||
@@ -170,7 +168,6 @@ export class StorageService {
       return `${this.localBaseUrl}/uploads/${storedUrlOrKey.replace(/^\/+/, "")}`;
     }
 
-    // Real Cloudflare R2: extract object key from stored URL or key
     let key = storedUrlOrKey;
     if (
       storedUrlOrKey.startsWith("http://") ||

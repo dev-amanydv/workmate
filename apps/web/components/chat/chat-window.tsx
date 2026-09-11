@@ -21,9 +21,7 @@ interface ChatWindowProps {
   conversation: Conversation;
   currentUserId: string;
   socket: Socket;
-  /** Called when the user successfully follows the other person */
   onFollowStatusChange?: (conversationId: string, canSend: boolean, canReply: boolean) => void;
-  /** Mobile back button handler */
   onBack?: () => void;
 }
 
@@ -53,15 +51,9 @@ export function ChatWindow({
   const convIdRef = useRef(conversation.id);
 
   const other = conversation.otherUser;
-  // canSend: current user follows other → can send messages
-  // canReply: both follow each other → full messaging
-  // If user is the receiver (doesn't follow other but other follows them),
-  // they can only read and see a "follow to reply" banner
   const canSend = conversation.canSend;
   const canReply = conversation.canReply;
 
-  // If current user didn't initiate (they're receiver who hasn't followed back),
-  // show read-only mode with follow CTA
   const isReadOnly = !canSend && !canReply;
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
@@ -74,7 +66,6 @@ export function ChatWindow({
     return el.scrollHeight - el.scrollTop - el.clientHeight < 150;
   }, []);
 
-  // Load messages + join room
   useEffect(() => {
     convIdRef.current = conversation.id;
     setMessages([]);
@@ -103,7 +94,6 @@ export function ChatWindow({
     };
   }, [conversation.id, socket, scrollToBottom]);
 
-  // Socket event listeners
   useEffect(() => {
     const handleNewMessage = (msg: ChatMessage) => {
       if (msg.conversationId !== convIdRef.current) return;
@@ -216,13 +206,11 @@ export function ChatWindow({
     sendMessage();
   };
 
-  // Follow the other user
   const handleFollow = async () => {
     if (!other || isFollowing) return;
     setIsFollowing(true);
     try {
       await apiFetch(`/follows/${other.id}`, { method: "POST" });
-      // Refetch follow status and notify parent to update conversation
       const status = await apiFetch<{ senderFollowsReceiver: boolean; receiverFollowsSender: boolean }>(
         `/chat/follow-status/${other.id}`,
       );
@@ -232,7 +220,6 @@ export function ChatWindow({
         status.senderFollowsReceiver && status.receiverFollowsSender,
       );
     } catch {
-      // ignore
     } finally {
       setIsFollowing(false);
     }
@@ -242,7 +229,6 @@ export function ChatWindow({
 
   return (
     <div className="flex flex-col h-full bg-[#FBFBFA]">
-      {/* Header */}
       <div className="flex items-center gap-3 px-4 sm:px-5 py-3.5 bg-white border-b border-[#E6E5E0] flex-shrink-0">
         {onBack && (
           <button
@@ -278,7 +264,6 @@ export function ChatWindow({
             <p className="text-xs text-[#6C6F71]">Direct conversation</p>
           )}
         </div>
-        {/* Follow status badge */}
         {isReadOnly && (
           <span className="text-[11px] font-semibold text-[#9E3B27] bg-[#FBF0EE] border border-[#EACEC8] rounded px-2.5 py-0.5">
             Read-only
@@ -286,7 +271,6 @@ export function ChatWindow({
         )}
       </div>
 
-      {/* Messages area */}
       <div
         ref={messagesRef}
         className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2 min-h-0"
@@ -308,7 +292,6 @@ export function ChatWindow({
           </div>
         )}
 
-        {/* Skeleton */}
         {isLoading && (
           <div className="flex flex-col gap-3 py-4">
             {[...Array(4)].map((_, i) => (
@@ -326,7 +309,6 @@ export function ChatWindow({
           </div>
         )}
 
-        {/* Empty state */}
         {!isLoading && messages.length === 0 && (
           <div className="flex flex-col items-center justify-center flex-1 gap-3 text-center py-16 px-4">
             <div className="h-12 w-12 rounded-lg border border-[#EDECE8] bg-[#F5F4F0] text-[#4E5CF0] flex items-center justify-center">
@@ -343,7 +325,6 @@ export function ChatWindow({
           </div>
         )}
 
-        {/* Messages */}
         {!isLoading &&
           messages.map((msg, i) => {
             const prev = messages[i - 1];
@@ -358,7 +339,6 @@ export function ChatWindow({
             );
           })}
 
-        {/* Typing indicators */}
         {typingList.map((name) => (
           <TypingIndicator key={name} userName={name} />
         ))}
@@ -366,9 +346,7 @@ export function ChatWindow({
         <div ref={bottomRef} />
       </div>
 
-      {/* Bottom area: input OR follow CTA */}
       {isReadOnly ? (
-        /* Follow-to-reply banner */
         <div className="flex-shrink-0 px-4 py-4 bg-white border-t border-[#E6E5E0]">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-xl border border-[#E6E5E0] bg-[#F5F4F0]">
             <div className="flex items-center gap-2.5">
@@ -404,7 +382,6 @@ export function ChatWindow({
           </div>
         </div>
       ) : (
-        /* Regular message input */
         <form
           onSubmit={handleSubmit}
           className="flex-shrink-0 px-4 py-3 bg-white border-t border-[#E6E5E0]"

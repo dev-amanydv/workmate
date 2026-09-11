@@ -102,7 +102,6 @@ export function SearchView({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Combine real recent users with default members if database has fewer than 4 users
   const recentDisplayUsers = useMemo(() => {
     const combined = [...initialRecentUsers];
     const seenIds = new Set(combined.map((u) => u.id));
@@ -117,7 +116,6 @@ export function SearchView({
     return combined;
   }, [initialRecentUsers]);
 
-  // Execute Search API call
   const executeSearch = async (searchTerm: string) => {
     const trimmed = searchTerm.trim();
     if (!trimmed) {
@@ -143,7 +141,6 @@ export function SearchView({
         results = res.data;
       }
 
-      // If backend returns matching users, show them; also check default users for demo
       const lower = trimmed.toLowerCase();
       const demoMatches = DEFAULT_USERS.filter(
         (u) =>
@@ -162,7 +159,6 @@ export function SearchView({
 
       setSearchResults(results);
     } catch {
-      // Graceful fallback for demo search
       const lower = trimmed.toLowerCase();
       const demoMatches = DEFAULT_USERS.filter(
         (u) =>
@@ -235,26 +231,21 @@ export function SearchView({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start h-full overflow-hidden">
-      {/* Left Sidebar: Fixed */}
       <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pr-1 shrink-0">
         <LeftSidebar userId={currentUser?.id} />
       </div>
 
-      {/* Center Search Card: Scrolls independently */}
       <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 pb-12">
         <div className="rounded-xl border border-[#E6E5E0] bg-white p-6 sm:p-8">
 
-          {/* Title */}
           <h1 className="text-2xl sm:text-3xl font-bold text-[#17191A] tracking-tight mt-1 mb-2">
             Search Network
           </h1>
 
-          {/* Subtitle */}
           <p className="text-xs sm:text-sm text-[#6C6F71]">
             Find colleagues, teammates, and users across disciplines.
           </p>
 
-          {/* Search Input Box */}
           <form onSubmit={handleSubmit} className="mt-6 relative flex items-center">
             <span className="absolute left-3.5 text-[#6C6F71] pointer-events-none">
               <svg
@@ -281,7 +272,6 @@ export function SearchView({
               className="w-full h-11 bg-[#F5F4F0] text-sm text-[#17191A] placeholder-[#8A8D90] rounded-lg pl-10 pr-11 border border-[#E6E5E0] hover:border-[#D5D3CC] focus:bg-white focus:border-[#184A45] focus:outline-none transition"
             />
 
-            {/* Apple Spinner when searching, or clear button */}
             <div className="absolute right-4 flex items-center">
               {isSearching ? (
                 <AppleSpinner size={18} className="text-slate-400" />
@@ -310,10 +300,8 @@ export function SearchView({
             </div>
           </form>
 
-          {/* Navigation Tabs (People, Posts, Companies, Hashtags, Filters) */}
         
 
-          {/* Section Heading: Suggested for you / Search Results */}
           <div className="pt-6 pb-2 flex items-center justify-between">
             <h2 className="text-base font-bold text-slate-900">
               {hasQuery ? `Search results for "${query}"` : "Suggested for you"}
@@ -329,7 +317,6 @@ export function SearchView({
             )}
           </div>
 
-          {/* Content Area: Skeletons ONLY when loading recently joined members */}
           {isLoadingRecent ? (
             <div className="divide-y divide-slate-100">
               {[1, 2, 3, 4].map((i) => (
@@ -380,7 +367,6 @@ export function SearchView({
         </div>
       </div>
 
-      {/* Right Sidebar: Fixed */}
       <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pl-1 shrink-0">
         <RightSidebar
           userName={currentUser?.name}

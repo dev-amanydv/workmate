@@ -53,7 +53,6 @@ export function PostCard({
     const prevLiked = isLiked;
     const prevCount = likesCount;
 
-    // Optimistic UI update
     setIsLiked(!prevLiked);
     setLikesCount(prevLiked ? Math.max(0, prevCount - 1) : prevCount + 1);
 
@@ -68,7 +67,6 @@ export function PostCard({
       setIsLiked(res.isLiked);
       setLikesCount(res.likesCount);
     } catch (err: unknown) {
-      // Revert optimistic state on error
       setIsLiked(prevLiked);
       setLikesCount(prevCount);
     } finally {
@@ -162,7 +160,6 @@ export function PostCard({
         </div>
       )}
 
-      {/* Post Header: Author, Date, Follow, Edit/Delete */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <Avatar
@@ -179,7 +176,6 @@ export function PostCard({
                 {post.author?.name || "Unknown Author"}
               </p>
 
-              {/* Follow Button: shown if user has not followed the post owner in feed (and not author) */}
               {!isAuthor && currentUserId && (
                 <button
                   type="button"
@@ -210,7 +206,6 @@ export function PostCard({
           </div>
         </div>
 
-        {/* Action Buttons: Only show Edit and Delete if the post belongs to current user */}
         {isAuthor && (
           <div
             onClick={(e) => e.stopPropagation()}
@@ -268,7 +263,6 @@ export function PostCard({
         )}
       </div>
 
-      {/* Post Content / Edit Form */}
       {isEditing ? (
         <form
           onSubmit={handleEditSubmit}
@@ -310,10 +304,8 @@ export function PostCard({
         </p>
       )}
 
-      {/* Post Image */}
       {post.imageUrl && (
         <div className="mt-3 overflow-hidden rounded-lg border border-[#E6E5E0]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={post.imageUrl}
             alt="Post media"
@@ -322,7 +314,6 @@ export function PostCard({
         </div>
       )}
 
-      {/* Footer: Likes and Detail Indicator */}
       <div className="mt-4 flex items-center justify-between border-t border-[#EDECE8] pt-3">
         <button
           type="button"

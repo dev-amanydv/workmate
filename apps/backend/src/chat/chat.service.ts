@@ -21,10 +21,6 @@ const MESSAGE_SELECT = {
 export class ChatService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Check follow relationship between two users.
-   * Returns { senderFollowsReceiver, receiverFollowsSender }
-   */
   async getFollowStatus(
     senderUserId: string,
     receiverUserId: string,
@@ -54,15 +50,10 @@ export class ChatService {
     };
   }
 
-  /**
-   * Get or create a 1-to-1 conversation.
-   * Requires that userA follows userB (sender must follow receiver).
-   */
   async getOrCreateConversation(
     userAId: string,
     userBId: string,
   ): Promise<{ id: string }> {
-    // Check if conversation already exists (receiver accessing their inbox)
     const existing = await this.prisma.conversation.findFirst({
       where: {
         AND: [
@@ -75,7 +66,6 @@ export class ChatService {
 
     if (existing && existing.participants.length === 2) return { id: existing.id };
 
-    // Only allow creation if userA follows userB
     const { senderFollowsReceiver } = await this.getFollowStatus(userAId, userBId);
     if (!senderFollowsReceiver) {
       throw new ForbiddenException(
@@ -95,9 +85,6 @@ export class ChatService {
     return conversation;
   }
 
-  /**
-   * List all conversations for a user, enriched with follow status.
-   */
   async getConversations(userId: string) {
     const convs = await this.prisma.conversation.findMany({
       where: { participants: { some: { userId } } },
@@ -119,7 +106,6 @@ export class ChatService {
       },
     });
 
-    // Fetch follow status for all conversation partners in parallel
     const results = await Promise.all(
       convs.map(async (c) => {
         const otherUser = c.participants[0]?.user ?? null;
@@ -137,9 +123,7 @@ export class ChatService {
           updatedAt: c.updatedAt,
           otherUser,
           lastMessage: c.messages[0] ?? null,
-          // Current user can send if they follow the other person
           canSend: iFollowThem,
-          // Current user can reply if they follow the sender back
           canReply: iFollowThem && theyFollowMe,
         };
       }),
@@ -148,7 +132,6 @@ export class ChatService {
     return results;
   }
 
-  /** Get paginated messages for a conversation (cursor-based) */
   async getMessages(
     conversationId: string,
     userId: string,
@@ -176,19 +159,13 @@ export class ChatService {
     return { messages: items.reverse(), nextCursor, hasMore };
   }
 
-  /**
-   * Persist a message.
-   * Sender must follow the receiver (the other participant).
-   */
   async saveMessage(conversationId: string, senderId: string, content: string) {
-    // Verify sender is a participant
     const participant = await this.prisma.conversationParticipant.findUnique({
       where: { conversationId_userId: { conversationId, userId: senderId } },
     });
 
     if (!participant) throw new ForbiddenException("Not a participant in this conversation");
 
-    // Find the other participant
     const otherParticipant = await this.prisma.conversationParticipant.findFirst({
       where: {
         conversationId,
@@ -199,7 +176,6 @@ export class ChatService {
 
     if (!otherParticipant) throw new BadRequestException("Conversation is incomplete");
 
-    // Sender must follow the receiver
     const { senderFollowsReceiver } = await this.getFollowStatus(
       senderId,
       otherParticipant.userId,
@@ -211,7 +187,6 @@ export class ChatService {
       );
     }
 
-    // Use transaction callback form (Prisma v7 compatible)
     return this.prisma.$transaction(async (tx) => {
       const message = await tx.message.create({
         data: { conversationId, senderId, content: content.trim() },
@@ -227,7 +202,6 @@ export class ChatService {
     });
   }
 
-  /** Get conversation details, verifying user is a participant */
   async getConversation(conversationId: string, userId: string) {
     const conversation = await this.prisma.conversation.findUnique({
       where: { id: conversationId },

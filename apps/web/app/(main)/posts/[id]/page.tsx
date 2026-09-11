@@ -71,12 +71,10 @@ export default async function PostDetailPage({
   if (!post) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start h-full overflow-hidden">
-        {/* Left Sidebar: Fixed navigation column */}
         <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pr-1 shrink-0">
           <LeftSidebar userId={user.id} />
         </div>
 
-        {/* Center Column */}
         <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 pb-12">
           <div className="rounded-xl border border-[#E6E5E0] bg-white p-8 text-center">
             <h2 className="text-lg font-bold text-[#17191A]">
@@ -96,7 +94,6 @@ export default async function PostDetailPage({
           </div>
         </div>
 
-        {/* Right Sidebar: Fixed suggested follows column */}
         <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pl-1 shrink-0">
           <RightSidebar userName={user.name} suggestedUsers={suggestedUsers} />
         </div>

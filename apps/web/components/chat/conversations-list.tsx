@@ -16,9 +16,7 @@ export interface Conversation {
     senderId: string;
     createdAt: string;
   } | null;
-  /** Current user follows the other person (can initiate/send) */
   canSend: boolean;
-  /** Both follow each other (full bidirectional messaging) */
   canReply: boolean;
 }
 
@@ -50,7 +48,6 @@ export function ConversationsList({
 }: ConversationsListProps) {
   return (
     <div className="flex flex-col h-full bg-white">
-      {/* Header */}
       <div className="px-5 py-4 border-b border-[#E6E5E0]">
         <h2 className="text-base font-semibold text-[#17191A] tracking-tight">Messages</h2>
         <p className="text-xs text-[#6C6F71] mt-0.5">
@@ -58,7 +55,6 @@ export function ConversationsList({
         </p>
       </div>
 
-      {/* Conversation rows */}
       <div className="flex-1 overflow-y-auto py-1">
         {conversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-3 px-6 text-center py-16">
@@ -86,7 +82,6 @@ export function ConversationsList({
                   isActive ? "bg-[#F5F4F0]" : ""
                 }`}
               >
-                {/* Avatar */}
                 <div className="relative flex-shrink-0">
                   <Avatar
                     src={other?.avatarUrl}
@@ -97,7 +92,6 @@ export function ConversationsList({
                   />
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline justify-between gap-1">
                     <span

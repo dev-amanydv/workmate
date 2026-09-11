@@ -80,7 +80,6 @@ export function FeedHeader({
         credentials: "include",
       });
     } catch {
-      // Even if network call fails, redirect to login
     } finally {
       window.location.href = "/login";
     }
@@ -89,7 +88,6 @@ export function FeedHeader({
   return (
     <header className="shrink-0 sticky top-0 z-50 border-b border-[#E6E5E0] bg-white">
       <div className="mx-auto flex max-w-[1380px] items-center justify-between px-4 sm:px-6 lg:px-8 h-15">
-        {/* Left: Brand Identity */}
         <div className="flex items-center gap-8">
           <Link
             href="/feed"
@@ -102,14 +100,11 @@ export function FeedHeader({
 
         
 
-        {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Mobile search */}
           
         
 
 
-          {/* User Profile Affordance & Dropdown Menu */}
           <div className="relative pl-1">
             <button
               ref={buttonRef}
@@ -143,13 +138,11 @@ export function FeedHeader({
               </svg>
             </button>
 
-            {/* Redesigned Popup Dropdown */}
             {showProfileMenu && (
               <div
                 ref={menuRef}
                 className="absolute right-0 mt-2 w-[310px] rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_12px_36px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.03)] overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100"
               >
-                {/* Header Profile Section */}
                 <div className="p-5 flex items-center gap-4">
                   <div className="relative h-[50px] w-[50px] rounded-xl overflow-hidden bg-slate-100 shrink-0">
                     <Avatar
@@ -169,10 +162,8 @@ export function FeedHeader({
                   </div>
                 </div>
 
-                {/* Divider */}
                 <div className="border-t border-[#F1F3F5]" />
 
-                {/* Middle Menu Items */}
                 <div className="py-2 flex flex-col">
                   <Link
                     href="/profile"
@@ -216,10 +207,8 @@ export function FeedHeader({
                   </Link>
                 </div>
 
-                {/* Divider */}
                 <div className="border-t border-[#F1F3F5]" />
 
-                {/* Sign Out Section */}
                 <div className="py-2 flex flex-col">
                   <button
                     type="button"

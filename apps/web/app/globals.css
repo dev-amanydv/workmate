@@ -31,7 +31,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Restrained, purposeful chat animations */
 @keyframes typingBounce {
   0%, 60%, 100% {
     transform: translateY(0);
@@ -47,7 +46,6 @@ body {
   animation: typingBounce 1.2s infinite ease-in-out;
 }
 
-/* Utility to hide scrollbars while preserving scrolling */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

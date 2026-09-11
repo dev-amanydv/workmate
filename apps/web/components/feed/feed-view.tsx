@@ -28,7 +28,6 @@ export function FeedView({
     setPosts((prev) => prev.filter((p) => p.id !== postId));
   };
 
-  // Derive suggested users from backend or real post authors (excluding current user)
   const suggestedUsers = useMemo<SuggestedUser[]>(() => {
     if (initialSuggestedUsers && initialSuggestedUsers.length > 0) {
       return initialSuggestedUsers;
@@ -55,19 +54,15 @@ export function FeedView({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start h-full overflow-hidden">
-      {/* Left Sidebar: Fixed navigation column */}
       <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pr-1 shrink-0">
         <LeftSidebar userId={userId} />
       </div>
 
-      {/* Center Feed Column: The ONLY component that scrolls */}
       <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 flex flex-col gap-5">
         
-        {/* Feed Posts List */}
         <div className="flex flex-col gap-4 pb-12">
           {posts.length === 0 ? (
             <div className="rounded-xl border-px  bg-white p-10 sm:p-14 text-center">
-              {/* Bespoke Architectural Chronicle Empty State Mark */}
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-[#f3f3f1] bg-[#F5F4F0] text-[#184A45]">
                 <svg
                   className="w-7 h-7"
@@ -117,7 +112,6 @@ export function FeedView({
         </div>
       </div>
 
-      {/* Right Sidebar: Fixed suggested follows column */}
       <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pl-1 shrink-0">
         <RightSidebar userName={userName} suggestedUsers={suggestedUsers} />
       </div>

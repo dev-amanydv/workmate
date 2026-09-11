@@ -140,7 +140,6 @@ export function RightSidebar({
 
 
 
-      {/* 3. Suggested Collaborators (Specific roles, high-contrast actions) */}
       <div className="rounded-xl border border-[#E6E5E0] bg-[#F5F4F0] p-4">
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#EDECE8]">
           <div>

@@ -25,7 +25,6 @@ export function WorkmateLogo({
 
   return (
     <div className={`flex items-center gap-2.5 select-none ${className}`}>
-      {/* Architectural Geometric "W" Monogram */}
       <svg
         className={`${markDimensions} shrink-0 text-[#184A45]`}
         viewBox="0 0 32 32"

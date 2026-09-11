@@ -21,7 +21,6 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
 
-  // Connect socket once on mount
   useEffect(() => {
     const socket = connectSocket();
     socketRef.current = socket;
@@ -33,7 +32,6 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
     socket.on("disconnect", onDisconnect);
     if (socket.connected) setIsConnected(true);
 
-    // Bubble new messages up to update last-message preview in sidebar
     const onNewMessage = (msg: ChatMessage) => {
       setConversations((prev) => {
         const updated = prev.map((c) => {
@@ -69,7 +67,6 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
     setActiveConv(conv);
   };
 
-  /** Called when the user follows back — updates conversation permissions in state */
   const handleFollowStatusChange = useCallback(
     (conversationId: string, canSend: boolean, canReply: boolean) => {
       setConversations((prev) =>
@@ -77,7 +74,6 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
           c.id === conversationId ? { ...c, canSend, canReply } : c,
         ),
       );
-      // Also update active conversation
       setActiveConv((prev) =>
         prev?.id === conversationId ? { ...prev, canSend, canReply } : prev,
       );
@@ -87,12 +83,10 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[220px_300px_1fr] xl:grid-cols-[240px_320px_1fr] gap-0 items-start h-full overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8">
-      {/* Column 1: Left navigation sidebar */}
       <div className="hidden lg:block h-full border-r border-[#E6E5E0] bg-[#FBFBFA] px-3 pt-6 overflow-y-auto shrink-0">
         <LeftSidebar userId={userId} />
       </div>
 
-      {/* Column 2: Conversations list */}
       <div
         className={`${
           activeConv ? "hidden lg:flex" : "flex"
@@ -106,13 +100,11 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
         />
       </div>
 
-      {/* Column 3: Active chat window */}
       <div
         className={`${
           activeConv ? "flex" : "hidden lg:flex"
         } flex-col h-full overflow-hidden min-w-0`}
       >
-        {/* Connection status banner */}
         {!isConnected && (
           <div className="flex items-center justify-center gap-2 py-1.5 text-xs text-[#9E3B27] bg-[#FBF0EE] border-b border-[#EACEC8] flex-shrink-0">
             <div className="h-1.5 w-1.5 rounded-full bg-[#9E3B27] animate-pulse" />

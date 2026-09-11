@@ -24,15 +24,15 @@ let socket: Socket | null = null;
 export function getSocket(): Socket {
   if (!socket) {
     socket = io(`${SOCKET_URL}/chat`, {
-      withCredentials: true,       // send cookies for auth
-      transports: ["websocket", "polling"], // prefer WS, fall back to polling
+      withCredentials: true,
+      transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 10000,
       randomizationFactor: 0.5,
       timeout: 20000,
-      autoConnect: false,          // connect explicitly when needed
+      autoConnect: false,
     });
   }
   return socket;

@@ -32,7 +32,6 @@ export function UserListItem({
     setIsToggling(true);
     const nextFollowing = !isFollowing;
 
-    // Optimistic UI update
     setIsFollowing(nextFollowing);
 
     try {
@@ -46,7 +45,6 @@ export function UserListItem({
         setIsFollowing(res.isFollowing);
       }
     } catch {
-      // If error (e.g. simulated user), keep state or revert
       setIsFollowing(nextFollowing);
     } finally {
       setIsToggling(false);
@@ -60,12 +58,10 @@ export function UserListItem({
   return (
     <div className="py-3.5 border-b border-[#EDECE8] last:border-0 transition-colors hover:bg-[#F5F4F0] -mx-2 px-2 rounded-lg">
       <div className="flex items-center justify-between gap-4">
-        {/* Clickable Profile Area */}
         <Link
           href={`/profile/${user.id}`}
           className="flex items-center gap-3.5 flex-1 min-w-0 group"
         >
-          {/* Avatar */}
           <Avatar
             src={user.avatarUrl}
             alt={user.name}
@@ -74,7 +70,6 @@ export function UserListItem({
             className="h-11 w-11 rounded-md border border-[#E6E5E0] shrink-0"
           />
 
-          {/* Middle Info: Name, Bio, Mutual Connections */}
           <div className="min-w-0 flex-1">
             <h3 className="text-sm font-semibold text-[#17191A] leading-snug group-hover:text-[#184A45] transition truncate">
               {user.name}
@@ -87,7 +82,6 @@ export function UserListItem({
           </div>
         </Link>
 
-        {/* Right: Follow Button */}
         <div className="shrink-0">
           {user.isSelf ? (
             <span className="rounded-md bg-[#F5F4F0] border border-[#E6E5E0] px-3 py-1.5 text-xs font-medium text-[#6C6F71]">

@@ -27,12 +27,10 @@ export function PostDetailView({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start h-full overflow-hidden">
-      {/* Left Sidebar: Fixed navigation column */}
       <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pr-1 shrink-0">
         <LeftSidebar userId={effectiveUserId} />
       </div>
 
-      {/* Center Column: The component that scrolls */}
       <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 flex flex-col gap-4 pb-12">
         <div className="flex items-center justify-between">
           <Link
@@ -64,7 +62,6 @@ export function PostDetailView({
         />
       </div>
 
-      {/* Right Sidebar: Fixed suggested follows column */}
       <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pl-1 shrink-0">
         <RightSidebar
           userName={effectiveUserName}

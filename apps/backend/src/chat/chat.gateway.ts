@@ -24,7 +24,6 @@ interface AuthSocket extends Socket {
   userName: string;
 }
 
-/** Convert any error (including NestJS HTTP exceptions) into a WsException */
 function toWsException(err: unknown, fallback: string): WsException {
   if (err instanceof WsException) return err;
   if (err instanceof Error) return new WsException(err.message || fallback);
@@ -121,7 +120,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const userId = user.id;
 
     try {
-      // Verify the user is a participant — can be sender OR receiver
       const participant = await this.prisma.conversationParticipant.findUnique({
         where: {
           conversationId_userId: {

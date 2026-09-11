@@ -28,9 +28,7 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
 
   return (
     <aside className="w-full flex flex-col gap-6">
-      {/* Navigation List */}
       <nav className="flex flex-col space-y-1">
-        {/* Home */}
         <Link
           href="/feed"
           className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition ${
@@ -52,7 +50,6 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
           <span>Feed</span>
         </Link>
 
-        {/* Directory / Search */}
         <Link
           href="/search"
           className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition ${
@@ -73,7 +70,6 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
           <span>Directory</span>
         </Link>
 
-        {/* Conversations / Messages */}
         <Link
           href="/chat"
           className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition ${
@@ -94,7 +90,6 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
           <span>Conversations</span>
         </Link>
 
-        {/* Create Post */}
         <Link
           href="/posts/create"
           className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition ${
@@ -109,7 +104,6 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
           <span>Create</span>
         </Link>
 
-        {/* Profile */}
         <Link
           href={userId ? `/profile/${userId}` : "/profile"}
           className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition ${
@@ -131,7 +125,6 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
         </Link>
       </nav>
 
-      {/* Network Community Utility Card */}
       <div className="rounded-xl border border-[#E6E5E0] bg-[#F5F4F0] p-4.5 flex flex-col justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
