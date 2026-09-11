@@ -1,4 +1,5 @@
 const nextConfig = {
+  output: "standalone",
   devIndicators: false,
   images: {
     remotePatterns: [

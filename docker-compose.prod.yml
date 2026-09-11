@@ -1,0 +1,116 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: workmate-mysql
+    restart: unless-stopped
+    command:
+      - --innodb-buffer-pool-size=64M
+      - --max-connections=50
+      - --performance-schema=OFF
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword_change_me}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-workmate}
+      MYSQL_USER: ${MYSQL_USER:-workmate}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-workmate_change_me}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - workmate-net
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    image: workmate-backend:latest
+    container_name: workmate-backend
+    restart: unless-stopped
+    expose:
+      - "4000"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: mysql://${MYSQL_USER:-workmate}:${MYSQL_PASSWORD:-workmate_change_me}@mysql:3306/${MYSQL_DATABASE:-workmate}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      COOKIE_SAME_SITE: ${COOKIE_SAME_SITE:-lax}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-workmate_jwt_access_secret_change_me}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-workmate_jwt_refresh_secret_change_me}
+      JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-900}
+      JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-1209600}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-http://localhost/api/auth/google/callback}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-workmate}
+      R2_PUBLIC_URL: ${R2_PUBLIC_URL:-}
+      UPLOADS_DIR: ${UPLOADS_DIR:-./uploads}
+      LOCAL_STORAGE_BASE_URL: ${LOCAL_STORAGE_BASE_URL:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - backend-uploads:/app/apps/backend/uploads
+    networks:
+      - workmate-net
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
+        NEXT_PUBLIC_SOCKET_URL: ${NEXT_PUBLIC_SOCKET_URL:-}
+    image: workmate-web:latest
+    container_name: workmate-web
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+      INTERNAL_API_URL: http://backend:4000/api
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
+      NEXT_PUBLIC_SOCKET_URL: ${NEXT_PUBLIC_SOCKET_URL:-}
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - workmate-net
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: workmate-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - web
+      - backend
+    networks:
+      - workmate-net
+
+volumes:
+  mysql-data:
+  backend-uploads:
+  caddy-data:
+  caddy-config:
+
+networks:
+  workmate-net:
+    driver: bridge

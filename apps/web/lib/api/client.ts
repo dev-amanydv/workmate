@@ -18,6 +18,9 @@ export interface ApiResponse<T> {
 const DEFAULT_API_URL = "http://localhost:4000/api";
 
 export function getApiBaseUrl(): string {
+  if (typeof window === "undefined" && process.env.INTERNAL_API_URL) {
+    return process.env.INTERNAL_API_URL;
+  }
   return process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL;
 }
 
