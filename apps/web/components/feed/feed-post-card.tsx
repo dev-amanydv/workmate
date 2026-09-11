@@ -113,7 +113,7 @@ export function FeedPostCard({
   const paragraphs = post.content.split("\n\n").filter(Boolean);
 
   return (
-    <article className="rounded-xl border border-[#E6E5E0] bg-white p-5 sm:p-6 transition-colors hover:border-[#D5D3CC]">
+    <article className="rounded-xl border-px border-[#e7e7e7] bg-white p-5 sm:p-6 transition-colors hover:border-[#D5D3CC]">
       {/* Header: Author Info and Overflow Menu */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">

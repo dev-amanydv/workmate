@@ -39,6 +39,7 @@ export default async function MainLayout({
     <div className="h-screen flex flex-col bg-[#FBFBFA] text-[#17191A] antialiased overflow-hidden">
       <FeedHeader
         userName={user?.name}
+        userEmail={user?.email}
         userAvatar={user?.avatarUrl}
       />
       <main className="flex-1 min-h-0 overflow-hidden mx-auto max-w-[1380px] w-full px-4 sm:px-6 lg:px-8">

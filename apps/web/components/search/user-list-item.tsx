@@ -84,21 +84,6 @@ export function UserListItem({
               {user.bio || "Member"}
             </p>
 
-            {/* Overlapping tiny avatars + Mutual connections text */}
-            <div className="flex items-center gap-2 mt-1">
-              <div className="flex -space-x-1.5 overflow-hidden shrink-0">
-                {mutualAvatars.slice(0, 3).map((av, idx) => (
-                  <Avatar
-                    key={idx}
-                    src={av}
-                    alt="Mutual"
-                    fallbackName="M"
-                    size={16}
-                    className="h-4 w-4 rounded-full border border-white"
-                  />
-                ))}
-              </div>
-            </div>
           </div>
         </Link>
 

@@ -322,7 +322,7 @@ export function SearchView({
               <button
                 type="button"
                 onClick={() => setShowAll((prev) => !prev)}
-                className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition cursor-pointer"
+                className="text-xs font-semibold text-grey-600 hover:text-grey-700 transition cursor-pointer"
               >
                 {showAll ? "Show less" : "See all"}
               </button>

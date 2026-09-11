@@ -1,29 +1,65 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar } from "../ui/avatar";
 import { WorkmateLogo } from "../brand/logo";
-import { LogoutButton } from "../logout-button";
+import { getApiBaseUrl } from "../../lib/api/client";
 
 interface FeedHeaderProps {
   userName?: string;
+  userEmail?: string;
   userAvatar?: string | null;
 }
 
 export function FeedHeader({
   userName,
+  userEmail,
   userAvatar,
 }: FeedHeaderProps) {
   const router = useRouter();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [imageError, setImageError] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const displayName = userName || "Account";
-  const userInitial = displayName.charAt(0).toUpperCase();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const displayName = userName || "Aman Yadav";
+  const displayEmail =
+    userEmail ||
+    (userName
+      ? `${userName.trim().toLowerCase().replace(/\s+/g, ".")}@gmail.com`
+      : "aman.yadav@gmail.com");
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        setShowProfileMenu(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setShowProfileMenu(false);
+      }
+    }
+
+    if (showProfileMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showProfileMenu]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +68,21 @@ export function FeedHeader({
       router.push(`/search?q=${encodeURIComponent(trimmed)}`);
     } else {
       router.push("/search");
+    }
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const baseUrl = getApiBaseUrl();
+      await fetch(`${baseUrl}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // Even if network call fails, redirect to login
+    } finally {
+      window.location.href = "/login";
     }
   };
 
@@ -91,82 +142,183 @@ export function FeedHeader({
           {/* Direct Messages */}
           <Link
             href="/chat"
-            className="p-2 text-[#6C6F71] hover:text-[#17191A] hover:bg-[#F5F4F0] rounded-lg transition"
+            className="p-2 text-[#475569] hover:text-[#0F172A] hover:bg-[#F5F4F0] rounded-xl transition"
             aria-label="Messages"
             title="Conversations"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.75.75 0 01-.84-.84c.123-.62.338-1.578.583-2.42A7.886 7.886 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+            <svg
+              className="w-6 h-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.75}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+              <circle cx="8" cy="12" r="0.75" fill="currentColor" strokeWidth={0} />
+              <circle cx="12" cy="12" r="0.75" fill="currentColor" strokeWidth={0} />
+              <circle cx="16" cy="12" r="0.75" fill="currentColor" strokeWidth={0} />
             </svg>
           </Link>
 
           {/* Notifications */}
           <button
             type="button"
-            className="relative p-2 text-[#6C6F71] hover:text-[#17191A] hover:bg-[#F5F4F0] rounded-lg transition cursor-pointer"
+            className="relative p-2 text-[#475569] hover:text-[#0F172A] hover:bg-[#F5F4F0] rounded-xl transition cursor-pointer"
             aria-label="Notifications"
             title="Activity"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+            <svg
+              className="w-6 h-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.75}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
             </svg>
-            <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-[#9E3B27]" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#E04D36]" />
           </button>
 
-          {/* User Profile Affordance (Replacing unstyled floating initial) */}
+          {/* User Profile Affordance & Dropdown Menu */}
           <div className="relative pl-1">
             <button
+              ref={buttonRef}
               type="button"
               onClick={() => setShowProfileMenu((prev) => !prev)}
-              className="flex items-center gap-2.5 py-1 px-2 rounded-lg border border-[#E6E5E0] hover:border-[#D5D3CC] bg-[#FBFBFA] hover:bg-[#F5F4F0] transition focus:outline-none focus:border-[#184A45] cursor-pointer"
+              className="flex items-center gap-3 py-1.5 px-3 rounded-2xl border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] transition focus:outline-none cursor-pointer"
               aria-expanded={showProfileMenu}
               aria-label="Account menu"
             >
-              <div className="relative h-7 w-7 rounded overflow-hidden border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center shrink-0">
+              <div className="relative h-9 w-9 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center shrink-0">
                 <Avatar
                   src={userAvatar}
                   alt={displayName}
-                  size={28}
+                  size={36}
                   className="h-full w-full object-cover"
                 />
               </div>
-              <span className="hidden sm:inline text-xs font-medium text-[#17191A] max-w-[100px] truncate">
+              <span className="hidden sm:inline text-[15px] font-medium text-[#111827] max-w-[130px] truncate">
                 {displayName}
               </span>
               <svg
-                className={`w-3 h-3 text-[#6C6F71] transition-transform duration-150 ${showProfileMenu ? "rotate-180" : ""}`}
+                className={`w-4 h-4 text-[#64748B] transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                <path d="m6 9 6 6 6-6" />
               </svg>
             </button>
 
-            {/* Dropdown Menu - Reserved elevation */}
+            {/* Redesigned Popup Dropdown */}
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-56 rounded-lg border border-[#E6E5E0] bg-white py-1.5 shadow-lg ring-1 ring-black/5 z-50">
-                <div className="px-3.5 py-2 border-b border-[#E6E5E0]">
-                  <p className="text-xs font-semibold text-[#17191A]">{displayName}</p>
-                  <p className="text-[11px] text-[#6C6F71]">Signed in as user</p>
+              <div
+                ref={menuRef}
+                className="absolute right-0 mt-2 w-[310px] rounded-2xl border border-[#E2E8F0] bg-white shadow-[0_12px_36px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.03)] overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-100"
+              >
+                {/* Header Profile Section */}
+                <div className="p-5 flex items-center gap-4">
+                  <div className="relative h-[50px] w-[50px] rounded-xl overflow-hidden bg-slate-100 shrink-0">
+                    <Avatar
+                      src={userAvatar}
+                      alt={displayName}
+                      size={50}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col min-w-0 justify-center">
+                    <span className="text-[17px] font-semibold text-[#0F172A] truncate leading-snug">
+                      {displayName}
+                    </span>
+                    <span className="text-[14px] text-[#64748B] truncate font-normal leading-snug">
+                      {displayEmail}
+                    </span>
+                  </div>
                 </div>
-                <Link
-                  href="/profile"
-                  onClick={() => setShowProfileMenu(false)}
-                  className="block px-3.5 py-2 text-xs font-medium text-[#17191A] hover:bg-[#F5F4F0] transition"
-                >
-                  View Profile
-                </Link>
-                <Link
-                  href="/posts/create"
-                  onClick={() => setShowProfileMenu(false)}
-                  className="block px-3.5 py-2 text-xs font-medium text-[#17191A] hover:bg-[#F5F4F0] transition"
-                >
-                  Create Post
-                </Link>
-                <div className="border-t border-[#E6E5E0] my-1 pt-1 px-1">
-                  <LogoutButton />
+
+                {/* Divider */}
+                <div className="border-t border-[#F1F3F5]" />
+
+                {/* Middle Menu Items */}
+                <div className="py-2 flex flex-col">
+                  <Link
+                    href="/profile"
+                    onClick={() => setShowProfileMenu(false)}
+                    className="flex items-center gap-4 px-6 py-3.5 text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                  >
+                    <svg
+                      className="w-5 h-5 text-[#334155] shrink-0"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.8}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <span className="text-[15px] font-medium">View Profile</span>
+                  </Link>
+
+                  <Link
+                    href="/posts/create"
+                    onClick={() => setShowProfileMenu(false)}
+                    className="flex items-center gap-4 px-6 py-3.5 text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                  >
+                    <svg
+                      className="w-5 h-5 text-[#334155] shrink-0"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.8}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect width="18" height="18" x="3" y="3" rx="4" />
+                      <path d="M12 8v8" />
+                      <path d="M8 12h8" />
+                    </svg>
+                    <span className="text-[15px] font-medium">Create Post</span>
+                  </Link>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-[#F1F3F5]" />
+
+                {/* Sign Out Section */}
+                <div className="py-2 flex flex-col">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
+                    className="flex items-center gap-4 px-6 py-3.5 text-[#475569] hover:bg-[#F8FAFC] transition-colors cursor-pointer text-left w-full disabled:opacity-50"
+                  >
+                    <svg
+                      className="w-5 h-5 text-[#475569] shrink-0"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.8}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                      <polyline points="16 17 21 12 16 7" />
+                      <line x1="21" x2="9" y1="12" y2="12" />
+                    </svg>
+                    <span className="text-[15px] font-medium">
+                      {isLoggingOut ? "Signing out..." : "Sign out"}
+                    </span>
+                  </button>
                 </div>
               </div>
             )}

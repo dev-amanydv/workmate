@@ -93,7 +93,11 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
       </div>
 
       {/* Column 2: Conversations list */}
-      <div className="hidden lg:flex flex-col h-full border-r border-[#E6E5E0] bg-white overflow-hidden shrink-0">
+      <div
+        className={`${
+          activeConv ? "hidden lg:flex" : "flex"
+        } flex-col h-full border-r border-[#E6E5E0] bg-white overflow-hidden shrink-0`}
+      >
         <ConversationsList
           conversations={conversations}
           activeId={activeConv?.id ?? null}
@@ -103,12 +107,16 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
       </div>
 
       {/* Column 3: Active chat window */}
-      <div className="flex flex-col h-full overflow-hidden min-w-0">
+      <div
+        className={`${
+          activeConv ? "flex" : "hidden lg:flex"
+        } flex-col h-full overflow-hidden min-w-0`}
+      >
         {/* Connection status banner */}
         {!isConnected && (
-          <div className="flex items-center justify-center gap-2 py-1.5 text-xs text-amber-700 bg-amber-50 border-b border-amber-100 flex-shrink-0">
-            <div className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-            Reconnecting...
+          <div className="flex items-center justify-center gap-2 py-1.5 text-xs text-[#9E3B27] bg-[#FBF0EE] border-b border-[#EACEC8] flex-shrink-0">
+            <div className="h-1.5 w-1.5 rounded-full bg-[#9E3B27] animate-pulse" />
+            Reconnecting to messages...
           </div>
         )}
 
@@ -119,25 +127,19 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
             currentUserId={currentUserId}
             socket={socketRef.current}
             onFollowStatusChange={handleFollowStatusChange}
+            onBack={() => setActiveConv(null)}
           />
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center px-8 bg-[#F8FAFC]">
-            <div className="relative">
-              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-                <svg className="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.75.75 0 01-.84-.84c.123-.62.338-1.578.583-2.42A7.886 7.886 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-                </svg>
-              </div>
-              <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-emerald-400 border-2 border-white flex items-center justify-center">
-                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </div>
+          <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-8 bg-[#FBFBFA]">
+            <div className="h-14 w-14 rounded-xl border border-[#EDECE8] bg-[#F5F4F0] flex items-center justify-center text-[#184A45]">
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.75.75 0 01-.84-.84c.123-.62.338-1.578.583-2.42A7.886 7.886 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+              </svg>
             </div>
             <div>
-              <h3 className="text-base font-semibold text-slate-800">Your messages</h3>
-              <p className="text-sm text-slate-500 mt-1 max-w-xs">
-                Select a conversation to start chatting, or send a message from someone&apos;s profile
+              <h3 className="text-base font-semibold text-[#17191A]">Your conversations</h3>
+              <p className="text-xs sm:text-sm text-[#6C6F71] mt-1 max-w-xs leading-relaxed">
+                Select a conversation to start chatting, or connect with peers in the directory to begin a dialogue.
               </p>
             </div>
           </div>

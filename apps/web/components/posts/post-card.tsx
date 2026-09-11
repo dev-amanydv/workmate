@@ -329,15 +329,15 @@ export function PostCard({
           onClick={handleLikeToggle}
           disabled={isTogglingLike}
           className={`group flex items-center gap-1.5 text-xs font-medium transition ${
-            isLiked
-              ? "text-[#9E3B27]"
-              : "text-[#6C6F71] hover:text-[#9E3B27]"
+            isLiked ? "text-[#9E3B27]" : "text-[#6C6F71] hover:text-[#9E3B27]"
           }`}
           title={isLiked ? "Unlike post" : "Appreciate post"}
         >
           <svg
             className={`h-4 w-4 ${
-              isLiked ? "text-[#9E3B27]" : "fill-none stroke-current"
+              isLiked
+                ? "fill-[#9E3B27]"
+                : "fill-none stroke-current"
             }`}
             viewBox="0 0 24 24"
             strokeWidth={1.75}

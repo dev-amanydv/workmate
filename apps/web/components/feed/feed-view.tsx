@@ -66,7 +66,7 @@ export function FeedView({
         {/* Feed Posts List */}
         <div className="flex flex-col gap-4 pb-12">
           {posts.length === 0 ? (
-            <div className="rounded-xl border-px border-[#f4f3f1] bg-white p-10 sm:p-14 text-center">
+            <div className="rounded-xl border-px  bg-white p-10 sm:p-14 text-center">
               {/* Bespoke Architectural Chronicle Empty State Mark */}
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-[#f3f3f1] bg-[#F5F4F0] text-[#184A45]">
                 <svg
