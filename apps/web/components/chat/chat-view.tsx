@@ -86,14 +86,14 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
   );
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[220px_300px_1fr] xl:grid-cols-[240px_320px_1fr] gap-0 items-start min-h-[calc(100vh-64px)] -mt-6 -mx-4 sm:-mx-6 lg:-mx-8">
+    <div className="grid grid-cols-1 lg:grid-cols-[220px_300px_1fr] xl:grid-cols-[240px_320px_1fr] gap-0 items-start h-full overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8">
       {/* Column 1: Left navigation sidebar */}
-      <div className="hidden lg:block h-full border-r border-slate-100 bg-white px-3 pt-6">
+      <div className="hidden lg:block h-full border-r border-[#E6E5E0] bg-[#FBFBFA] px-3 pt-6 overflow-y-auto shrink-0">
         <LeftSidebar userId={userId} />
       </div>
 
       {/* Column 2: Conversations list */}
-      <div className="hidden lg:flex flex-col h-full border-r border-slate-100 bg-white overflow-hidden">
+      <div className="hidden lg:flex flex-col h-full border-r border-[#E6E5E0] bg-white overflow-hidden shrink-0">
         <ConversationsList
           conversations={conversations}
           activeId={activeConv?.id ?? null}
@@ -103,7 +103,7 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
       </div>
 
       {/* Column 3: Active chat window */}
-      <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex flex-col h-full overflow-hidden min-w-0">
         {/* Connection status banner */}
         {!isConnected && (
           <div className="flex items-center justify-center gap-2 py-1.5 text-xs text-amber-700 bg-amber-50 border-b border-amber-100 flex-shrink-0">

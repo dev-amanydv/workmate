@@ -43,7 +43,7 @@ export function FeedView({
         realAuthors.push({
           id: p.author.id || p.authorId,
           name: p.author.name,
-          role: p.author.role || "Systems Practitioner",
+          role: p.author.role || "Member",
           avatarUrl: p.author.avatarUrl || null,
           isFollowing: p.author.isFollowing ?? false,
         });
@@ -54,23 +54,21 @@ export function FeedView({
   }, [initialSuggestedUsers, posts, userId]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start">
-      {/* Left Sidebar */}
-      <div className="hidden lg:block sticky top-22">
+    <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start h-full overflow-hidden">
+      {/* Left Sidebar: Fixed navigation column */}
+      <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pr-1 shrink-0">
         <LeftSidebar userId={userId} />
       </div>
 
-      {/* Center Feed Column */}
-      <div className="flex flex-col gap-5 min-w-0">
-        {/* Create Post Prompt Card */}
-        <CreatePostPrompt userAvatar={userAvatar} userName={userName} />
-
+      {/* Center Feed Column: The ONLY component that scrolls */}
+      <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 flex flex-col gap-5">
+        
         {/* Feed Posts List */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 pb-12">
           {posts.length === 0 ? (
-            <div className="rounded-xl border border-[#E6E5E0] bg-white p-10 sm:p-14 text-center">
+            <div className="rounded-xl border-px border-[#f4f3f1] bg-white p-10 sm:p-14 text-center">
               {/* Bespoke Architectural Chronicle Empty State Mark */}
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-[#E6E5E0] bg-[#F5F4F0] text-[#184A45]">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-[#f3f3f1] bg-[#F5F4F0] text-[#184A45]">
                 <svg
                   className="w-7 h-7"
                   fill="none"
@@ -86,23 +84,23 @@ export function FeedView({
                 </svg>
               </div>
               <h3 className="text-base font-semibold text-[#17191A]">
-                Your dispatch feed is quiet
+                Your feed is quiet
               </h3>
               <p className="mx-auto mt-1.5 max-w-md text-xs sm:text-sm text-[#6C6F71] leading-relaxed">
-                Connect with engineers, designers, and researchers in the directory to see their technical dispatches, or publish your first dispatch to begin the discussion.
+                Connect with other users in the directory to see their updates, or create your first post.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <a
                   href="/search"
                   className="rounded-lg bg-[#184A45] hover:bg-[#133D39] text-white px-4 py-2 text-xs font-semibold transition"
                 >
-                  Explore practitioner directory
+                  Explore directory
                 </a>
                 <a
                   href="/posts/create"
                   className="rounded-lg border border-[#E6E5E0] bg-[#F5F4F0] hover:bg-[#EFEFEA] text-[#17191A] px-4 py-2 text-xs font-semibold transition"
                 >
-                  Publish first dispatch
+                  Create post
                 </a>
               </div>
             </div>
@@ -119,8 +117,8 @@ export function FeedView({
         </div>
       </div>
 
-      {/* Right Sidebar */}
-      <div className="hidden lg:block sticky top-22">
+      {/* Right Sidebar: Fixed suggested follows column */}
+      <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pl-1 shrink-0">
         <RightSidebar userName={userName} suggestedUsers={suggestedUsers} />
       </div>
     </div>

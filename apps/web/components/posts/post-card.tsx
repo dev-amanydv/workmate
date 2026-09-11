@@ -361,7 +361,7 @@ export function PostCard({
 
         {!isDetailView && (
           <span className="text-xs font-medium text-[#6C6F71] transition group-hover:text-[#184A45]">
-            View dispatch
+            View post
           </span>
         )}
       </div>

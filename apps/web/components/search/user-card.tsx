@@ -111,7 +111,7 @@ export function UserCard({ user, isRecentBadge = false }: UserCardProps) {
 
             {/* Bio / Role */}
             <p className="mt-1.5 text-xs text-[#6C6F71] line-clamp-2 leading-relaxed">
-              {user.bio || "Systems Practitioner"}
+              {user.bio || "Member"}
             </p>
           </div>
         </div>

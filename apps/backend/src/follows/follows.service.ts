@@ -65,4 +65,91 @@ export class FollowsService {
       isFollowing: false,
     };
   }
+
+  async getFollowers(
+    currentUserId: string,
+    targetUserId: string,
+  ): Promise<
+    Array<{
+      id: string;
+      name: string;
+      email: string;
+      bio: string | null;
+      avatarUrl: string | null;
+      isFollowing: boolean;
+      isSelf: boolean;
+    }>
+  > {
+    const follows = await this.prisma.follow.findMany({
+      where: { followingId: targetUserId },
+      include: {
+        follower: {
+          include: {
+            followers: currentUserId
+              ? {
+                  where: { followerId: currentUserId },
+                  select: { id: true },
+                }
+              : false,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return follows.map((f: any) => ({
+      id: f.follower.id,
+      name: f.follower.name,
+      email: f.follower.email,
+      bio: f.follower.bio,
+      avatarUrl: f.follower.avatarUrl,
+      isFollowing:
+        Array.isArray(f.follower.followers) && f.follower.followers.length > 0,
+      isSelf: currentUserId === f.follower.id,
+    }));
+  }
+
+  async getFollowing(
+    currentUserId: string,
+    targetUserId: string,
+  ): Promise<
+    Array<{
+      id: string;
+      name: string;
+      email: string;
+      bio: string | null;
+      avatarUrl: string | null;
+      isFollowing: boolean;
+      isSelf: boolean;
+    }>
+  > {
+    const follows = await this.prisma.follow.findMany({
+      where: { followerId: targetUserId },
+      include: {
+        following: {
+          include: {
+            followers: currentUserId
+              ? {
+                  where: { followerId: currentUserId },
+                  select: { id: true },
+                }
+              : false,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return follows.map((f: any) => ({
+      id: f.following.id,
+      name: f.following.name,
+      email: f.following.email,
+      bio: f.following.bio,
+      avatarUrl: f.following.avatarUrl,
+      isFollowing:
+        Array.isArray(f.following.followers) && f.following.followers.length > 0,
+      isSelf: currentUserId === f.following.id,
+    }));
+  }
 }
+

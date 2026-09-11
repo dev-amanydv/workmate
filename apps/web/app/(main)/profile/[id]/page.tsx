@@ -42,20 +42,20 @@ export default async function UserProfilePage({
   if (!profileUser) {
     return (
       <div className="mx-auto max-w-xl text-center py-20">
-        <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-xs">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600 mb-4">
+        <div className="rounded-xl border border-[#E6E5E0] bg-white p-10 shadow-xs">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-[#EEF4F3] text-[#184A45] mb-4">
             <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>
           </div>
-          <h2 className="text-lg font-bold text-slate-900">User not found</h2>
-          <p className="mt-2 text-xs text-slate-500">
+          <h2 className="text-lg font-bold text-[#17191A]">User not found</h2>
+          <p className="mt-2 text-xs text-[#6C6F71]">
             The profile you are looking for does not exist or has been removed.
           </p>
           <div className="mt-6">
             <Link
               href="/feed"
-              className="inline-flex items-center rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-blue-700 transition"
+              className="inline-flex items-center rounded-lg bg-[#184A45] px-5 py-2.5 text-xs font-semibold text-white hover:bg-[#133D39] transition"
             >
               Back to Feed
             </Link>

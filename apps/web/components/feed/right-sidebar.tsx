@@ -135,38 +135,9 @@ export function RightSidebar({
 
   return (
     <aside className="w-full flex flex-col gap-4">
-      {/* 1. Network Activity Briefing (Replacing the gradient mountain blob illustration) */}
-      <div className="rounded-xl border border-[#E6E5E0] bg-[#F5F4F0] p-4">
-        <div className="flex items-center justify-between">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#6C6F71]">
-            Daily Briefing
-          </p>
-          <span className="h-1.5 w-1.5 rounded-full bg-[#184A45]" />
-        </div>
-        <h3 className="mt-1 text-sm font-semibold text-[#17191A]">
-          Network Activity
-        </h3>
-        <p className="mt-1 text-xs text-[#6C6F71] leading-relaxed">
-          Discussions across distributed architecture, design systems, and database performance updated this morning.
-        </p>
-        <div className="mt-3 pt-2.5 border-t border-[#EDECE8] flex items-center justify-between text-xs">
-          <span className="text-[#6C6F71]">Signed in as</span>
-          <span className="font-semibold text-[#17191A]">{userName}</span>
-        </div>
-      </div>
 
-      {/* 2. Practitioner Note (Replacing generic motivational quote) */}
-      <div className="rounded-xl border border-[#E6E5E0] bg-[#F5F4F0] p-4">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#184A45]">
-          Engineering Note
-        </p>
-        <p className="mt-2 text-xs text-[#17191A] leading-relaxed font-normal">
-          &ldquo;Write architectural decisions down before scheduling meetings. Clear technical documents invite asynchronous scrutiny and preserve rationale.&rdquo;
-        </p>
-        <p className="mt-2 text-[11px] text-[#6C6F71]">
-          — Workmate Architecture Guild
-        </p>
-      </div>
+
+
 
       {/* 3. Suggested Collaborators (Specific roles, high-contrast actions) */}
       <div className="rounded-xl border border-[#E6E5E0] bg-[#F5F4F0] p-4">
@@ -246,53 +217,7 @@ export function RightSidebar({
         )}
       </div>
 
-      {/* 4. Discipline Directory (Replacing the generic blob people card) */}
-      <div className="rounded-xl border border-[#E6E5E0] bg-[#F5F4F0] p-4">
-        <div className="space-y-1.5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#6C6F71]">
-            Explore By Craft
-          </p>
-          <p className="text-xs text-[#17191A] leading-snug">
-            Connect directly with verified domain practitioners.
-          </p>
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          <Link
-            href="/search?q=Infrastructure"
-            className="rounded border border-[#E6E5E0] bg-white px-2 py-0.5 text-[11px] font-medium text-[#484B4D] hover:text-[#17191A] hover:border-[#D5D3CC] transition"
-          >
-            Infrastructure
-          </Link>
-          <Link
-            href="/search?q=Design"
-            className="rounded border border-[#E6E5E0] bg-white px-2 py-0.5 text-[11px] font-medium text-[#484B4D] hover:text-[#17191A] hover:border-[#D5D3CC] transition"
-          >
-            Design Systems
-          </Link>
-          <Link
-            href="/search?q=Distributed"
-            className="rounded border border-[#E6E5E0] bg-white px-2 py-0.5 text-[11px] font-medium text-[#484B4D] hover:text-[#17191A] hover:border-[#D5D3CC] transition"
-          >
-            Distributed Systems
-          </Link>
-          <Link
-            href="/search?q=Security"
-            className="rounded border border-[#E6E5E0] bg-white px-2 py-0.5 text-[11px] font-medium text-[#484B4D] hover:text-[#17191A] hover:border-[#D5D3CC] transition"
-          >
-            Security & Cryptography
-          </Link>
-        </div>
-
-        <div className="mt-3 pt-2.5 border-t border-[#EDECE8]">
-          <Link
-            href="/search"
-            className="text-xs font-semibold text-[#184A45] hover:underline"
-          >
-            Open practitioner directory
-          </Link>
-        </div>
-      </div>
+      
     </aside>
   );
 }

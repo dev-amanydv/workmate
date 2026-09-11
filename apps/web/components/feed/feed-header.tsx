@@ -35,7 +35,7 @@ export function FeedHeader({
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#E6E5E0] bg-white">
+    <header className="shrink-0 sticky top-0 z-50 border-b border-[#E6E5E0] bg-white">
       <div className="mx-auto flex max-w-[1380px] items-center justify-between px-4 sm:px-6 lg:px-8 h-15">
         {/* Left: Brand Identity */}
         <div className="flex items-center gap-8">
@@ -64,7 +64,7 @@ export function FeedHeader({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search people by name, discipline, or engineering role..."
+              placeholder="Search people by name, role, or company..."
               className="w-full bg-[#F5F4F0] hover:bg-[#EFEFEA] focus:bg-white text-sm text-[#17191A] placeholder-[#8A8D90] rounded-lg pl-10 pr-14 py-2 border border-transparent focus:border-[#184A45] focus:outline-none transition"
             />
             <div className="absolute right-3 flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-[#E6E5E0] bg-white text-[11px] font-mono text-[#8A8D90] pointer-events-none">
@@ -92,7 +92,7 @@ export function FeedHeader({
             href="/chat"
             className="p-2 text-[#6C6F71] hover:text-[#17191A] hover:bg-[#F5F4F0] rounded-lg transition"
             aria-label="Messages"
-            title="Discussions"
+            title="Conversations"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.75.75 0 01-.84-.84c.123-.62.338-1.578.583-2.42A7.886 7.886 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
@@ -157,7 +157,7 @@ export function FeedHeader({
               <div className="absolute right-0 mt-2 w-56 rounded-lg border border-[#E6E5E0] bg-white py-1.5 shadow-lg ring-1 ring-black/5 z-50">
                 <div className="px-3.5 py-2 border-b border-[#E6E5E0]">
                   <p className="text-xs font-semibold text-[#17191A]">{displayName}</p>
-                  <p className="text-[11px] text-[#6C6F71]">Signed in as practitioner</p>
+                  <p className="text-[11px] text-[#6C6F71]">Signed in as user</p>
                 </div>
                 <Link
                   href="/profile"
@@ -171,7 +171,7 @@ export function FeedHeader({
                   onClick={() => setShowProfileMenu(false)}
                   className="block px-3.5 py-2 text-xs font-medium text-[#17191A] hover:bg-[#F5F4F0] transition"
                 >
-                  Publish Dispatch
+                  Create Post
                 </Link>
                 <div className="border-t border-[#E6E5E0] my-1 pt-1 px-1">
                   <LogoutButton />

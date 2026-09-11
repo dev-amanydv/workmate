@@ -234,18 +234,18 @@ export function SearchView({
       : recentDisplayUsers.slice(0, 4);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start">
-      {/* Left Sidebar */}
-      <div className="hidden lg:block sticky top-22">
+    <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start h-full overflow-hidden">
+      {/* Left Sidebar: Fixed */}
+      <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pr-1 shrink-0">
         <LeftSidebar userId={currentUser?.id} />
       </div>
 
-      {/* Center Search Card */}
-      <div className="min-w-0">
+      {/* Center Search Card: Scrolls independently */}
+      <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 pb-12">
         <div className="rounded-xl border border-[#E6E5E0] bg-white p-6 sm:p-8">
           {/* Overline */}
           <p className="text-[11px] font-semibold tracking-wider text-[#6C6F71] uppercase">
-            PRACTITIONER DIRECTORY
+            MEMBER DIRECTORY
           </p>
 
           {/* Title */}
@@ -255,7 +255,7 @@ export function SearchView({
 
           {/* Subtitle */}
           <p className="text-xs sm:text-sm text-[#6C6F71]">
-            Find colleagues, collaborators, and verified practitioners across disciplines.
+            Find colleagues, teammates, and users across disciplines.
           </p>
 
           {/* Search Input Box */}
@@ -337,7 +337,7 @@ export function SearchView({
                     : "text-[#6C6F71] hover:text-[#17191A]"
                 }`}
               >
-                Dispatches
+                Posts
               </button>
               <button
                 type="button"
@@ -452,8 +452,8 @@ export function SearchView({
         </div>
       </div>
 
-      {/* Right Sidebar */}
-      <div className="hidden lg:block sticky top-22">
+      {/* Right Sidebar: Fixed */}
+      <div className="hidden lg:block h-full overflow-y-auto no-scrollbar py-6 pl-1 shrink-0">
         <RightSidebar
           userName={currentUser?.name}
           suggestedUsers={suggestedUsers}

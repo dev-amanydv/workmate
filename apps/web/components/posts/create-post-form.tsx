@@ -83,7 +83,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   return (
     <div className="rounded-xl border border-[#E6E5E0] bg-white p-6 transition-colors">
       <h3 className="mb-3 text-base font-semibold text-[#17191A]">
-        New Dispatch
+        Create Post
       </h3>
 
       {error && (
@@ -98,7 +98,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
             rows={4}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Share a technical insight, architectural decision, or question for your network..."
+            placeholder="Share an update, idea, or question for your network..."
             className="w-full rounded-lg border border-[#E6E5E0] p-3 text-sm text-[#17191A] placeholder-[#8A8D90] focus:border-[#184A45] focus:outline-none transition"
             disabled={isSubmitting}
           />
@@ -125,7 +125,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
 
         <div className="flex items-center justify-between border-t border-[#EDECE8] pt-3">
           <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#E6E5E0] px-3 py-1.5 text-xs font-medium text-[#484B4D] hover:bg-[#F5F4F0] transition">
-            <span>Attach diagram / image</span>
+            <span>Attach image</span>
             <input
               ref={fileInputRef}
               type="file"
@@ -141,7 +141,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
             disabled={isSubmitting || !content.trim()}
             className="inline-flex items-center justify-center rounded-lg bg-[#184A45] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#133D39] disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
           >
-            {isSubmitting ? "Publishing..." : "Publish Dispatch"}
+            {isSubmitting ? "Posting..." : "Create Post"}
           </button>
         </div>
       </form>

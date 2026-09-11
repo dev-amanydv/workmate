@@ -92,7 +92,7 @@ export function UserListItem({
             </h3>
 
             <p className="text-xs text-[#6C6F71] font-normal leading-tight mt-0.5 truncate">
-              {user.bio || "Systems Practitioner"}
+              {user.bio || "Member"}
             </p>
 
             {/* Overlapping tiny avatars + Mutual connections text */}

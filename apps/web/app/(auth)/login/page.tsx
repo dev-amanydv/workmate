@@ -21,7 +21,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           Workmate
         </h1>
         <p className="mt-1.5 text-xs text-[#6C6F71]">
-          A focused professional network for engineering and craft practitioners.
+          A human professional network for meaningful work conversations.
         </p>
       </div>
 

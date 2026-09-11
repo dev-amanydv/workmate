@@ -1,9 +1,18 @@
-import { Controller, Get, NotFoundException, Param, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Query,
+} from "@nestjs/common";
 import type { User } from "@prisma/client";
 
 import { UserResponseDto } from "../auth/dto/user-response.dto";
 import { CurrentUser } from "../common/decorators/current-user.decorator";
 import { PrismaService } from "../prisma/prisma.service";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Controller("users")
 export class UsersController {
@@ -42,6 +51,56 @@ export class UsersController {
       },
     };
   }
+
+  @Patch("me")
+  async updateMe(
+    @CurrentUser() user: User,
+    @Body() dto: UpdateUserDto,
+  ): Promise<{
+    data: UserResponseDto & {
+      followersCount: number;
+      followingCount: number;
+      postsCount: number;
+      isSelf: boolean;
+    };
+  }> {
+    const dataToUpdate: any = {};
+    if (typeof dto.name === "string" && dto.name.trim().length > 0) {
+      dataToUpdate.name = dto.name.trim();
+    }
+    if (typeof dto.bio !== "undefined") {
+      dataToUpdate.bio = dto.bio ? dto.bio.trim() : null;
+    }
+    if (typeof dto.avatarUrl !== "undefined") {
+      dataToUpdate.avatarUrl = dto.avatarUrl ? dto.avatarUrl.trim() : null;
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: user.id },
+      data: dataToUpdate,
+      include: {
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+            posts: true,
+          },
+        },
+      },
+    });
+
+    const base = UserResponseDto.fromUser(updatedUser);
+    return {
+      data: {
+        ...base,
+        followersCount: updatedUser._count?.followers ?? 0,
+        followingCount: updatedUser._count?.following ?? 0,
+        postsCount: updatedUser._count?.posts ?? 0,
+        isSelf: true,
+      },
+    };
+  }
+
 
   @Get("suggested")
   async suggested(@CurrentUser() user: User): Promise<{

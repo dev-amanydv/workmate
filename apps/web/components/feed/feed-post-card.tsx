@@ -95,19 +95,19 @@ export function FeedPostCard({
     }
   };
 
-  // Authored appreciation attribution replacing Slack emoji slop
+  // Simple, human attribution
   let appreciationProof: string;
   if (isLiked) {
     if (likesCount <= 1) {
-      appreciationProof = "You appreciated this dispatch";
+      appreciationProof = "You liked this post";
     } else {
       const others = likesCount - 1;
-      appreciationProof = `You and ${others} ${others === 1 ? "colleague" : "colleagues"} appreciated this`;
+      appreciationProof = `You and ${others} ${others === 1 ? "other" : "others"} liked`;
     }
   } else if (likesCount > 0) {
-    appreciationProof = `${likesCount} ${likesCount === 1 ? "practitioner" : "practitioners"} appreciated this`;
+    appreciationProof = `${likesCount} ${likesCount === 1 ? "person" : "people"} liked this`;
   } else {
-    appreciationProof = "Be the first to appreciate this dispatch";
+    appreciationProof = "Be the first to like this post";
   }
 
   const paragraphs = post.content.split("\n\n").filter(Boolean);
@@ -191,7 +191,7 @@ export function FeedPostCard({
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                   </svg>
-                  <span>{isDeleting ? "Deleting..." : "Delete dispatch"}</span>
+                  <span>{isDeleting ? "Deleting..." : "Delete post"}</span>
                 </button>
               )}
             </div>
@@ -241,7 +241,7 @@ export function FeedPostCard({
         </Link>
       </div>
 
-      {/* Action Affordances: Single considered Appreciate + Share */}
+      {/* Action Affordances: Like + Share */}
       <div className="relative mt-2 flex items-center justify-between pt-1">
         <button
           type="button"
@@ -266,7 +266,7 @@ export function FeedPostCard({
               d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
             />
           </svg>
-          <span>{isLiked ? "Appreciated" : "Appreciate"}</span>
+          <span>{isLiked ? "Liked" : "Like"}</span>
           {likesCount > 0 && (
             <span className="ml-1 text-[11px] opacity-80">({likesCount})</span>
           )}
