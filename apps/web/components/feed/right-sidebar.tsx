@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { apiFetch } from "../../lib/api/client";
@@ -13,6 +13,37 @@ export interface SuggestedUser {
   isFollowing?: boolean;
 }
 
+const DEFAULT_SUGGESTED_USERS: SuggestedUser[] = [
+  {
+    id: "rohan-mehta",
+    name: "Rohan Mehta",
+    role: "Software Engineer at Stripe",
+    avatarUrl: "/mock/avatar-rohan.jpg",
+    isFollowing: false,
+  },
+  {
+    id: "priya-sharma",
+    name: "Priya Sharma",
+    role: "Product Designer at Figma",
+    avatarUrl: "/mock/avatar-priya.jpg",
+    isFollowing: false,
+  },
+  {
+    id: "arjun-nair",
+    name: "Arjun Nair",
+    role: "Backend Engineer at Zepto",
+    avatarUrl: "/mock/avatar-arjun.jpg",
+    isFollowing: false,
+  },
+  {
+    id: "sneha-kapoor",
+    name: "Sneha Kapoor",
+    role: "Building at Workmate",
+    avatarUrl: "/mock/avatar-sneha.jpg",
+    isFollowing: false,
+  },
+];
+
 interface RightSidebarProps {
   userName?: string;
   suggestedUsers?: SuggestedUser[];
@@ -22,15 +53,42 @@ export function RightSidebar({
   userName = "You",
   suggestedUsers = [],
 }: RightSidebarProps) {
+  const usersToDisplay = useMemo(() => {
+    const combined = [...suggestedUsers];
+    const seenIds = new Set(combined.map((u) => u.id));
+
+    for (const defUser of DEFAULT_SUGGESTED_USERS) {
+      if (combined.length >= 3) break;
+      if (!seenIds.has(defUser.id)) {
+        combined.push(defUser);
+        seenIds.add(defUser.id);
+      }
+    }
+
+    return combined.slice(0, 3);
+  }, [suggestedUsers]);
+
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
-    suggestedUsers.forEach((u) => {
+    usersToDisplay.forEach((u) => {
       initial[u.id] = u.isFollowing ?? false;
     });
     return initial;
   });
 
   const [togglingMap, setTogglingMap] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setFollowingMap((prev) => {
+      const updated = { ...prev };
+      usersToDisplay.forEach((u) => {
+        if (updated[u.id] === undefined) {
+          updated[u.id] = u.isFollowing ?? false;
+        }
+      });
+      return updated;
+    });
+  }, [usersToDisplay]);
 
   const toggleFollow = async (userId: string) => {
     if (togglingMap[userId]) return;
@@ -60,17 +118,22 @@ export function RightSidebar({
         }));
       }
     } catch {
-      // Revert optimistic state on error
-      setFollowingMap((prev) => ({
-        ...prev,
-        [userId]: prevFollowing,
-      }));
+      // If default/mock member, maintain optimistic toggle; otherwise revert
+      if (DEFAULT_SUGGESTED_USERS.some((d) => d.id === userId)) {
+        setFollowingMap((prev) => ({
+          ...prev,
+          [userId]: nextFollowing,
+        }));
+      } else {
+        setFollowingMap((prev) => ({
+          ...prev,
+          [userId]: prevFollowing,
+        }));
+      }
     } finally {
       setTogglingMap((prev) => ({ ...prev, [userId]: false }));
     }
   };
-
-  const usersToDisplay = suggestedUsers;
 
   return (
     <aside className="w-full flex flex-col gap-5">
@@ -118,7 +181,7 @@ export function RightSidebar({
         <div className="flex items-center justify-between pb-3 mb-2">
           <h3 className="text-sm font-bold text-slate-900">People you may like</h3>
           <Link
-            href="/network"
+            href="/search"
             className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition"
           >
             See all

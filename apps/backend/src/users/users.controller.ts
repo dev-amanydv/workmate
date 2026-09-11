@@ -55,7 +55,7 @@ export class UsersController {
   }> {
     const users = await this.prisma.user.findMany({
       where: user?.id ? { id: { not: user.id } } : {},
-      take: 5,
+      take: 3,
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

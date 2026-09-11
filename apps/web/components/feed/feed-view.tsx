@@ -50,7 +50,7 @@ export function FeedView({
       }
     });
 
-    return realAuthors.slice(0, 5);
+    return realAuthors.slice(0, 3);
   }, [initialSuggestedUsers, posts, userId]);
 
   return (
