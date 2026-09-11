@@ -2,11 +2,20 @@ import { ExecutionContext, Injectable, Logger } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { Observable } from "rxjs";
 
+import { AuthService } from "../auth.service";
+
 @Injectable()
 export class GoogleAuthGuard extends AuthGuard("google") {
   private readonly logger = new Logger(GoogleAuthGuard.name);
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  constructor(private readonly auth: AuthService) {
+    super();
+  }
+
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+    this.auth.assertGoogleConfigured();
     return super.canActivate(context);
   }
 

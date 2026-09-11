@@ -18,7 +18,7 @@ the *sender* following the recipient, see §7).
 
 | # | Feature | Notes |
 |---|---------|-------|
-| 1 | Auth | Google OAuth 2.0 login only. No email/password. |
+| 1 | Auth | Google OAuth 2.0 login only. No email/password. (Implemented: Google OAuth 2.0 + JWT cookies, Prisma User model, local MySQL Docker Compose, Tailwind CSS configured in apps/web) |
 | 2 | Profile | View own/other profiles, edit name/bio/avatar, follower/following counts |
 | 3 | Posts | Full CRUD, text + optional single image, owner-only edit/delete |
 | 4 | Likes | Like/unlike a post, like count |
@@ -329,3 +329,8 @@ A feature is complete only when:
 2. Frontend: loading, empty, and error states are handled (not just the happy path).
 3. Types are shared, not duplicated.
 4. This file is updated if the change affects structure, schema, or conventions.
+
+### 11.1 Implementation Status
+- **Auth (Google OAuth + Session):** Completed end-to-end.
+  - Backend: `passport-google-oauth20`, JWT access + refresh tokens in `httpOnly, secure, sameSite=lax` cookies, global `JwtAuthGuard` with `@Public()` opt-out, Prisma `User` model, `/users/me` endpoint, and local MySQL `docker-compose.yml`.
+  - Frontend: Tailwind CSS configured in `apps/web`, single "Sign in with Google" button login screen at `/login`, authenticated `/feed` placeholder showing user profile + logout, and `middleware.ts` cookie presence guard.

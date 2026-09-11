@@ -13,8 +13,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
     private readonly auth: AuthService,
   ) {
     super({
-      clientID: config.get<string>("GOOGLE_CLIENT_ID", ""),
-      clientSecret: config.get<string>("GOOGLE_CLIENT_SECRET", ""),
+      clientID: config.get<string>("GOOGLE_CLIENT_ID", "") || "not-configured",
+      clientSecret:
+        config.get<string>("GOOGLE_CLIENT_SECRET", "") || "not-configured",
       callbackURL: config.getOrThrow<string>("GOOGLE_CALLBACK_URL"),
       scope: ["email", "profile"],
     });

@@ -50,7 +50,7 @@ export class AuthService {
 
     const googleId = profile.id;
     const avatarUrl = profile.photos?.[0]?.value ?? null;
-    const name = profile.displayName || email.split("@")[0];
+    const name = profile.displayName || email.split("@")[0] || "User";
 
     return this.prisma.user.upsert({
       where: { googleId },
