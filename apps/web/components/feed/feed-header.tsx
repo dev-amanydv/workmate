@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar } from "../ui/avatar";
 import { WorkmateLogo } from "../brand/logo";
-import { getApiBaseUrl } from "../../lib/api/client";
+import { logoutUser } from "../../lib/auth";
 
 interface FeedHeaderProps {
   userName?: string;
@@ -73,16 +73,7 @@ export function FeedHeader({
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    try {
-      const baseUrl = getApiBaseUrl();
-      await fetch(`${baseUrl}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch {
-    } finally {
-      window.location.href = "/login";
-    }
+    await logoutUser();
   };
 
   return (

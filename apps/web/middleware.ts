@@ -3,9 +3,10 @@ import { NextResponse, type NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPreview = request.nextUrl.searchParams.has("preview");
-  const hasAccessToken = request.cookies.has("access_token") || isPreview;
+  const token = request.cookies.get("access_token")?.value;
+  const hasAccessToken = Boolean(token && token.trim().length > 0) || isPreview;
 
-  if (pathname.startsWith("/auth/callback")) {
+  if (pathname.startsWith("/auth/callback") || pathname.startsWith("/auth/logout")) {
     return NextResponse.next();
   }
 
@@ -25,7 +26,7 @@ export function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
-  if (isPreview && !request.cookies.has("access_token")) {
+  if (isPreview && !hasAccessToken) {
     response.cookies.set("access_token", "preview-token", { path: "/" });
   }
   return response;

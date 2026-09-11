@@ -97,8 +97,18 @@ export class AuthService {
   }
 
   clearAuthCookies(res: Response): void {
-    res.clearCookie(ACCESS_TOKEN_COOKIE, this.cookieOptions("/"));
-    res.clearCookie(REFRESH_TOKEN_COOKIE, this.cookieOptions("/api/auth"));
+    const clearOptions = (path: string): CookieOptions => {
+      const { maxAge: _, ...rest } = this.cookieOptions(path);
+      return {
+        ...rest,
+        maxAge: 0,
+        expires: new Date(0),
+      };
+    };
+
+    res.clearCookie(ACCESS_TOKEN_COOKIE, clearOptions("/"));
+    res.clearCookie(REFRESH_TOKEN_COOKIE, clearOptions("/api/auth"));
+    res.clearCookie(REFRESH_TOKEN_COOKIE, clearOptions("/"));
   }
 
   async refreshAccessToken(refreshToken: string | undefined): Promise<User> {

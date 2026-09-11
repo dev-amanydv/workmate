@@ -55,6 +55,7 @@ export class AuthController {
     return { data: { ok: true } };
   }
 
+  @Public()
   @Post("logout")
   logout(@Res({ passthrough: true }) res: Response): { data: { ok: true } } {
     this.auth.clearAuthCookies(res);

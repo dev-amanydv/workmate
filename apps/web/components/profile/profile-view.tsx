@@ -8,7 +8,8 @@ import { Avatar } from "../ui/avatar";
 import { LeftSidebar } from "../feed/left-sidebar";
 import { RightSidebar, type SuggestedUser } from "../feed/right-sidebar";
 import { FeedPostCard } from "../feed/feed-post-card";
-import { apiFetch, getApiBaseUrl } from "../../lib/api/client";
+import { apiFetch } from "../../lib/api/client";
+import { logoutUser } from "../../lib/auth";
 import type { Post } from "../../types/post";
 import type { UserProfile } from "../../types/user";
 
@@ -71,16 +72,7 @@ export function ProfileView({
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    try {
-      const baseUrl = getApiBaseUrl();
-      await fetch(`${baseUrl}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch {
-    } finally {
-      window.location.href = "/login";
-    }
+    await logoutUser();
   };
 
   const [activeTab, setActiveTab] = useState<
