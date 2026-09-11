@@ -2,6 +2,7 @@ export interface AuthorSummary {
   id: string;
   name: string;
   avatarUrl: string | null;
+  isFollowing?: boolean;
 }
 
 export class PostResponseDto {
@@ -12,6 +13,8 @@ export class PostResponseDto {
   imageUrl: string | null;
   createdAt: Date;
   updatedAt: Date;
+  likesCount: number;
+  isLiked: boolean;
 
   static fromEntity(post: {
     id: string;
@@ -24,7 +27,10 @@ export class PostResponseDto {
       id: string;
       name: string;
       avatarUrl: string | null;
+      isFollowing?: boolean;
     };
+    likesCount?: number;
+    isLiked?: boolean;
   }): PostResponseDto {
     return {
       id: post.id,
@@ -33,11 +39,15 @@ export class PostResponseDto {
         id: post.author.id,
         name: post.author.name,
         avatarUrl: post.author.avatarUrl,
+        isFollowing: post.author.isFollowing ?? false,
       },
       content: post.content,
       imageUrl: post.imageUrl,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
+      likesCount: post.likesCount ?? 0,
+      isLiked: post.isLiked ?? false,
     };
   }
 }
+

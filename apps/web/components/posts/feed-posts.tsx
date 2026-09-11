@@ -7,13 +7,24 @@ import { PostCard } from "./post-card";
 
 interface FeedPostsProps {
   initialPosts: Post[];
+  currentUserId?: string;
 }
 
-export function FeedPosts({ initialPosts }: FeedPostsProps) {
+export function FeedPosts({ initialPosts, currentUserId }: FeedPostsProps) {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
 
   const handlePostCreated = (newPost: Post) => {
     setPosts((prev) => [newPost, ...prev]);
+  };
+
+  const handlePostUpdated = (updatedPost: Post) => {
+    setPosts((prev) =>
+      prev.map((p) => (p.id === updatedPost.id ? updatedPost : p)),
+    );
+  };
+
+  const handlePostDeleted = (deletedId: string) => {
+    setPosts((prev) => prev.filter((p) => p.id !== deletedId));
   };
 
   return (
@@ -30,9 +41,18 @@ export function FeedPosts({ initialPosts }: FeedPostsProps) {
             No posts yet. Be the first to share an update!
           </div>
         ) : (
-          posts.map((post) => <PostCard key={post.id} post={post} />)
+          posts.map((post) => (
+            <PostCard
+              key={post.id}
+              post={post}
+              currentUserId={currentUserId}
+              onPostUpdated={handlePostUpdated}
+              onPostDeleted={handlePostDeleted}
+            />
+          ))
         )}
       </div>
     </div>
   );
 }
+

@@ -115,7 +115,7 @@ export default async function FeedPage() {
         </div>
       </div>
 
-      <FeedPosts initialPosts={initialPosts} />
+      <FeedPosts initialPosts={initialPosts} currentUserId={user.id} />
     </div>
   );
 }

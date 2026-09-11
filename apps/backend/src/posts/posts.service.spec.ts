@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { StorageService } from "../storage/storage.service";
 import { PostsService } from "./posts.service";
+import { FollowsService } from "../follows/follows.service";
 
 describe("StorageService", () => {
   const config = new ConfigService({
@@ -70,10 +71,20 @@ describe("StorageService", () => {
 });
 
 describe("PostsService", () => {
+  const mockStorage = {
+    uploadImage: async () => "posts/test.jpg",
+    resolveImageUrl: async (url: string | null) =>
+      url ? `https://signed.example.com/${url}` : null,
+  };
+
   it("creates a post entity and returns post response", async () => {
     const mockPrisma = {
       post: {
-        create: async ({ data }: { data: { content: string; imageUrl: string | null; authorId: string } }) => ({
+        create: async ({
+          data,
+        }: {
+          data: { content: string; imageUrl: string | null; authorId: string };
+        }) => ({
           id: "post-123",
           authorId: data.authorId,
           content: data.content,
@@ -85,13 +96,9 @@ describe("PostsService", () => {
             name: "John Doe",
             avatarUrl: null,
           },
+          _count: { likes: 0 },
         }),
       },
-    };
-
-    const mockStorage = {
-      uploadImage: async () => "posts/test.jpg",
-      resolveImageUrl: async (url: string | null) => url ? `https://signed.example.com/${url}` : null,
     };
 
     const service = new PostsService(mockPrisma as any, mockStorage as any);
@@ -104,5 +111,178 @@ describe("PostsService", () => {
     assert.equal(result.content, "Hello world!");
     assert.equal(result.author.name, "John Doe");
     assert.equal(result.imageUrl, null);
+    assert.equal(result.likesCount, 0);
+    assert.equal(result.isLiked, false);
+  });
+
+  it("updates post when user is the author", async () => {
+    const mockPrisma = {
+      post: {
+        findUnique: async () => ({
+          id: "post-123",
+          authorId: "user-1",
+          content: "Original content",
+          imageUrl: null,
+        }),
+        update: async ({ data }: any) => ({
+          id: "post-123",
+          authorId: "user-1",
+          content: data.content,
+          imageUrl: null,
+          createdAt: new Date("2026-09-11T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-11T00:01:00.000Z"),
+          author: { id: "user-1", name: "John Doe", avatarUrl: null },
+          _count: { likes: 2 },
+          likes: [{ id: "like-1" }],
+        }),
+      },
+    };
+
+    const service = new PostsService(mockPrisma as any, mockStorage as any);
+    const updated = await service.update("post-123", "user-1", {
+      content: "Updated content",
+    });
+
+    assert.equal(updated.content, "Updated content");
+    assert.equal(updated.likesCount, 2);
+    assert.equal(updated.isLiked, true);
+  });
+
+  it("throws ForbiddenException when updating someone else's post", async () => {
+    const mockPrisma = {
+      post: {
+        findUnique: async () => ({
+          id: "post-123",
+          authorId: "user-author",
+          content: "Original",
+        }),
+      },
+    };
+
+    const service = new PostsService(mockPrisma as any, mockStorage as any);
+    await assert.rejects(
+      () =>
+        service.update("post-123", "user-intruder", {
+          content: "Hacked",
+        }),
+      ForbiddenException,
+    );
+  });
+
+  it("deletes post when user is author", async () => {
+    let deletedId = "";
+    const mockPrisma = {
+      post: {
+        findUnique: async () => ({
+          id: "post-123",
+          authorId: "user-1",
+        }),
+        delete: async ({ where }: any) => {
+          deletedId = where.id;
+          return { id: where.id };
+        },
+      },
+    };
+
+    const service = new PostsService(mockPrisma as any, mockStorage as any);
+    const res = await service.delete("post-123", "user-1");
+
+    assert.equal(res.success, true);
+    assert.equal(deletedId, "post-123");
+  });
+
+  it("throws ForbiddenException when deleting someone else's post", async () => {
+    const mockPrisma = {
+      post: {
+        findUnique: async () => ({
+          id: "post-123",
+          authorId: "user-author",
+        }),
+      },
+    };
+
+    const service = new PostsService(mockPrisma as any, mockStorage as any);
+    await assert.rejects(
+      () => service.delete("post-123", "user-intruder"),
+      ForbiddenException,
+    );
+  });
+
+  it("likes and unlikes a post correctly", async () => {
+    let upserted = false;
+    let deleted = false;
+    const mockPrisma = {
+      post: {
+        findUnique: async () => ({ id: "post-123" }),
+      },
+      like: {
+        upsert: async () => {
+          upserted = true;
+          return {};
+        },
+        deleteMany: async () => {
+          deleted = true;
+          return { count: 1 };
+        },
+        count: async () => (upserted && !deleted ? 1 : 0),
+      },
+    };
+
+    const service = new PostsService(mockPrisma as any, mockStorage as any);
+    const likeRes = await service.like("post-123", "user-1");
+    assert.equal(likeRes.success, true);
+    assert.equal(likeRes.isLiked, true);
+    assert.equal(likeRes.likesCount, 1);
+
+    const unlikeRes = await service.unlike("post-123", "user-1");
+    assert.equal(unlikeRes.success, true);
+    assert.equal(unlikeRes.isLiked, false);
+    assert.equal(unlikeRes.likesCount, 0);
+  });
+});
+
+describe("FollowsService", () => {
+  it("prevents following self", async () => {
+    const service = new FollowsService({} as any);
+    await assert.rejects(
+      () => service.follow("user-1", "user-1"),
+      BadRequestException,
+    );
+    await assert.rejects(
+      () => service.unfollow("user-1", "user-1"),
+      BadRequestException,
+    );
+  });
+
+  it("allows following and unfollowing another user", async () => {
+    let followCreated = false;
+    let followDeleted = false;
+
+    const mockPrisma = {
+      user: {
+        findUnique: async () => ({ id: "user-2" }),
+      },
+      follow: {
+        upsert: async () => {
+          followCreated = true;
+          return {};
+        },
+        deleteMany: async () => {
+          followDeleted = true;
+          return { count: 1 };
+        },
+      },
+    };
+
+    const service = new FollowsService(mockPrisma as any);
+    const followRes = await service.follow("user-1", "user-2");
+    assert.equal(followRes.success, true);
+    assert.equal(followRes.isFollowing, true);
+    assert.equal(followCreated, true);
+
+    const unfollowRes = await service.unfollow("user-1", "user-2");
+    assert.equal(unfollowRes.success, true);
+    assert.equal(unfollowRes.isFollowing, false);
+    assert.equal(followDeleted, true);
   });
 });

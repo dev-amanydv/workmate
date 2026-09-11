@@ -2,6 +2,7 @@ export interface AuthorSummary {
   id: string;
   name: string;
   avatarUrl: string | null;
+  isFollowing?: boolean;
 }
 
 export interface Post {
@@ -12,4 +13,7 @@ export interface Post {
   imageUrl: string | null;
   createdAt: string;
   updatedAt: string;
+  likesCount: number;
+  isLiked: boolean;
 }
+
