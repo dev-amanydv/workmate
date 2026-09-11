@@ -100,89 +100,14 @@ export function FeedHeader({
           </Link>
         </div>
 
-        {/* Center: Search Bar */}
-        <div className="flex-1 max-w-lg mx-6 hidden md:block">
-          <form onSubmit={handleSearch} className="relative flex items-center">
-            <button
-              type="submit"
-              className="absolute left-3.5 text-[#6C6F71] hover:text-[#17191A] transition"
-              aria-label="Submit search"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-            </button>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search people by name, role, or company..."
-              className="w-full bg-[#F5F4F0] hover:bg-[#EFEFEA] focus:bg-white text-sm text-[#17191A] placeholder-[#8A8D90] rounded-lg pl-10 pr-14 py-2 border border-transparent focus:border-[#184A45] focus:outline-none transition"
-            />
-            <div className="absolute right-3 flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-[#E6E5E0] bg-white text-[11px] font-mono text-[#8A8D90] pointer-events-none">
-              <span className="text-xs leading-none">⌘</span>
-              <span>K</span>
-            </div>
-          </form>
-        </div>
+        
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Mobile search */}
-          <Link
-            href="/search"
-            className="md:hidden p-2 text-[#6C6F71] hover:text-[#17191A] hover:bg-[#F5F4F0] rounded-lg transition"
-            aria-label="Search"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-          </Link>
+          
+        
 
-          {/* Direct Messages */}
-          <Link
-            href="/chat"
-            className="p-2 text-[#475569] hover:text-[#0F172A] hover:bg-[#F5F4F0] rounded-xl transition"
-            aria-label="Messages"
-            title="Conversations"
-          >
-            <svg
-              className="w-6 h-6"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.75}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-              <circle cx="8" cy="12" r="0.75" fill="currentColor" strokeWidth={0} />
-              <circle cx="12" cy="12" r="0.75" fill="currentColor" strokeWidth={0} />
-              <circle cx="16" cy="12" r="0.75" fill="currentColor" strokeWidth={0} />
-            </svg>
-          </Link>
-
-          {/* Notifications */}
-          <button
-            type="button"
-            className="relative p-2 text-[#475569] hover:text-[#0F172A] hover:bg-[#F5F4F0] rounded-xl transition cursor-pointer"
-            aria-label="Notifications"
-            title="Activity"
-          >
-            <svg
-              className="w-6 h-6"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.75}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-            </svg>
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#E04D36]" />
-          </button>
 
           {/* User Profile Affordance & Dropdown Menu */}
           <div className="relative pl-1">

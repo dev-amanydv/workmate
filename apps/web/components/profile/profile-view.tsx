@@ -70,9 +70,9 @@ export function ProfileView({
   const [showUnfollowModal, setShowUnfollowModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Tabs state: 'posts' | 'followers' | 'following' | 'about'
+  // Tabs state: 'posts' | 'followers' | 'following'
   const [activeTab, setActiveTab] = useState<
-    "posts" | "followers" | "following" | "about"
+    "posts" | "followers" | "following"
   >("posts");
 
   // Followers / Following list data
@@ -118,6 +118,8 @@ export function ProfileView({
     setFollowingCount(profileUser.followingCount ?? 0);
     setPostsCount(profileUser.postsCount ?? initialPosts?.length ?? 0);
     setPosts(initialPosts);
+    setFollowersList(null);
+    setFollowingList(null);
   }, [profileUser, initialPosts]);
 
   // Fetch followers or following when tabs are activated
