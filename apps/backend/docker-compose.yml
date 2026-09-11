@@ -48,14 +48,14 @@ services:
       JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-1209600}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
-      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-http://localhost:4000/api/auth/google/callback}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-https://workmate-api.amanydv.in/api/auth/google/callback}
       R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-placeholder_account_id}
       R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-placeholder_access_key}
       R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-placeholder_secret_key}
       R2_BUCKET_NAME: ${R2_BUCKET_NAME:-workmate}
       R2_PUBLIC_URL: ${R2_PUBLIC_URL:-https://pub-workmate.r2.dev}
       UPLOADS_DIR: ${UPLOADS_DIR:-./uploads}
-      LOCAL_STORAGE_BASE_URL: ${LOCAL_STORAGE_BASE_URL:-http://localhost:4000}
+      LOCAL_STORAGE_BASE_URL: ${LOCAL_STORAGE_BASE_URL:-https://workmate-api.amanydv.in}
     env_file:
       - path: .env.production
         required: false
@@ -71,9 +71,29 @@ services:
     networks:
       - default
 
+  caddy:
+    image: caddy:2-alpine
+    container_name: workmate-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:-workmate-api.amanydv.in}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - backend
+    networks:
+      - default
+
 volumes:
   mysql-data:
   backend-uploads:
+  caddy-data:
+  caddy-config:
 
 networks:
   default:

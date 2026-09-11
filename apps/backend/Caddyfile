@@ -1,0 +1,10 @@
+{
+    admin off
+}
+
+{$DOMAIN:workmate-api.amanydv.in} {
+    encode zstd gzip
+
+    # Proxy all traffic (REST API, WebSockets, healthcheck, uploads) to the NestJS backend
+    reverse_proxy backend:4000
+}
