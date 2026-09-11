@@ -38,7 +38,9 @@ export class JwtAuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest<Request & { user?: User }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: User }>();
     const token = request.cookies?.[ACCESS_TOKEN_COOKIE] as string | undefined;
 
     if (!token) {

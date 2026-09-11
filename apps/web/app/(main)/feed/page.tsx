@@ -33,9 +33,7 @@ export default async function FeedPage() {
     redirect("/login");
   }
 
-  const initial = (user.name || user.email || "U")
-    .charAt(0)
-    .toUpperCase();
+  const initial = (user.name || user.email || "U").charAt(0).toUpperCase();
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -108,7 +106,8 @@ export default async function FeedPage() {
           Feed Coming Soon
         </h3>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          This is the authenticated placeholder page proving your session is active.
+          This is the authenticated placeholder page proving your session is
+          active.
         </p>
       </div>
     </div>

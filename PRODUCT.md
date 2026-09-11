@@ -12,19 +12,19 @@
 
 Core value: people create profiles, post text/image updates, follow each other, and chat in
 real time — but **only with people they follow** (mutual-follow not required; chat is gated on
-the *sender* following the recipient, see §7).
+the _sender_ following the recipient, see §7).
 
 ### 1.1 Feature List (MVP scope — do not silently add features beyond this)
 
-| # | Feature | Notes |
-|---|---------|-------|
-| 1 | Auth | Google OAuth 2.0 login only. No email/password. (Implemented: Google OAuth 2.0 + JWT cookies, Prisma User model, local MySQL Docker Compose, Tailwind CSS configured in apps/web) |
-| 2 | Profile | View own/other profiles, edit name/bio/avatar, follower/following counts |
-| 3 | Posts | Full CRUD, text + optional single image, owner-only edit/delete |
-| 4 | Likes | Like/unlike a post, like count |
-| 5 | Follow | Search users, follow/unfollow, list followers/following |
-| 6 | Chat | Real-time 1:1 chat via Socket.IO, persisted, restricted to followed users |
-| 7 | Frontend | Responsive Next.js UI for all of the above |
+| #   | Feature  | Notes                                                                                                                                                                             |
+| --- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Auth     | Google OAuth 2.0 login only. No email/password. (Implemented: Google OAuth 2.0 + JWT cookies, Prisma User model, local MySQL Docker Compose, Tailwind CSS configured in apps/web) |
+| 2   | Profile  | View own/other profiles, edit name/bio/avatar, follower/following counts                                                                                                          |
+| 3   | Posts    | Full CRUD, text + optional single image, owner-only edit/delete                                                                                                                   |
+| 4   | Likes    | Like/unlike a post, like count                                                                                                                                                    |
+| 5   | Follow   | Search users, follow/unfollow, list followers/following                                                                                                                           |
+| 6   | Chat     | Real-time 1:1 chat via Socket.IO, persisted, restricted to followed users                                                                                                         |
+| 7   | Frontend | Responsive Next.js UI for all of the above                                                                                                                                        |
 
 ### 1.2 Explicitly Out of Scope (v1)
 
@@ -36,18 +36,18 @@ the *sender* following the recipient, see §7).
 
 ## 2. Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Monorepo | Turborepo (npm workspaces) |
-| Frontend | Next.js (App Router), TypeScript, React |
-| Backend | NestJS (Node.js, TypeScript) |
-| Database | MySQL |
-| ORM | Prisma (recommended) — see §5 |
-| Real-time | Socket.IO (via `@nestjs/platform-socket.io`) |
-| Auth | Google OAuth 2.0 + JWT (access + refresh cookies) |
-| File storage | Local `/uploads` in dev, Cloudflare R2 for prod |
-| Validation | `class-validator` / `class-transformer` DTOs on every endpoint |
-| Styling | Tailwind CSS |
+| Layer        | Technology                                                     |
+| ------------ | -------------------------------------------------------------- |
+| Monorepo     | Turborepo (npm workspaces)                                     |
+| Frontend     | Next.js (App Router), TypeScript, React                        |
+| Backend      | NestJS (Node.js, TypeScript)                                   |
+| Database     | MySQL                                                          |
+| ORM          | Prisma (recommended) — see §5                                  |
+| Real-time    | Socket.IO (via `@nestjs/platform-socket.io`)                   |
+| Auth         | Google OAuth 2.0 + JWT (access + refresh cookies)              |
+| File storage | Local `/uploads` in dev, Cloudflare R2 for prod                |
+| Validation   | `class-validator` / `class-transformer` DTOs on every endpoint |
+| Styling      | Tailwind CSS                                                   |
 
 ---
 
@@ -220,28 +220,28 @@ model Message {
 
 ## 6. REST API Surface (backend, prefix `/api`)
 
-| Method | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/auth/google` | public | redirect to Google |
-| GET | `/auth/google/callback` | public | handles callback, sets cookies |
-| POST | `/auth/refresh` | cookie | rotate access token |
-| POST | `/auth/logout` | required | clear cookies |
-| GET | `/users/me` | required | current user profile |
-| GET | `/users/:id` | required | public profile view |
-| PATCH | `/users/me` | required | edit name/bio/avatar |
-| GET | `/users/search?q=` | required | search by name/email |
-| GET | `/posts?cursor=&limit=` | required | paginated feed |
-| POST | `/posts` | required | create post (multipart: content, image?) |
-| GET | `/posts/:id` | required | single post |
-| PATCH | `/posts/:id` | required + owner | edit post |
-| DELETE | `/posts/:id` | required + owner | delete post |
-| POST | `/posts/:id/like` | required | like post (idempotent) |
-| DELETE | `/posts/:id/like` | required | unlike post |
-| POST | `/follows/:userId` | required | follow user |
-| DELETE | `/follows/:userId` | required | unfollow user |
-| GET | `/follows/:userId/followers` | required | list followers |
-| GET | `/follows/:userId/following` | required | list following |
-| GET | `/chat/:userId/messages?cursor=` | required + must follow | message history |
+| Method | Route                            | Auth                   | Description                              |
+| ------ | -------------------------------- | ---------------------- | ---------------------------------------- |
+| GET    | `/auth/google`                   | public                 | redirect to Google                       |
+| GET    | `/auth/google/callback`          | public                 | handles callback, sets cookies           |
+| POST   | `/auth/refresh`                  | cookie                 | rotate access token                      |
+| POST   | `/auth/logout`                   | required               | clear cookies                            |
+| GET    | `/users/me`                      | required               | current user profile                     |
+| GET    | `/users/:id`                     | required               | public profile view                      |
+| PATCH  | `/users/me`                      | required               | edit name/bio/avatar                     |
+| GET    | `/users/search?q=`               | required               | search by name/email                     |
+| GET    | `/posts?cursor=&limit=`          | required               | paginated feed                           |
+| POST   | `/posts`                         | required               | create post (multipart: content, image?) |
+| GET    | `/posts/:id`                     | required               | single post                              |
+| PATCH  | `/posts/:id`                     | required + owner       | edit post                                |
+| DELETE | `/posts/:id`                     | required + owner       | delete post                              |
+| POST   | `/posts/:id/like`                | required               | like post (idempotent)                   |
+| DELETE | `/posts/:id/like`                | required               | unlike post                              |
+| POST   | `/follows/:userId`               | required               | follow user                              |
+| DELETE | `/follows/:userId`               | required               | unfollow user                            |
+| GET    | `/follows/:userId/followers`     | required               | list followers                           |
+| GET    | `/follows/:userId/following`     | required               | list following                           |
+| GET    | `/chat/:userId/messages?cursor=` | required + must follow | message history                          |
 
 All list endpoints use cursor-based pagination. All mutating endpoints validate the request
 body with a DTO class (`class-validator`) and reject unknown/invalid fields
@@ -263,7 +263,7 @@ body with a DTO class (`class-validator`) and reject unknown/invalid fields
 - Rooms are keyed by a deterministic sorted pair, e.g. `chat:{minUserId}:{maxUserId}`.
 - Every message is persisted to `Message` **before** being emitted to the recipient, so REST
   history and socket stream never diverge.
-- Unfollowing does not delete history; it only blocks *new* messages going forward (decide/confirm
+- Unfollowing does not delete history; it only blocks _new_ messages going forward (decide/confirm
   this behavior with product owner if requirements tighten — current default: block new sends
   only).
 
@@ -324,6 +324,7 @@ NEXT_PUBLIC_SOCKET_URL=http://localhost:4000
 ## 11. Definition of Done (per feature)
 
 A feature is complete only when:
+
 1. Backend: DTO validation, auth guard, ownership/authorization check, error handling, and at
    least one test exist.
 2. Frontend: loading, empty, and error states are handled (not just the happy path).
@@ -331,6 +332,7 @@ A feature is complete only when:
 4. This file is updated if the change affects structure, schema, or conventions.
 
 ### 11.1 Implementation Status
+
 - **Auth (Google OAuth + Session):** Completed end-to-end.
   - Backend: `passport-google-oauth20`, JWT access + refresh tokens in `httpOnly, secure, sameSite=lax` cookies, global `JwtAuthGuard` with `@Public()` opt-out, Prisma `User` model, `/users/me` endpoint, and local MySQL `docker-compose.yml`.
   - Frontend: Tailwind CSS configured in `apps/web`, single "Sign in with Google" button login screen at `/login`, authenticated `/feed` placeholder showing user profile + logout, and `middleware.ts` cookie presence guard.

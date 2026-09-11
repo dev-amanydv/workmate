@@ -1,4 +1,8 @@
-import { Injectable, ServiceUnavailableException, UnauthorizedException } from "@nestjs/common";
+import {
+  Injectable,
+  ServiceUnavailableException,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import type { User } from "@prisma/client";
@@ -80,7 +84,11 @@ export class AuthService {
   }
 
   setAuthCookies(res: Response, tokens: AuthTokens): void {
-    res.cookie(ACCESS_TOKEN_COOKIE, tokens.accessToken, this.cookieOptions("/"));
+    res.cookie(
+      ACCESS_TOKEN_COOKIE,
+      tokens.accessToken,
+      this.cookieOptions("/"),
+    );
     res.cookie(
       REFRESH_TOKEN_COOKIE,
       tokens.refreshToken,

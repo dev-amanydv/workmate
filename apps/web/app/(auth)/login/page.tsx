@@ -76,7 +76,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       </div>
 
       <p className="text-center text-xs text-gray-500 dark:text-gray-400">
-        By signing in, you agree to Workmate&apos;s Terms of Service and Privacy Policy.
+        By signing in, you agree to Workmate&apos;s Terms of Service and Privacy
+        Policy.
       </p>
     </div>
   );
