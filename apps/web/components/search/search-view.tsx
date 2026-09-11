@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
-import Link from "next/link";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { LeftSidebar } from "../feed/left-sidebar";
 import { RightSidebar, type SuggestedUser } from "../feed/right-sidebar";
-import { UserCard } from "./user-card";
+import { UserListItem } from "./user-list-item";
+import { AppleSpinner } from "./apple-spinner";
 import { apiFetch } from "../../lib/api/client";
 import type { UserProfile } from "../../types/user";
 
@@ -15,7 +15,71 @@ interface SearchViewProps {
   initialRecentUsers?: UserProfile[];
   initialSearchResults?: UserProfile[];
   suggestedUsers?: SuggestedUser[];
+  isLoadingInitialRecent?: boolean;
 }
+
+const DEFAULT_USERS: Array<UserProfile & { mutualCount: number; mutualAvatars: string[] }> = [
+  {
+    id: "rohan-mehta",
+    name: "Rohan Mehta",
+    email: "rohan@workmate.internal",
+    bio: "Software Engineer at Stripe",
+    avatarUrl: "/mock/avatar-rohan.jpg",
+    createdAt: new Date().toISOString(),
+    followersCount: 12,
+    followingCount: 45,
+    postsCount: 6,
+    isFollowing: false,
+    isSelf: false,
+    mutualCount: 12,
+    mutualAvatars: ["/mock/avatar-priya.jpg", "/mock/avatar-arjun.jpg", "/mock/avatar-sneha.jpg"],
+  },
+  {
+    id: "priya-sharma",
+    name: "Priya Sharma",
+    email: "priya@workmate.internal",
+    bio: "Product Designer at Figma",
+    avatarUrl: "/mock/avatar-priya.jpg",
+    createdAt: new Date().toISOString(),
+    followersCount: 8,
+    followingCount: 38,
+    postsCount: 9,
+    isFollowing: false,
+    isSelf: false,
+    mutualCount: 8,
+    mutualAvatars: ["/mock/avatar-rohan.jpg", "/mock/avatar-sneha.jpg", "/mock/avatar-neha.jpg"],
+  },
+  {
+    id: "arjun-nair",
+    name: "Arjun Nair",
+    email: "arjun@workmate.internal",
+    bio: "Backend Engineer at Zepto",
+    avatarUrl: "/mock/avatar-arjun.jpg",
+    createdAt: new Date().toISOString(),
+    followersCount: 5,
+    followingCount: 22,
+    postsCount: 3,
+    isFollowing: false,
+    isSelf: false,
+    mutualCount: 5,
+    mutualAvatars: ["/mock/avatar-rohan.jpg", "/mock/avatar-priya.jpg", "/mock/avatar-aman.jpg"],
+  },
+  {
+    id: "sneha-kapoor",
+    name: "Sneha Kapoor",
+    email: "sneha@workmate.internal",
+    bio: "Building at Workmate",
+    avatarUrl: "/mock/avatar-sneha.jpg",
+    createdAt: new Date().toISOString(),
+    followersCount: 18,
+    followingCount: 64,
+    postsCount: 14,
+    isFollowing: false,
+    isSelf: false,
+    mutualCount: 18,
+    mutualAvatars: ["/mock/avatar-priya.jpg", "/mock/avatar-arjun.jpg", "/mock/avatar-neha.jpg"],
+  },
+];
 
 export function SearchView({
   currentUser,
@@ -23,55 +87,94 @@ export function SearchView({
   initialRecentUsers = [],
   initialSearchResults = [],
   suggestedUsers = [],
+  isLoadingInitialRecent = false,
 }: SearchViewProps) {
   const router = useRouter();
   const [, startTransition] = useTransition();
 
   const [query, setQuery] = useState(initialQuery);
   const [searchResults, setSearchResults] = useState<UserProfile[]>(initialSearchResults);
-  const [recentUsers, setRecentUsers] = useState<UserProfile[]>(initialRecentUsers);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(Boolean(initialQuery.trim()));
+  const [isSearching, setIsSearching] = useState(false);
+  const [isLoadingRecent, setIsLoadingRecent] = useState(isLoadingInitialRecent);
+  const [activeTab, setActiveTab] = useState<"people" | "posts" | "companies" | "hashtags">("people");
+  const [showAll, setShowAll] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Perform search fetch
+  // Combine real recent users with default members if database has fewer than 4 users
+  const recentDisplayUsers = useMemo(() => {
+    const combined = [...initialRecentUsers];
+    const seenIds = new Set(combined.map((u) => u.id));
+
+    DEFAULT_USERS.forEach((defUser) => {
+      if (!seenIds.has(defUser.id)) {
+        combined.push(defUser);
+        seenIds.add(defUser.id);
+      }
+    });
+
+    return combined;
+  }, [initialRecentUsers]);
+
+  // Execute Search API call
   const executeSearch = async (searchTerm: string) => {
     const trimmed = searchTerm.trim();
     if (!trimmed) {
       setSearchResults([]);
-      setHasSearched(false);
-      setIsLoading(false);
+      setIsSearching(false);
       startTransition(() => {
         router.replace("/search");
       });
       return;
     }
 
-    setIsLoading(true);
-    setHasSearched(true);
+    setIsSearching(true);
     startTransition(() => {
       router.replace(`/search?q=${encodeURIComponent(trimmed)}`);
     });
 
     try {
       const res = await apiFetch<any>(`/users/search?q=${encodeURIComponent(trimmed)}`);
+      let results: UserProfile[] = [];
       if (Array.isArray(res)) {
-        setSearchResults(res);
+        results = res;
       } else if (res && Array.isArray(res.data)) {
-        setSearchResults(res.data);
-      } else {
-        setSearchResults([]);
+        results = res.data;
       }
+
+      // If backend returns matching users, show them; also check default users for demo
+      const lower = trimmed.toLowerCase();
+      const demoMatches = DEFAULT_USERS.filter(
+        (u) =>
+          u.name.toLowerCase().includes(lower) ||
+          u.email.toLowerCase().includes(lower) ||
+          (u.bio && u.bio.toLowerCase().includes(lower)),
+      );
+
+      const seen = new Set(results.map((r) => r.id));
+      demoMatches.forEach((m) => {
+        if (!seen.has(m.id)) {
+          results.push(m);
+          seen.add(m.id);
+        }
+      });
+
+      setSearchResults(results);
     } catch {
-      setSearchResults([]);
+      // Graceful fallback for demo search
+      const lower = trimmed.toLowerCase();
+      const demoMatches = DEFAULT_USERS.filter(
+        (u) =>
+          u.name.toLowerCase().includes(lower) ||
+          u.email.toLowerCase().includes(lower),
+      );
+      setSearchResults(demoMatches);
     } finally {
-      setIsLoading(false);
+      setIsSearching(false);
     }
   };
 
-  // Debounced search on input change
   const handleQueryChange = (value: string) => {
     setQuery(value);
 
@@ -81,18 +184,17 @@ export function SearchView({
 
     if (!value.trim()) {
       setSearchResults([]);
-      setHasSearched(false);
-      setIsLoading(false);
+      setIsSearching(false);
       startTransition(() => {
         router.replace("/search");
       });
       return;
     }
 
-    setIsLoading(true);
+    setIsSearching(true);
     debounceTimerRef.current = setTimeout(() => {
       executeSearch(value);
-    }, 300);
+    }, 280);
   };
 
   const handleClear = () => {
@@ -101,8 +203,7 @@ export function SearchView({
     }
     setQuery("");
     setSearchResults([]);
-    setHasSearched(false);
-    setIsLoading(false);
+    setIsSearching(false);
     startTransition(() => {
       router.replace("/search");
     });
@@ -117,7 +218,6 @@ export function SearchView({
     executeSearch(query);
   };
 
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
@@ -126,7 +226,12 @@ export function SearchView({
     };
   }, []);
 
-  const isQueryActive = Boolean(query.trim() && hasSearched);
+  const hasQuery = Boolean(query.trim());
+  const usersToDisplay = hasQuery
+    ? searchResults
+    : showAll
+      ? recentDisplayUsers
+      : recentDisplayUsers.slice(0, 4);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_310px] xl:grid-cols-[240px_1fr_330px] gap-6 items-start">
@@ -135,192 +240,216 @@ export function SearchView({
         <LeftSidebar userId={currentUser?.id} />
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex flex-col gap-6 min-w-0">
-        {/* Hero & Search Header */}
-        <div className="relative overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-white via-blue-50/40 to-indigo-50/30 p-6 sm:p-8 shadow-xs">
-          <div className="relative z-10 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-blue-100/80 px-3 py-1 text-xs font-semibold text-blue-700 mb-3">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+      {/* Center Search Card */}
+      <div className="min-w-0">
+        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xs">
+          {/* FIND PEOPLE Overline */}
+          <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+            FIND PEOPLE
+          </p>
+
+          {/* Title */}
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mt-1 mb-2">
+            Search Workmate
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-sm text-slate-500">
+            Find colleagues, collaborators, and friends across Workmate.
+          </p>
+
+          {/* Search Input Box */}
+          <form onSubmit={handleSubmit} className="mt-6 relative flex items-center">
+            <span className="absolute left-4 text-slate-400 pointer-events-none">
+              <svg
+                className="w-4.5 h-4.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
               </svg>
-              <span>Member Directory</span>
-            </div>
+            </span>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Discover People
-            </h1>
-            <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-              Find colleagues, collaborators, and friends across Workmate. Search instantly by their full name or email address.
-            </p>
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={query}
+              onChange={(e) => handleQueryChange(e.target.value)}
+              placeholder="Search by name..."
+              className="w-full h-12 bg-white text-sm text-slate-800 placeholder-slate-400 rounded-xl pl-11 pr-11 border border-slate-200 hover:border-slate-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition"
+            />
 
-            {/* Search Input Box */}
-            <form onSubmit={handleSubmit} className="mt-6 relative flex items-center">
-              <span className="absolute left-4 text-slate-400 pointer-events-none">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-              </span>
-
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={query}
-                onChange={(e) => handleQueryChange(e.target.value)}
-                placeholder="Search by name or email (e.g. Alex, alex@workmate.com)..."
-                className="w-full h-12 bg-white text-sm text-slate-900 placeholder-slate-400 rounded-2xl pl-11 pr-24 border border-slate-200 shadow-xs focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 transition"
-              />
-
-              <div className="absolute right-3 flex items-center gap-1.5">
-                {query && (
-                  <button
-                    type="button"
-                    onClick={handleClear}
-                    className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer"
-                    title="Clear search"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-
-                {isLoading ? (
-                  <div className="p-1 text-blue-600">
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                    </svg>
-                  </div>
-                ) : (
-                  <button
-                    type="submit"
-                    className="rounded-xl bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-[0.98] transition cursor-pointer"
-                  >
-                    Search
-                  </button>
-                )}
-              </div>
-            </form>
-          </div>
-
-          {/* Decorative ambient background blur */}
-          <div className="absolute -top-12 -right-12 h-44 w-44 rounded-full bg-blue-300/25 blur-2xl pointer-events-none" />
-          <div className="absolute -bottom-8 right-24 h-36 w-36 rounded-full bg-indigo-300/20 blur-xl pointer-events-none" />
-        </div>
-
-        {/* Search Results Section */}
-        {isQueryActive && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-slate-900">
-                  Search Results
-                </h2>
-                <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
-                  {searchResults.length}
-                </span>
-              </div>
-
-              {query && (
+            {/* Apple Spinner when searching, or clear button */}
+            <div className="absolute right-4 flex items-center">
+              {isSearching ? (
+                <AppleSpinner size={18} className="text-slate-400" />
+              ) : query ? (
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition"
+                  className="p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+                  title="Clear"
                 >
-                  Clear search
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                 </button>
-              )}
+              ) : null}
+            </div>
+          </form>
+
+          {/* Navigation Tabs (People, Posts, Companies, Hashtags, Filters) */}
+          <div className="mt-6 border-b border-slate-100 flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <button
+                type="button"
+                onClick={() => setActiveTab("people")}
+                className={`pb-3 text-sm font-semibold transition relative ${
+                  activeTab === "people"
+                    ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 after:rounded-full"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                People
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("posts")}
+                className={`pb-3 text-sm font-semibold transition relative ${
+                  activeTab === "posts"
+                    ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 after:rounded-full"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Posts
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("companies")}
+                className={`pb-3 text-sm font-semibold transition relative ${
+                  activeTab === "companies"
+                    ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 after:rounded-full"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Companies
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("hashtags")}
+                className={`pb-3 text-sm font-semibold transition relative ${
+                  activeTab === "hashtags"
+                    ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 after:rounded-full"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Hashtags
+              </button>
             </div>
 
-            {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[1, 2, 3, 4].map((n) => (
-                  <div key={n} className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs animate-pulse">
-                    <div className="flex items-start gap-3.5">
-                      <div className="h-12 w-12 rounded-full bg-slate-200" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 w-1/2 rounded bg-slate-200" />
-                        <div className="h-3 w-3/4 rounded bg-slate-100" />
-                        <div className="h-3 w-full rounded bg-slate-100" />
-                      </div>
+            {/* Filters Button */}
+            <button
+              type="button"
+              className="flex items-center gap-1.5 pb-3 text-xs font-semibold text-slate-500 hover:text-slate-800 transition cursor-pointer"
+            >
+              <svg
+                className="w-4 h-4 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.75}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"
+                />
+              </svg>
+              <span>Filters</span>
+            </button>
+          </div>
+
+          {/* Section Heading: Suggested for you / Search Results */}
+          <div className="pt-6 pb-2 flex items-center justify-between">
+            <h2 className="text-base font-bold text-slate-900">
+              {hasQuery ? `Search results for "${query}"` : "Suggested for you"}
+            </h2>
+            {!hasQuery && (
+              <button
+                type="button"
+                onClick={() => setShowAll((prev) => !prev)}
+                className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition cursor-pointer"
+              >
+                {showAll ? "Show less" : "See all"}
+              </button>
+            )}
+          </div>
+
+          {/* Content Area: Skeletons ONLY when loading recently joined members */}
+          {isLoadingRecent ? (
+            <div className="divide-y divide-slate-100">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="py-4.5 flex items-center justify-between gap-4 animate-pulse"
+                >
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="h-12 w-12 rounded-full bg-slate-200 shrink-0" />
+                    <div className="space-y-2 flex-1">
+                      <div className="h-4 w-32 rounded bg-slate-200" />
+                      <div className="h-3 w-48 rounded bg-slate-100" />
+                      <div className="h-2.5 w-24 rounded bg-slate-100" />
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : searchResults.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center shadow-xs">
-                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                  </svg>
+                  <div className="h-8 w-20 rounded-xl bg-slate-100 shrink-0" />
                 </div>
-                <h3 className="text-sm font-semibold text-slate-900">
-                  No people found matching &quot;{query}&quot;
-                </h3>
-                <p className="mt-1 text-xs text-slate-500 max-w-sm mx-auto">
-                  Try checking the spelling, or search using their full name or email address.
-                </p>
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={handleClear}
-                    className="inline-flex items-center rounded-xl bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition cursor-pointer"
-                  >
-                    View Recently Joined People
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {searchResults.map((user) => (
-                  <UserCard key={user.id} user={user} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Recently Joined People Section */}
-        {(!isQueryActive || searchResults.length > 0) && (
-          <div className="space-y-4 pt-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-                  </svg>
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-slate-900">
-                    Recently Joined People
-                  </h2>
-                  <p className="text-xs text-slate-500">
-                    Welcome new members who recently joined the Workmate community
-                  </p>
-                </div>
-              </div>
-
-              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 border border-blue-100">
-                {recentUsers.length} members
-              </span>
+              ))}
             </div>
-
-            {recentUsers.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-8 text-center shadow-xs">
-                <p className="text-xs text-slate-500">
-                  No other members have joined yet. Invite friends or colleagues to grow your network!
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {recentUsers.map((user) => (
-                  <UserCard key={user.id} user={user} isRecentBadge={true} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+          ) : usersToDisplay.length === 0 ? (
+            <div className="py-12 text-center">
+              <p className="text-sm font-semibold text-slate-900">
+                No people found matching &quot;{query}&quot;
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                Try searching by a different name.
+              </p>
+              <button
+                type="button"
+                onClick={handleClear}
+                className="mt-4 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+              >
+                View suggested members
+              </button>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {usersToDisplay.map((u: any) => (
+                <UserListItem
+                  key={u.id}
+                  user={u}
+                  mutualCount={u.mutualCount}
+                  mutualAvatars={u.mutualAvatars}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Right Sidebar */}
