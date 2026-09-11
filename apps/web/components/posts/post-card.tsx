@@ -146,9 +146,9 @@ export function PostCard({
   return (
     <article
       onClick={handleCardClick}
-      className={`relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition dark:border-neutral-800 dark:bg-neutral-900 ${
+      className={`relative rounded-xl border border-[#E6E5E0] bg-white p-5 transition-colors ${
         !isDetailView && !isEditing
-          ? "cursor-pointer hover:border-blue-200 hover:shadow-md dark:hover:border-neutral-700"
+          ? "cursor-pointer hover:border-[#D5D3CC]"
           : ""
       }`}
     >
@@ -164,7 +164,7 @@ export function PostCard({
       {/* Post Header: Author, Date, Follow, Edit/Delete */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-sm font-bold text-blue-600 dark:bg-blue-950 dark:text-blue-300">
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[#E6E5E0] bg-[#EEF4F3] text-sm font-semibold text-[#184A45]">
             {post.author?.avatarUrl ? (
               <Image
                 src={post.author.avatarUrl}
@@ -181,7 +181,7 @@ export function PostCard({
 
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+              <p className="truncate text-sm font-semibold text-[#17191A]">
                 {post.author?.name || "Unknown Author"}
               </p>
 
@@ -191,10 +191,10 @@ export function PostCard({
                   type="button"
                   onClick={handleFollowToggle}
                   disabled={isTogglingFollow}
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition ${
+                  className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium transition ${
                     isFollowing
-                      ? "border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-red-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
-                      : "bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-400 dark:hover:bg-blue-900"
+                      ? "border border-[#E6E5E0] bg-[#F5F4F0] text-[#17191A] hover:bg-[#EFEFEA]"
+                      : "bg-[#184A45] text-white hover:bg-[#133D39]"
                   }`}
                   title={isFollowing ? "Click to unfollow" : "Click to follow"}
                 >
@@ -304,49 +304,49 @@ export function PostCard({
             <button
               type="submit"
               disabled={isSaving || !editContent.trim()}
-              className="rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-blue-700 disabled:opacity-50"
+              className="rounded-lg bg-[#184A45] px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-[#133D39] disabled:opacity-50"
             >
               {isSaving ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>
       ) : (
-        <p className="mt-3 whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200">
+        <p className="mt-3 whitespace-pre-wrap text-[15px] leading-[1.6] text-[#17191A]">
           {post.content}
         </p>
       )}
 
       {/* Post Image */}
       {post.imageUrl && (
-        <div className="mt-3 overflow-hidden rounded-xl border border-gray-100 dark:border-neutral-800">
+        <div className="mt-3 overflow-hidden rounded-lg border border-[#E6E5E0]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={post.imageUrl}
             alt="Post media"
-            className="max-h-96 w-auto max-w-full rounded-xl object-contain"
+            className="max-h-96 w-auto max-w-full rounded-lg object-contain"
           />
         </div>
       )}
 
       {/* Footer: Likes and Detail Indicator */}
-      <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3 dark:border-neutral-800">
+      <div className="mt-4 flex items-center justify-between border-t border-[#EDECE8] pt-3">
         <button
           type="button"
           onClick={handleLikeToggle}
           disabled={isTogglingLike}
           className={`group flex items-center gap-1.5 text-xs font-medium transition ${
             isLiked
-              ? "text-red-500 dark:text-red-400"
-              : "text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400"
+              ? "text-[#9E3B27]"
+              : "text-[#6C6F71] hover:text-[#9E3B27]"
           }`}
-          title={isLiked ? "Unlike post" : "Like post"}
+          title={isLiked ? "Unlike post" : "Appreciate post"}
         >
           <svg
-            className={`h-4 w-4 transition-transform group-hover:scale-110 ${
-              isLiked ? "fill-red-500 text-red-500" : "fill-none stroke-current"
+            className={`h-4 w-4 ${
+              isLiked ? "fill-[#9E3B27] text-[#9E3B27]" : "fill-none stroke-current"
             }`}
             viewBox="0 0 24 24"
-            strokeWidth={2}
+            strokeWidth={1.75}
           >
             <path
               strokeLinecap="round"
@@ -355,13 +355,13 @@ export function PostCard({
             />
           </svg>
           <span>
-            {likesCount} {likesCount === 1 ? "like" : "likes"}
+            {likesCount} {likesCount === 1 ? "appreciation" : "appreciations"}
           </span>
         </button>
 
         {!isDetailView && (
-          <span className="text-xs text-gray-400 transition group-hover:text-blue-600 dark:text-gray-500">
-            View details &rarr;
+          <span className="text-xs font-medium text-[#6C6F71] transition group-hover:text-[#184A45]">
+            View dispatch
           </span>
         )}
       </div>

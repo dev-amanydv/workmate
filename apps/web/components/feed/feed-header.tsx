@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { WorkmateLogo } from "../brand/logo";
 import { LogoutButton } from "../logout-button";
 
 interface FeedHeaderProps {
@@ -20,7 +21,7 @@ export function FeedHeader({
   const [searchQuery, setSearchQuery] = useState("");
   const [imageError, setImageError] = useState(false);
 
-  const displayName = userName || "You";
+  const displayName = userName || "Account";
   const userInitial = displayName.charAt(0).toUpperCase();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -34,19 +35,16 @@ export function FeedHeader({
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-[1380px] items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
-        {/* Left: Logo */}
+    <header className="sticky top-0 z-50 border-b border-[#E6E5E0] bg-white">
+      <div className="mx-auto flex max-w-[1380px] items-center justify-between px-4 sm:px-6 lg:px-8 h-15">
+        {/* Left: Brand Identity */}
         <div className="flex items-center gap-8">
-          <Link href="/feed" className="flex items-center gap-2.5 transition hover:opacity-90">
-            <Image
-              src="/mock/workmate-logo.png"
-              alt="Workmate"
-              width={122}
-              height={32}
-              className="h-8 w-auto object-contain"
-              priority
-            />
+          <Link
+            href="/feed"
+            className="flex items-center transition opacity-100 hover:opacity-85 focus:outline-none"
+            aria-label="Workmate Home"
+          >
+            <WorkmateLogo size="md" />
           </Link>
         </div>
 
@@ -55,10 +53,10 @@ export function FeedHeader({
           <form onSubmit={handleSearch} className="relative flex items-center">
             <button
               type="submit"
-              className="absolute left-3.5 text-slate-400 hover:text-blue-600 transition"
+              className="absolute left-3.5 text-[#6C6F71] hover:text-[#17191A] transition"
               aria-label="Submit search"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
             </button>
@@ -66,10 +64,10 @@ export function FeedHeader({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for people by name or email..."
-              className="w-full bg-[#F1F5F9]/80 hover:bg-[#E2E8F0]/60 focus:bg-white text-sm text-slate-800 placeholder-slate-400 rounded-xl pl-10 pr-14 py-2 border border-transparent focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition"
+              placeholder="Search people by name, discipline, or engineering role..."
+              className="w-full bg-[#F5F4F0] hover:bg-[#EFEFEA] focus:bg-white text-sm text-[#17191A] placeholder-[#8A8D90] rounded-lg pl-10 pr-14 py-2 border border-transparent focus:border-[#184A45] focus:outline-none transition"
             />
-            <div className="absolute right-3 flex items-center gap-0.5 px-1.5 py-0.5 rounded-md border border-slate-200 bg-white text-[11px] font-medium text-slate-400 shadow-2xs pointer-events-none">
+            <div className="absolute right-3 flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-[#E6E5E0] bg-white text-[11px] font-mono text-[#8A8D90] pointer-events-none">
               <span className="text-xs leading-none">⌘</span>
               <span>K</span>
             </div>
@@ -77,80 +75,74 @@ export function FeedHeader({
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          {/* Mobile search icon */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Mobile search */}
           <Link
             href="/search"
-            className="md:hidden p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition"
+            className="md:hidden p-2 text-[#6C6F71] hover:text-[#17191A] hover:bg-[#F5F4F0] rounded-lg transition"
             aria-label="Search"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
             </svg>
           </Link>
-          {/* Sun / Theme toggle icon */}
-          <button
-            type="button"
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition"
-            aria-label="Toggle theme"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="4" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-            </svg>
-          </button>
 
-          {/* Notifications Bell */}
-          <button
-            type="button"
-            className="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition"
-            aria-label="Notifications"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-            </svg>
-            {/* Red unread dot */}
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" />
-          </button>
-
-          {/* Messages */}
+          {/* Direct Messages */}
           <Link
             href="/chat"
-            className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition"
+            className="p-2 text-[#6C6F71] hover:text-[#17191A] hover:bg-[#F5F4F0] rounded-lg transition"
             aria-label="Messages"
+            title="Discussions"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.75.75 0 01-.84-.84c.123-.62.338-1.578.583-2.42A7.886 7.886 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
             </svg>
           </Link>
 
-          {/* User Profile Pill */}
-          <div className="relative">
+          {/* Notifications */}
+          <button
+            type="button"
+            className="relative p-2 text-[#6C6F71] hover:text-[#17191A] hover:bg-[#F5F4F0] rounded-lg transition cursor-pointer"
+            aria-label="Notifications"
+            title="Activity"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+            </svg>
+            <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-[#9E3B27]" />
+          </button>
+
+          {/* User Profile Affordance (Replacing unstyled floating initial) */}
+          <div className="relative pl-1">
             <button
               type="button"
               onClick={() => setShowProfileMenu((prev) => !prev)}
-              className="flex items-center gap-1.5 p-1 rounded-full hover:ring-2 hover:ring-slate-200 transition focus:outline-none"
+              className="flex items-center gap-2.5 py-1 px-2 rounded-lg border border-[#E6E5E0] hover:border-[#D5D3CC] bg-[#FBFBFA] hover:bg-[#F5F4F0] transition focus:outline-none focus:border-[#184A45] cursor-pointer"
               aria-expanded={showProfileMenu}
+              aria-label="Account menu"
             >
-              <div className="relative h-8 w-8 rounded-full overflow-hidden border border-slate-200 shadow-2xs bg-blue-50 flex items-center justify-center">
+              <div className="relative h-7 w-7 rounded overflow-hidden border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center shrink-0">
                 {userAvatar && !imageError ? (
                   <Image
                     src={userAvatar}
                     alt={displayName}
-                    width={32}
-                    height={32}
+                    width={28}
+                    height={28}
                     className="h-full w-full object-cover"
                     unoptimized={userAvatar.startsWith("http")}
                     onError={() => setImageError(true)}
                   />
                 ) : (
-                  <span className="text-xs font-bold text-blue-600">
+                  <span className="text-xs font-semibold text-[#184A45]">
                     {userInitial}
                   </span>
                 )}
               </div>
+              <span className="hidden sm:inline text-xs font-medium text-[#17191A] max-w-[100px] truncate">
+                {displayName}
+              </span>
               <svg
-                className={`w-3.5 h-3.5 text-slate-500 transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
+                className={`w-3 h-3 text-[#6C6F71] transition-transform duration-150 ${showProfileMenu ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={2}
@@ -160,28 +152,28 @@ export function FeedHeader({
               </svg>
             </button>
 
-            {/* Dropdown Menu */}
+            {/* Dropdown Menu - Reserved elevation */}
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-slate-100 bg-white py-2 shadow-xl ring-1 ring-black/5 z-50">
-                <div className="px-4 py-2 border-b border-slate-100">
-                  <p className="text-sm font-semibold text-slate-800">{displayName}</p>
-                  <p className="text-xs text-slate-400">Signed in</p>
+              <div className="absolute right-0 mt-2 w-56 rounded-lg border border-[#E6E5E0] bg-white py-1.5 shadow-lg ring-1 ring-black/5 z-50">
+                <div className="px-3.5 py-2 border-b border-[#E6E5E0]">
+                  <p className="text-xs font-semibold text-[#17191A]">{displayName}</p>
+                  <p className="text-[11px] text-[#6C6F71]">Signed in as practitioner</p>
                 </div>
                 <Link
                   href="/profile"
                   onClick={() => setShowProfileMenu(false)}
-                  className="block px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
+                  className="block px-3.5 py-2 text-xs font-medium text-[#17191A] hover:bg-[#F5F4F0] transition"
                 >
                   View Profile
                 </Link>
                 <Link
                   href="/posts/create"
                   onClick={() => setShowProfileMenu(false)}
-                  className="block px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
+                  className="block px-3.5 py-2 text-xs font-medium text-[#17191A] hover:bg-[#F5F4F0] transition"
                 >
-                  Create Post
+                  Publish Dispatch
                 </Link>
-                <div className="border-t border-slate-100 my-1 pt-1 px-2">
+                <div className="border-t border-[#E6E5E0] my-1 pt-1 px-1">
                   <LogoutButton />
                 </div>
               </div>

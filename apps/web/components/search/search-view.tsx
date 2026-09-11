@@ -242,30 +242,30 @@ export function SearchView({
 
       {/* Center Search Card */}
       <div className="min-w-0">
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xs">
-          {/* FIND PEOPLE Overline */}
-          <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
-            FIND PEOPLE
+        <div className="rounded-xl border border-[#E6E5E0] bg-white p-6 sm:p-8">
+          {/* Overline */}
+          <p className="text-[11px] font-semibold tracking-wider text-[#6C6F71] uppercase">
+            PRACTITIONER DIRECTORY
           </p>
 
           {/* Title */}
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mt-1 mb-2">
-            Search Workmate
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#17191A] tracking-tight mt-1 mb-2">
+            Search Network
           </h1>
 
           {/* Subtitle */}
-          <p className="text-sm text-slate-500">
-            Find colleagues, collaborators, and friends across Workmate.
+          <p className="text-xs sm:text-sm text-[#6C6F71]">
+            Find colleagues, collaborators, and verified practitioners across disciplines.
           </p>
 
           {/* Search Input Box */}
           <form onSubmit={handleSubmit} className="mt-6 relative flex items-center">
-            <span className="absolute left-4 text-slate-400 pointer-events-none">
+            <span className="absolute left-3.5 text-[#6C6F71] pointer-events-none">
               <svg
                 className="w-4.5 h-4.5"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth={2}
+                strokeWidth={1.75}
                 viewBox="0 0 24 24"
               >
                 <path
@@ -281,8 +281,8 @@ export function SearchView({
               type="text"
               value={query}
               onChange={(e) => handleQueryChange(e.target.value)}
-              placeholder="Search by name..."
-              className="w-full h-12 bg-white text-sm text-slate-800 placeholder-slate-400 rounded-xl pl-11 pr-11 border border-slate-200 hover:border-slate-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition"
+              placeholder="Search by name, discipline, or engineering role..."
+              className="w-full h-11 bg-[#F5F4F0] text-sm text-[#17191A] placeholder-[#8A8D90] rounded-lg pl-10 pr-11 border border-[#E6E5E0] hover:border-[#D5D3CC] focus:bg-white focus:border-[#184A45] focus:outline-none transition"
             />
 
             {/* Apple Spinner when searching, or clear button */}
@@ -320,10 +320,10 @@ export function SearchView({
               <button
                 type="button"
                 onClick={() => setActiveTab("people")}
-                className={`pb-3 text-sm font-semibold transition relative ${
+                className={`pb-3 text-xs font-semibold uppercase tracking-wider transition relative ${
                   activeTab === "people"
-                    ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 after:rounded-full"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "text-[#184A45] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#184A45]"
+                    : "text-[#6C6F71] hover:text-[#17191A]"
                 }`}
               >
                 People
@@ -331,35 +331,35 @@ export function SearchView({
               <button
                 type="button"
                 onClick={() => setActiveTab("posts")}
-                className={`pb-3 text-sm font-semibold transition relative ${
+                className={`pb-3 text-xs font-semibold uppercase tracking-wider transition relative ${
                   activeTab === "posts"
-                    ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 after:rounded-full"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "text-[#184A45] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#184A45]"
+                    : "text-[#6C6F71] hover:text-[#17191A]"
                 }`}
               >
-                Posts
+                Dispatches
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("companies")}
-                className={`pb-3 text-sm font-semibold transition relative ${
+                className={`pb-3 text-xs font-semibold uppercase tracking-wider transition relative ${
                   activeTab === "companies"
-                    ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 after:rounded-full"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "text-[#184A45] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#184A45]"
+                    : "text-[#6C6F71] hover:text-[#17191A]"
                 }`}
               >
-                Companies
+                Teams
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab("hashtags")}
-                className={`pb-3 text-sm font-semibold transition relative ${
+                className={`pb-3 text-xs font-semibold uppercase tracking-wider transition relative ${
                   activeTab === "hashtags"
-                    ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-blue-600 after:rounded-full"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "text-[#184A45] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#184A45]"
+                    : "text-[#6C6F71] hover:text-[#17191A]"
                 }`}
               >
-                Hashtags
+                Topics
               </button>
             </div>
 

@@ -43,7 +43,7 @@ export function FeedView({
         realAuthors.push({
           id: p.author.id || p.authorId,
           name: p.author.name,
-          role: p.author.role || "Workmate Member",
+          role: p.author.role || "Systems Practitioner",
           avatarUrl: p.author.avatarUrl || null,
           isFollowing: p.author.isFollowing ?? false,
         });
@@ -66,28 +66,45 @@ export function FeedView({
         <CreatePostPrompt userAvatar={userAvatar} userName={userName} />
 
         {/* Feed Posts List */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4">
           {posts.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center shadow-xs">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+            <div className="rounded-xl border border-[#E6E5E0] bg-white p-10 sm:p-14 text-center">
+              {/* Bespoke Architectural Chronicle Empty State Mark */}
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg border border-[#E6E5E0] bg-[#F5F4F0] text-[#184A45]">
                 <svg
-                  className="w-6 h-6"
+                  className="w-7 h-7"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth={1.75}
+                  strokeWidth={1.5}
                   viewBox="0 0 24 24"
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                    d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
                   />
                 </svg>
               </div>
-              <h3 className="text-sm font-semibold text-slate-900">No posts yet</h3>
-              <p className="mt-1 text-xs text-slate-500">
-                Be the first to share an update with your network!
+              <h3 className="text-base font-semibold text-[#17191A]">
+                Your dispatch feed is quiet
+              </h3>
+              <p className="mx-auto mt-1.5 max-w-md text-xs sm:text-sm text-[#6C6F71] leading-relaxed">
+                Connect with engineers, designers, and researchers in the directory to see their technical dispatches, or publish your first dispatch to begin the discussion.
               </p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <a
+                  href="/search"
+                  className="rounded-lg bg-[#184A45] hover:bg-[#133D39] text-white px-4 py-2 text-xs font-semibold transition"
+                >
+                  Explore practitioner directory
+                </a>
+                <a
+                  href="/posts/create"
+                  className="rounded-lg border border-[#E6E5E0] bg-[#F5F4F0] hover:bg-[#EFEFEA] text-[#17191A] px-4 py-2 text-xs font-semibold transition"
+                >
+                  Publish first dispatch
+                </a>
+              </div>
             </div>
           ) : (
             posts.map((post) => (

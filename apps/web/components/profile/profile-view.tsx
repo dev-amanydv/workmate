@@ -149,26 +149,25 @@ export function ProfileView({
       {/* Main Profile Center Column */}
       <div className="flex flex-col gap-6 min-w-0">
         {/* Profile Card */}
-        <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xs">
-          {/* Cover Header Banner */}
-          <div className="relative h-44 sm:h-52 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-500 overflow-hidden">
-            {/* Subtle decorative shapes */}
-            <div className="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
-            <div className="absolute -left-12 -bottom-12 h-64 w-64 rounded-full bg-sky-300/20 blur-xl" />
-            <div className="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] [background-size:16px_16px]" />
+        <div className="overflow-hidden rounded-xl border border-[#E6E5E0] bg-white">
+          {/* Cover Header Banner: Architectural Deep Mineral Pine with subtle craft texture */}
+          <div className="relative h-40 sm:h-48 w-full bg-[#184A45] overflow-hidden">
+            {/* Architectural structural grid lines */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:24px_24px]" />
+            <div className="absolute -right-8 -top-8 h-48 w-48 rounded-full bg-white/5 pointer-events-none" />
 
-            {/* Share Profile Button on top right */}
+            {/* Share Profile Button */}
             <div className="absolute top-4 right-4 z-10">
               <button
                 type="button"
                 onClick={handleShareProfile}
-                className="flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-md px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-white/30 transition cursor-pointer"
+                className="flex items-center gap-1.5 rounded-md bg-white/15 backdrop-blur-md px-3 py-1.5 text-xs font-medium text-white hover:bg-white/25 transition cursor-pointer"
                 title="Share profile"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
                 </svg>
-                <span>{copiedLink ? "Copied Link!" : "Share"}</span>
+                <span>{copiedLink ? "Copied" : "Share"}</span>
               </button>
             </div>
           </div>
@@ -176,84 +175,75 @@ export function ProfileView({
           {/* Profile Header Content */}
           <div className="relative px-6 pb-6 pt-0 sm:px-8">
             {/* Avatar Row with overlapping layout */}
-            <div className="flex flex-wrap items-end justify-between gap-4 -mt-16 sm:-mt-20 mb-4">
+            <div className="flex flex-wrap items-end justify-between gap-4 -mt-14 sm:-mt-16 mb-4">
               {/* Profile Avatar */}
-              <div className="relative h-28 w-28 sm:h-36 sm:w-36 rounded-full border-4 border-white bg-blue-50 shadow-md overflow-hidden flex items-center justify-center shrink-0">
+              <div className="relative h-24 w-24 sm:h-30 sm:w-30 rounded-lg border-4 border-white bg-[#EEF4F3] overflow-hidden flex items-center justify-center shrink-0">
                 {profileUser.avatarUrl && !imageError ? (
                   <Image
                     src={profileUser.avatarUrl}
                     alt={displayName}
-                    width={144}
-                    height={144}
+                    width={120}
+                    height={120}
                     className="h-full w-full object-cover"
                     unoptimized={profileUser.avatarUrl.startsWith("http")}
                     onError={() => setImageError(true)}
                   />
                 ) : (
-                  <span className="text-3xl sm:text-4xl font-bold text-blue-600">
+                  <span className="text-3xl font-semibold text-[#184A45]">
                     {userInitial}
                   </span>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 {isSelf ? (
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-700 border border-slate-200">
-                      <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                      </svg>
-                      Your Profile
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#F5F4F0] px-3.5 py-1.5 text-xs font-medium text-[#17191A] border border-[#E6E5E0]">
+                      Your Account
                     </span>
                     <Link
                       href="/posts/create"
-                      className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-700 transition"
+                      className="rounded-lg bg-[#184A45] px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-[#133D39] transition"
                     >
-                      Create Post
+                      New Dispatch
                     </Link>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3">
-                    {/* Follow / Following Button */}
+                  <div className="flex items-center gap-2.5">
                     <button
                       type="button"
                       onClick={handleFollowButtonClick}
                       disabled={isTogglingFollow}
-                      className={`flex items-center gap-1.5 rounded-xl px-5 py-2 text-xs font-semibold shadow-xs transition cursor-pointer ${
+                      className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition cursor-pointer ${
                         isFollowing
-                          ? "border border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:border-slate-300"
-                          : "bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98]"
+                          ? "border border-[#E6E5E0] bg-[#F5F4F0] text-[#17191A] hover:bg-[#EFEFEA]"
+                          : "bg-[#184A45] text-white hover:bg-[#133D39]"
                       }`}
                     >
                       {isTogglingFollow ? (
                         <span>Updating...</span>
                       ) : isFollowing ? (
                         <>
-                          <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                          <svg className="w-3.5 h-3.5 text-[#184A45]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                           </svg>
                           <span>Following</span>
                         </>
                       ) : (
-                        <>
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                          </svg>
-                          <span>Follow</span>
-                        </>
+                        <span>Follow</span>
                       )}
                     </button>
 
-                    {/* Message Button: VISIBLE ONLY WHEN FOLLOWING */}
+                    {/* Message Button */}
                     {isFollowing && (
                       <button
                         type="button"
                         onClick={handleMessageClick}
                         disabled={isStartingChat}
-                        className="flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-100 transition cursor-pointer shadow-xs"
+                        className="flex items-center gap-1.5 rounded-lg border border-[#E6E5E0] bg-[#F5F4F0] px-3.5 py-2 text-xs font-semibold text-[#184A45] hover:bg-[#EEF4F3] transition cursor-pointer"
                       >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.75.75 0 01-.84-.84c.123-.62.338-1.578.583-2.42A7.886 7.886 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                         </svg>
                         <span>{isStartingChat ? "Opening..." : "Message"}</span>

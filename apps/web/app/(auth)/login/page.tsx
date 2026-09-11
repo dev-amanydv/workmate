@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from "../../../lib/api/client";
+import { WorkmateLogo } from "../../../components/brand/logo";
 
 interface LoginPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -11,16 +12,16 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const googleLoginUrl = `${apiBaseUrl}/auth/google`;
 
   return (
-    <div className="w-full max-w-md space-y-8 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+    <div className="w-full max-w-md space-y-7 rounded-xl border border-[#E6E5E0] bg-white p-8">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-xl font-bold text-white shadow">
-          W
+        <div className="flex justify-center mb-5">
+          <WorkmateLogo size="lg" showWordmark={false} />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          Welcome to Workmate
+        <h1 className="text-xl font-semibold tracking-tight text-[#17191A]">
+          Workmate
         </h1>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Connect and collaborate with professionals in your network.
+        <p className="mt-1.5 text-xs text-[#6C6F71]">
+          A focused professional network for engineering and craft practitioners.
         </p>
       </div>
 
@@ -51,7 +52,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <div className="mt-6">
         <a
           href={googleLoginUrl}
-          className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
+          className="flex w-full items-center justify-center gap-3 rounded-lg border border-[#E6E5E0] bg-white px-4 py-2.5 text-xs font-semibold text-[#17191A] transition hover:bg-[#F5F4F0] focus:outline-none focus:border-[#184A45]"
         >
           <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
             <path

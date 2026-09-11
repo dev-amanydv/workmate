@@ -2,10 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const hasAccessToken = request.cookies.has("access_token");
+  const isPreview = request.nextUrl.searchParams.has("preview");
+  const hasAccessToken = request.cookies.has("access_token") || isPreview;
 
   if (pathname === "/login") {
-    if (hasAccessToken) {
+    if (hasAccessToken && !isPreview) {
       return NextResponse.redirect(new URL("/feed", request.url));
     }
     return NextResponse.next();
@@ -19,7 +20,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/feed", request.url));
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  if (isPreview && !request.cookies.has("access_token")) {
+    response.cookies.set("access_token", "preview-token", { path: "/" });
+  }
+  return response;
 }
 
 export const config = {

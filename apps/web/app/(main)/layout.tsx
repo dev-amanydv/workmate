@@ -36,7 +36,7 @@ export default async function MainLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
+    <div className="min-h-screen bg-[#FBFBFA] text-[#17191A] antialiased">
       <FeedHeader
         userName={user?.name}
         userAvatar={user?.avatarUrl}

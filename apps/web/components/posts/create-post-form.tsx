@@ -81,13 +81,13 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-      <h3 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
-        Create a Post
+    <div className="rounded-xl border border-[#E6E5E0] bg-white p-6 transition-colors">
+      <h3 className="mb-3 text-base font-semibold text-[#17191A]">
+        New Dispatch
       </h3>
 
       {error && (
-        <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
+        <div className="mb-4 rounded-lg bg-red-50 p-3 text-xs text-[#9E3B27] border border-red-100">
           {error}
         </div>
       )}
@@ -95,27 +95,27 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <textarea
-            rows={3}
+            rows={4}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="What's on your mind? Share an update..."
-            className="w-full rounded-xl border border-gray-300 p-3 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+            placeholder="Share a technical insight, architectural decision, or question for your network..."
+            className="w-full rounded-lg border border-[#E6E5E0] p-3 text-sm text-[#17191A] placeholder-[#8A8D90] focus:border-[#184A45] focus:outline-none transition"
             disabled={isSubmitting}
           />
         </div>
 
         {imagePreview && (
-          <div className="relative inline-block max-w-full overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-700">
+          <div className="relative inline-block max-w-full overflow-hidden rounded-lg border border-[#E6E5E0]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imagePreview}
               alt="Selected preview"
-              className="max-h-64 w-auto max-w-full rounded-xl object-contain"
+              className="max-h-64 w-auto max-w-full rounded-lg object-contain"
             />
             <button
               type="button"
               onClick={removeImage}
-              className="absolute right-2 top-2 rounded-full bg-black/70 px-2.5 py-1 text-xs font-semibold text-white shadow hover:bg-black/90"
+              className="absolute right-2 top-2 rounded bg-black/75 px-2.5 py-1 text-xs font-medium text-white shadow hover:bg-black/90 cursor-pointer"
               disabled={isSubmitting}
             >
               Remove
@@ -123,9 +123,9 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
           </div>
         )}
 
-        <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-neutral-800">
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-neutral-700 dark:text-gray-300 dark:hover:bg-neutral-800">
-            <span>📷 Add Image</span>
+        <div className="flex items-center justify-between border-t border-[#EDECE8] pt-3">
+          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#E6E5E0] px-3 py-1.5 text-xs font-medium text-[#484B4D] hover:bg-[#F5F4F0] transition">
+            <span>Attach diagram / image</span>
             <input
               ref={fileInputRef}
               type="file"
@@ -139,9 +139,9 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
           <button
             type="submit"
             disabled={isSubmitting || !content.trim()}
-            className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-lg bg-[#184A45] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#133D39] disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
           >
-            {isSubmitting ? "Posting..." : "Post"}
+            {isSubmitting ? "Publishing..." : "Publish Dispatch"}
           </button>
         </div>
       </form>

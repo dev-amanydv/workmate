@@ -1,69 +1,49 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-brand: #184a45;
+  --color-brand-hover: #133d39;
+  --color-brand-subtle: #eef4f3;
+  --color-canvas: #fbfbfa;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f5f4f0;
+  --color-border-stone: #e6e5e0;
+  --color-border-subtle: #edece8;
+  --color-ink: #17191a;
+  --color-ink-secondary: #484b4d;
+  --color-ink-muted: #6c6f71;
+  --color-terracotta: #9e3b27;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #fbfbfa;
+  --foreground: #17191a;
 }
 
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  background-color: #fbfbfa;
+  color: #17191a;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-}
-
-/* Chat animations */
+/* Restrained, purposeful chat animations */
 @keyframes typingBounce {
   0%, 60%, 100% {
     transform: translateY(0);
     opacity: 0.4;
   }
   30% {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
     opacity: 1;
   }
 }
 
-@keyframes fadeInSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.typing-dot {
+  animation: typingBounce 1.2s infinite ease-in-out;
 }
 
-.animate-in {
-  animation-fill-mode: both;
-}
-
-.fade-in {
-  animation-name: fadeInSlideUp;
-}
-
-.slide-in-from-bottom-1 {
-  animation-duration: 0.2s;
-  animation-timing-function: ease-out;
-}
-
-.slide-in-from-bottom-2 {
-  animation-duration: 0.2s;
-  animation-timing-function: ease-out;
-}
-
-.duration-200 {
-  animation-duration: 0.2s;
-}

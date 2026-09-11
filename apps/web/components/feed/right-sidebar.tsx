@@ -17,28 +17,28 @@ const DEFAULT_SUGGESTED_USERS: SuggestedUser[] = [
   {
     id: "rohan-mehta",
     name: "Rohan Mehta",
-    role: "Software Engineer at Stripe",
+    role: "Staff Infrastructure Engineer at Stripe",
     avatarUrl: "/mock/avatar-rohan.jpg",
     isFollowing: false,
   },
   {
     id: "priya-sharma",
     name: "Priya Sharma",
-    role: "Product Designer at Figma",
+    role: "Principal Product Designer at Figma",
     avatarUrl: "/mock/avatar-priya.jpg",
     isFollowing: false,
   },
   {
     id: "arjun-nair",
     name: "Arjun Nair",
-    role: "Backend Engineer at Zepto",
+    role: "Systems & Database Engineer at Zepto",
     avatarUrl: "/mock/avatar-arjun.jpg",
     isFollowing: false,
   },
   {
     id: "sneha-kapoor",
     name: "Sneha Kapoor",
-    role: "Building at Workmate",
+    role: "Compiler Engineer at Workmate",
     avatarUrl: "/mock/avatar-sneha.jpg",
     isFollowing: false,
   },
@@ -98,7 +98,6 @@ export function RightSidebar({
     const prevFollowing = followingMap[userId] ?? false;
     const nextFollowing = !prevFollowing;
 
-    // Optimistic UI update
     setFollowingMap((prev) => ({
       ...prev,
       [userId]: nextFollowing,
@@ -118,7 +117,6 @@ export function RightSidebar({
         }));
       }
     } catch {
-      // If default/mock member, maintain optimistic toggle; otherwise revert
       if (DEFAULT_SUGGESTED_USERS.some((d) => d.id === userId)) {
         setFollowingMap((prev) => ({
           ...prev,
@@ -136,146 +134,164 @@ export function RightSidebar({
   };
 
   return (
-    <aside className="w-full flex flex-col gap-5">
-      {/* 1. Good evening Widget */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs flex items-center justify-between overflow-hidden">
-        <div className="space-y-0.5">
-          <p className="text-xs text-slate-500 font-medium">Good evening,</p>
-          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-1.5">
-            <span>{userName}</span>
-            <span>👋</span>
-          </h3>
+    <aside className="w-full flex flex-col gap-4">
+      {/* 1. Network Activity Briefing (Replacing the gradient mountain blob illustration) */}
+      <div className="rounded-xl border border-[#E6E5E0] bg-[#F5F4F0] p-4">
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#6C6F71]">
+            Daily Briefing
+          </p>
+          <span className="h-1.5 w-1.5 rounded-full bg-[#184A45]" />
         </div>
-
-        <div className="relative h-12 w-28 shrink-0 overflow-hidden rounded-lg">
-          <Image
-            src="/mock/mountain-illustration.jpg"
-            alt="Mountains"
-            width={140}
-            height={50}
-            className="h-full w-full object-cover"
-          />
+        <h3 className="mt-1 text-sm font-semibold text-[#17191A]">
+          Network Activity
+        </h3>
+        <p className="mt-1 text-xs text-[#6C6F71] leading-relaxed">
+          Discussions across distributed architecture, design systems, and database performance updated this morning.
+        </p>
+        <div className="mt-3 pt-2.5 border-t border-[#EDECE8] flex items-center justify-between text-xs">
+          <span className="text-[#6C6F71]">Signed in as</span>
+          <span className="font-semibold text-[#17191A]">{userName}</span>
         </div>
       </div>
 
-      {/* 2. Inspirational Quote Widget */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
-        <div className="flex items-start gap-2.5">
-          {/* Blue giant quotation mark */}
-          <span className="text-blue-600 font-serif font-black text-2xl leading-none select-none">
-            “
-          </span>
-          <div className="space-y-3">
-            <p className="italic text-xs font-semibold text-slate-700 leading-relaxed">
-              Progress happens when people share, support, and build together.
-            </p>
-            <p className="text-[11px] text-slate-400 font-normal pt-1 border-t border-slate-100">
-              A more open, kind, and productive internet.
-            </p>
+      {/* 2. Practitioner Note (Replacing generic motivational quote) */}
+      <div className="rounded-xl border border-[#E6E5E0] bg-[#F5F4F0] p-4">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#184A45]">
+          Engineering Note
+        </p>
+        <p className="mt-2 text-xs text-[#17191A] leading-relaxed font-normal">
+          &ldquo;Write architectural decisions down before scheduling meetings. Clear technical documents invite asynchronous scrutiny and preserve rationale.&rdquo;
+        </p>
+        <p className="mt-2 text-[11px] text-[#6C6F71]">
+          — Workmate Architecture Guild
+        </p>
+      </div>
+
+      {/* 3. Suggested Collaborators (Specific roles, high-contrast actions) */}
+      <div className="rounded-xl border border-[#E6E5E0] bg-[#F5F4F0] p-4">
+        <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#EDECE8]">
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#17191A]">
+              Suggested Peers
+            </h3>
+            <p className="text-[11px] text-[#6C6F71]">Based on shared craft</p>
           </div>
-        </div>
-      </div>
-
-      {/* 3. People You May Like Widget */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
-        <div className="flex items-center justify-between pb-3 mb-2">
-          <h3 className="text-sm font-bold text-slate-900">People you may like</h3>
           <Link
             href="/search"
-            className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition"
+            className="text-xs font-medium text-[#184A45] hover:underline transition"
           >
-            See all
+            Directory
           </Link>
         </div>
 
         {usersToDisplay.length === 0 ? (
-          <p className="text-xs text-slate-400 py-2 text-center">
-            No recommendations right now.
+          <p className="text-xs text-[#6C6F71] py-2 text-center">
+            No recommendations currently.
           </p>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 pt-1">
             {usersToDisplay.map((user) => {
               const isFollowing = followingMap[user.id] ?? false;
               const isToggling = togglingMap[user.id] ?? false;
 
               return (
-                <div key={user.id} className="flex items-center justify-between gap-3">
+                <div key={user.id} className="flex items-center justify-between gap-2.5">
                   <Link
                     href={`/profile/${user.id}`}
                     className="flex items-center gap-2.5 min-w-0 hover:opacity-85 transition"
                   >
-                    <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-slate-100 shadow-2xs bg-blue-50 flex items-center justify-center">
+                    <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center">
                       {user.avatarUrl ? (
                         <Image
                           src={user.avatarUrl}
                           alt={user.name}
-                          width={36}
-                          height={36}
+                          width={32}
+                          height={32}
                           className="h-full w-full object-cover"
                           unoptimized={user.avatarUrl.startsWith("http")}
                         />
                       ) : (
-                        <span className="text-xs font-bold text-blue-600">
+                        <span className="text-xs font-semibold text-[#184A45]">
                           {(user.name || "U").charAt(0).toUpperCase()}
                         </span>
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-900 truncate hover:text-blue-600 transition">
+                      <p className="text-xs font-semibold text-[#17191A] truncate hover:text-[#184A45] transition">
                         {user.name}
                       </p>
-                      <p className="text-[11px] text-slate-400 truncate">
+                      <p className="text-[11px] text-[#6C6F71] truncate">
                         {user.role}
                       </p>
                     </div>
                   </Link>
 
-                <button
-                  type="button"
-                  onClick={() => toggleFollow(user.id)}
-                  disabled={isToggling}
-                  className={`shrink-0 rounded-lg px-3.5 py-1 text-xs font-semibold transition cursor-pointer ${
-                    isFollowing
-                      ? "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"
-                      : "bg-white text-blue-600 border border-blue-600 hover:bg-blue-50/70"
-                  }`}
-                >
-                  {isFollowing ? "Following" : "Follow"}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleFollow(user.id)}
+                    disabled={isToggling}
+                    className={`shrink-0 rounded px-2.5 py-1 text-xs font-medium transition cursor-pointer ${
+                      isFollowing
+                        ? "bg-[#EFEFEA] text-[#17191A] border border-[#D5D3CC] hover:bg-[#E5E4DE]"
+                        : "bg-[#184A45] text-white hover:bg-[#133D39]"
+                    }`}
+                  >
+                    {isFollowing ? "Following" : "Follow"}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-      {/* 4. Meaningful Connections Promo Card */}
-      <div className="relative overflow-hidden rounded-2xl border border-blue-100/70 bg-gradient-to-br from-[#EAF2FE] via-[#F4F8FE] to-[#DFECFE] p-5 shadow-xs flex items-center justify-between gap-4">
-        <div className="relative z-10 flex-1">
-          <p className="text-xs font-bold text-slate-800 leading-snug">
-            Meaningful connections lead to extraordinary opportunities.
+      {/* 4. Discipline Directory (Replacing the generic blob people card) */}
+      <div className="rounded-xl border border-[#E6E5E0] bg-[#F5F4F0] p-4">
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#6C6F71]">
+            Explore By Craft
           </p>
+          <p className="text-xs text-[#17191A] leading-snug">
+            Connect directly with verified domain practitioners.
+          </p>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-1.5">
           <Link
-            href="/search"
-            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition mt-3"
+            href="/search?q=Infrastructure"
+            className="rounded border border-[#E6E5E0] bg-white px-2 py-0.5 text-[11px] font-medium text-[#484B4D] hover:text-[#17191A] hover:border-[#D5D3CC] transition"
           >
-            <span>Find people</span>
-            <span className="text-sm leading-none">→</span>
+            Infrastructure
+          </Link>
+          <Link
+            href="/search?q=Design"
+            className="rounded border border-[#E6E5E0] bg-white px-2 py-0.5 text-[11px] font-medium text-[#484B4D] hover:text-[#17191A] hover:border-[#D5D3CC] transition"
+          >
+            Design Systems
+          </Link>
+          <Link
+            href="/search?q=Distributed"
+            className="rounded border border-[#E6E5E0] bg-white px-2 py-0.5 text-[11px] font-medium text-[#484B4D] hover:text-[#17191A] hover:border-[#D5D3CC] transition"
+          >
+            Distributed Systems
+          </Link>
+          <Link
+            href="/search?q=Security"
+            className="rounded border border-[#E6E5E0] bg-white px-2 py-0.5 text-[11px] font-medium text-[#484B4D] hover:text-[#17191A] hover:border-[#D5D3CC] transition"
+          >
+            Security & Cryptography
           </Link>
         </div>
 
-        <div className="relative z-10 h-16 w-24 shrink-0 overflow-hidden rounded-lg">
-          <Image
-            src="/mock/connections-illustration.jpg"
-            alt="Collaborative team"
-            width={115}
-            height={75}
-            className="h-full w-full object-cover"
-          />
+        <div className="mt-3 pt-2.5 border-t border-[#EDECE8]">
+          <Link
+            href="/search"
+            className="text-xs font-semibold text-[#184A45] hover:underline"
+          >
+            Open practitioner directory
+          </Link>
         </div>
-
-        {/* Soft background ambient gradient */}
-        <div className="absolute -bottom-8 -right-8 w-28 h-28 rounded-full bg-blue-300/20 blur-xl pointer-events-none" />
       </div>
     </aside>
   );
