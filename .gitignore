@@ -3,6 +3,8 @@ node_modules
 .pnp
 .pnp.js
 .commandcode
+DEPLOYMENT_GUIDE.md 
+
 
 
 .env

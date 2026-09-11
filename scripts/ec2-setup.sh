@@ -10,10 +10,18 @@ echo "=========================================================="
 echo " Starting Workmate EC2 Server Setup"
 echo "=========================================================="
 
+# 0. Configure non-interactive frontend and disable needrestart prompts (Ubuntu 24.04)
+export DEBIAN_FRONTEND=noninteractive
+if [ -f /etc/needrestart/needrestart.conf ]; then
+    sudo sed -i "s/#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/g" /etc/needrestart/needrestart.conf 2>/dev/null || true
+fi
+
+# Fix any interrupted dpkg states from previously aborted runs
+sudo dpkg --configure -a || true
+
 # 1. Update and install basic dependencies
 echo "[1/5] Updating system packages..."
 sudo apt-get update -y
-sudo apt-get upgrade -y
 sudo apt-get install -y curl wget git jq htop ca-certificates gnupg lsb-release
 
 # 2. Configure 3GB Swap file (Critical for AWS Free Tier 1GB RAM instances)
@@ -24,20 +32,27 @@ if [ ! -f /swapfile ]; then
     sudo mkswap /swapfile
     sudo swapon /swapfile
     echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-    # Set swappiness to 20 for optimal caching vs swapping
     sudo sysctl vm.swappiness=20
     echo 'vm.swappiness=20' | sudo tee -a /etc/sysctl.conf
     echo " Swap file created and activated successfully."
 else
-    echo " Swap file already exists. Skipping creation."
+    # Ensure swap is on even if file already existed
+    sudo swapon /swapfile 2>/dev/null || true
+    echo " Swap file already exists and active."
 fi
 
 # 3. Install Docker and Docker Compose plugin
 echo "[3/5] Installing Docker CE and Docker Compose..."
 if ! command -v docker &> /dev/null; then
-    curl -fsSL https://get.docker.com -o get-docker.sh
-    sudo sh get-docker.sh
-    rm -f get-docker.sh
+    # Add Docker official GPG key & repository with visible progress
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    
+    sudo apt-get update -y
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     
     # Enable docker service
     sudo systemctl enable docker
@@ -49,6 +64,7 @@ fi
 
 # 4. Add current user to docker group
 echo "[4/5] Configuring Docker permissions for user: $(whoami)..."
+sudo groupadd docker 2>/dev/null || true
 sudo usermod -aG docker "$USER" || true
 
 # 5. Configure Basic Firewall (UFW)
