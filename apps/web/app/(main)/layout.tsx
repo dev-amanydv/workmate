@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { FeedHeader } from "../../components/feed/feed-header";
+import { BottomNav } from "../../components/layout/bottom-nav";
 import { apiFetch } from "../../lib/api/client";
 
 interface UserProfile {
@@ -36,15 +37,16 @@ export default async function MainLayout({
   }
 
   return (
-    <div className="h-screen flex flex-col bg-[#FBFBFA] text-[#17191A] antialiased overflow-hidden">
+    <div className="h-screen h-[100dvh] flex flex-col bg-[#FBFBFA] text-[#17191A] antialiased overflow-hidden">
       <FeedHeader
         userName={user?.name}
         userEmail={user?.email}
         userAvatar={user?.avatarUrl}
       />
-      <main className="flex-1 min-h-0 overflow-hidden mx-auto max-w-[1380px] w-full px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 min-h-0 overflow-hidden mx-auto max-w-[1380px] w-full px-4 sm:px-6 lg:px-8 pt-15 lg:pt-0 pb-16 lg:pb-0">
         {children}
       </main>
+      <BottomNav userId={user?.id} />
     </div>
   );
 }

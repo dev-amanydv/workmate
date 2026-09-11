@@ -95,23 +95,30 @@ export function PostCard({
     }
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!isAuthor || isDeleting) return;
+    setDeleteError(null);
+    setShowDeleteModal(true);
+  };
 
-    if (!window.confirm("Are you sure you want to delete this post?")) {
-      return;
-    }
-
+  const handleConfirmDelete = async () => {
+    if (isDeleting) return;
     setIsDeleting(true);
+    setDeleteError(null);
+
     try {
       await apiFetch(`/posts/${post.id}`, { method: "DELETE" });
+      setShowDeleteModal(false);
       onPostDeleted?.(post.id);
       if (isDetailView) {
         router.push("/feed");
       }
     } catch (err: unknown) {
-      setError(
+      setDeleteError(
         err instanceof Error ? err.message : "Failed to delete post",
       );
       setIsDeleting(false);

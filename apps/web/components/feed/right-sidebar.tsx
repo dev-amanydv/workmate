@@ -135,7 +135,7 @@ export function RightSidebar({
   };
 
   return (
-    <aside className="w-full flex flex-col gap-4">
+    <aside className="w-full hidden lg:flex flex-col gap-4">
 
 
 

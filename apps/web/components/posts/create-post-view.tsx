@@ -136,9 +136,9 @@ export function CreatePostView({
 
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl border border-slate-200 bg-white shadow-2xs overflow-hidden"
+          className="rounded-2xl border-0 md:border border-slate-200 md:bg-white shadow-2xs overflow-hidden"
         >
-          <div className="p-6 sm:p-7">
+          <div className="sm:p-7">
             <div className="flex items-center gap-3.5 mb-5">
               <div className="h-11 w-11 rounded-full overflow-hidden shrink-0 border border-[#E6E5E0] bg-[#EEF4F3]">
                 <Avatar

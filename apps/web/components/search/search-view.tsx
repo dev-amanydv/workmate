@@ -235,8 +235,8 @@ export function SearchView({
         <LeftSidebar userId={currentUser?.id} />
       </div>
 
-      <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 pb-12">
-        <div className="rounded-xl border border-[#E6E5E0] bg-white p-6 sm:p-8">
+      <div className="h-full overflow-y-auto no-scrollbar py-4 sm:py-6 px-0 sm:px-1 min-w-0 pb-12">
+        <div className="rounded-xl border-0 sm:border sm:border-[#E6E5E0] bg-white p-5 sm:p-8">
 
           <h1 className="text-2xl sm:text-3xl font-bold text-[#17191A] tracking-tight mt-1 mb-2">
             Search Network

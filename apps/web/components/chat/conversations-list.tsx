@@ -48,7 +48,7 @@ export function ConversationsList({
 }: ConversationsListProps) {
   return (
     <div className="flex flex-col h-full bg-white">
-      <div className="px-5 py-4 border-b border-[#E6E5E0]">
+      <div className="hidden lg:block px-5 py-4 border-b border-[#E6E5E0]">
         <h2 className="text-base font-semibold text-[#17191A] tracking-tight">Messages</h2>
         <p className="text-xs text-[#6C6F71] mt-0.5">
           {conversations.length} {conversations.length === 1 ? "conversation" : "conversations"}

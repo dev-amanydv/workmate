@@ -8,7 +8,7 @@ import { Avatar } from "../ui/avatar";
 import { LeftSidebar } from "../feed/left-sidebar";
 import { RightSidebar, type SuggestedUser } from "../feed/right-sidebar";
 import { FeedPostCard } from "../feed/feed-post-card";
-import { apiFetch } from "../../lib/api/client";
+import { apiFetch, getApiBaseUrl } from "../../lib/api/client";
 import type { Post } from "../../types/post";
 import type { UserProfile } from "../../types/user";
 
@@ -67,6 +67,21 @@ export function ProfileView({
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [showUnfollowModal, setShowUnfollowModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const baseUrl = getApiBaseUrl();
+      await fetch(`${baseUrl}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+    } finally {
+      window.location.href = "/login";
+    }
+  };
 
   const [activeTab, setActiveTab] = useState<
     "posts" | "followers" | "following"
@@ -334,8 +349,8 @@ export function ProfileView({
         <LeftSidebar userId={currentUser?.id} />
       </div>
 
-      <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 flex flex-col gap-6">
-        <div className="rounded-2xl border border-[#E6E5E0] bg-white overflow-hidden shadow-xs">
+      <div className="h-full overflow-y-auto no-scrollbar py-6 min-w-0 flex flex-col gap-6">
+        <div className="rounded-2xl md:border md:border-[#E6E5E0] md:bg-white overflow-hidden md:shadow-xs">
           <div className="relative h-36 sm:h-44 w-full bg-gradient-to-r from-[#184A45] via-[#1E5650] to-[#123B37] overflow-hidden">
             <div className="absolute inset-0 opacity-15 pointer-events-none">
               <svg className="w-full h-full" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -405,13 +420,13 @@ export function ProfileView({
                 )}
               </div>
 
-              <div className="flex items-center gap-2.5 pt-1 sm:pt-0">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 pt-1 sm:pt-0">
                 {isSelf ? (
                   <>
                     <button
                       type="button"
                       onClick={openEditModal}
-                      className="flex items-center gap-1.5 rounded-lg border border-[#E6E5E0] bg-[#F5F4F0] px-4 py-2 text-xs font-semibold text-[#17191A] hover:bg-[#EFEFEA] hover:border-[#D8D7D0] transition cursor-pointer shadow-2xs"
+                      className="flex items-center gap-1.5 rounded-lg border border-[#E6E5E0] bg-[#F5F4F0] px-3.5 sm:px-4 py-2 text-xs font-semibold text-[#17191A] hover:bg-[#EFEFEA] hover:border-[#D8D7D0] transition cursor-pointer shadow-2xs"
                     >
                       <svg className="w-3.5 h-3.5 text-[#6C6F71]" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
@@ -420,13 +435,35 @@ export function ProfileView({
                     </button>
                     <Link
                       href="/posts/create"
-                      className="flex items-center gap-1.5 rounded-lg bg-[#184A45] px-4.5 py-2 text-xs font-semibold text-white hover:bg-[#133D39] transition shadow-xs"
+                      className="flex items-center gap-1.5 rounded-lg bg-[#184A45] px-3.5 sm:px-4.5 py-2 text-xs font-semibold text-white hover:bg-[#133D39] transition shadow-xs"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                       </svg>
                       <span>New Post</span>
                     </Link>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      className="lg:hidden flex items-center gap-1.5 rounded-lg border border-[#E6E5E0] bg-[#FAF0EE] px-3.5 sm:px-4 py-2 text-xs font-semibold text-[#9E3B27] hover:bg-[#F5E2DE] hover:border-[#E8C5BE] transition cursor-pointer disabled:opacity-50"
+                      aria-label="Sign out"
+                    >
+                      <svg
+                        className="w-3.5 h-3.5 text-[#9E3B27] shrink-0"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.8}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" x2="9" y1="12" y2="12" />
+                      </svg>
+                      <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
+                    </button>
                   </>
                 ) : (
                   <>

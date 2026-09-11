@@ -86,7 +86,7 @@ export function FeedHeader({
   };
 
   return (
-    <header className="shrink-0 sticky top-0 z-50 border-b border-[#E6E5E0] bg-white">
+    <header className="shrink-0 fixed top-0 inset-x-0 z-50 lg:sticky border-b border-[#E6E5E0] bg-white">
       <div className="mx-auto flex max-w-[1380px] items-center justify-between px-4 sm:px-6 lg:px-8 h-15">
         <div className="flex items-center gap-8">
           <Link
@@ -105,7 +105,7 @@ export function FeedHeader({
         
 
 
-          <div className="relative pl-1">
+          <div className="relative pl-1 hidden lg:block">
             <button
               ref={buttonRef}
               type="button"

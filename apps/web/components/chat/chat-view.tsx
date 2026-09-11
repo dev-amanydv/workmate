@@ -15,11 +15,15 @@ interface ChatViewProps {
 
 export function ChatView({ conversations: initial, currentUserId, userId }: ChatViewProps) {
   const [conversations, setConversations] = useState<Conversation[]>(initial);
-  const [activeConv, setActiveConv] = useState<Conversation | null>(
-    initial[0] ?? null,
-  );
+  const [activeConv, setActiveConv] = useState<Conversation | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches) {
+      setActiveConv((prev) => prev ?? initial[0] ?? null);
+    }
+  }, [initial]);
 
   useEffect(() => {
     const socket = connectSocket();
@@ -90,7 +94,7 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
       <div
         className={`${
           activeConv ? "hidden lg:flex" : "flex"
-        } flex-col h-full border-r border-[#E6E5E0] bg-white overflow-hidden shrink-0`}
+        } flex-col h-full lg:border-r border-[#E6E5E0] bg-white overflow-hidden shrink-0`}
       >
         <ConversationsList
           conversations={conversations}
