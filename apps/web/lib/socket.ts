@@ -17,12 +17,7 @@ export interface ChatMessage {
   };
 }
 
-export interface TypingPayload {
-  conversationId: string;
-  userId: string;
-  userName: string;
-  isTyping: boolean;
-}
+
 
 let socket: Socket | null = null;
 

@@ -331,7 +331,7 @@ export function PostCard({
           className={`group flex items-center gap-1.5 text-xs font-medium transition ${
             isLiked ? "text-[#9E3B27]" : "text-[#6C6F71] hover:text-[#9E3B27]"
           }`}
-          title={isLiked ? "Unlike post" : "Appreciate post"}
+          title={isLiked ? "Unlike post" : "Like post"}
         >
           <svg
             className={`h-4 w-4 ${
@@ -349,7 +349,7 @@ export function PostCard({
             />
           </svg>
           <span>
-            {likesCount} {likesCount === 1 ? "appreciation" : "appreciations"}
+            {likesCount} {likesCount === 1 ? "like" : "likes"}
           </span>
         </button>
 
