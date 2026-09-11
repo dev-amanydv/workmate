@@ -8,10 +8,10 @@ services:
       - --max-connections=50
       - --performance-schema=OFF
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword_change_me}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-workmate}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-workmate}
       MYSQL_USER: ${MYSQL_USER:-workmate}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-workmate_change_me}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-workmate}
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
@@ -35,7 +35,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-      DATABASE_URL: mysql://${MYSQL_USER:-workmate}:${MYSQL_PASSWORD:-workmate_change_me}@mysql:3306/${MYSQL_DATABASE:-workmate}
+      DATABASE_URL: ${DATABASE_URL:-mysql://${MYSQL_USER:-workmate}:${MYSQL_PASSWORD:-workmate}@mysql:3306/${MYSQL_DATABASE:-workmate}}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
       COOKIE_SAME_SITE: ${COOKIE_SAME_SITE:-lax}
       COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
@@ -55,6 +55,8 @@ services:
       LOCAL_STORAGE_BASE_URL: ${LOCAL_STORAGE_BASE_URL:-}
     env_file:
       - path: .env.production
+        required: false
+      - path: .env
         required: false
     depends_on:
       mysql:
@@ -101,6 +103,11 @@ services:
       - "443:443"
     environment:
       DOMAIN: ${DOMAIN:-}
+    env_file:
+      - path: .env.production
+        required: false
+      - path: .env
+        required: false
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
