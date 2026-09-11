@@ -42,7 +42,11 @@ export class PostsService {
       },
     });
 
-    return PostResponseDto.fromEntity(post);
+    const resolvedImageUrl = await this.storage.resolveImageUrl(post.imageUrl);
+    return PostResponseDto.fromEntity({
+      ...post,
+      imageUrl: resolvedImageUrl,
+    });
   }
 
   async findAll(params?: {
@@ -69,8 +73,18 @@ export class PostsService {
       nextCursor = nextItem?.id ?? null;
     }
 
+    const resolvedPosts = await Promise.all(
+      posts.map(async (p) => {
+        const presignedUrl = await this.storage.resolveImageUrl(p.imageUrl);
+        return PostResponseDto.fromEntity({
+          ...p,
+          imageUrl: presignedUrl,
+        });
+      }),
+    );
+
     return {
-      posts: posts.map((p) => PostResponseDto.fromEntity(p)),
+      posts: resolvedPosts,
       nextCursor,
     };
   }
@@ -89,6 +103,10 @@ export class PostsService {
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
 
-    return PostResponseDto.fromEntity(post);
+    const resolvedImageUrl = await this.storage.resolveImageUrl(post.imageUrl);
+    return PostResponseDto.fromEntity({
+      ...post,
+      imageUrl: resolvedImageUrl,
+    });
   }
 }

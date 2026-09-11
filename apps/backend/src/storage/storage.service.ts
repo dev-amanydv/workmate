@@ -1,7 +1,9 @@
+import fs from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 import "multer";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   BadRequestException,
   Injectable,
@@ -25,6 +27,8 @@ export class StorageService {
   private readonly s3Client: S3Client | null = null;
   private readonly bucketName: string;
   private readonly publicUrl: string;
+  private readonly localBaseUrl: string;
+  private readonly uploadsDir: string;
   private readonly accountId: string;
   private readonly isPlaceholder: boolean;
 
@@ -36,6 +40,13 @@ export class StorageService {
     this.publicUrl = this.config
       .get<string>("R2_PUBLIC_URL", "https://pub-workmate.r2.dev")
       .replace(/\/+$/, "");
+    this.localBaseUrl = this.config
+      .get<string>("LOCAL_STORAGE_BASE_URL", "http://localhost:4000")
+      .replace(/\/+$/, "");
+    this.uploadsDir = path.resolve(
+      process.cwd(),
+      this.config.get<string>("UPLOADS_DIR", "./uploads"),
+    );
 
     this.isPlaceholder =
       !accessKeyId ||
@@ -90,10 +101,21 @@ export class StorageService {
     const key = `${folder}/${randomUUID()}${ext}`;
 
     if (this.isPlaceholder || !this.s3Client) {
-      this.logger.warn(
-        `[Placeholder R2] Simulated upload for file "${file.originalname}" (${file.size} bytes). Key: ${key}`,
+      const filePath = path.resolve(this.uploadsDir, key);
+      try {
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        await fs.writeFile(filePath, file.buffer);
+      } catch (err) {
+        this.logger.error(
+          `Failed to save uploaded file locally: ${err instanceof Error ? err.message : String(err)}`,
+        );
+        throw new InternalServerErrorException("Failed to store uploaded file");
+      }
+
+      this.logger.log(
+        `[Local fallback] Stored "${file.originalname}" (${file.size} bytes) at ${filePath}`,
       );
-      return `${this.publicUrl}/${key}`;
+      return `${this.localBaseUrl}/uploads/${key}`;
     }
 
     try {
@@ -106,7 +128,10 @@ export class StorageService {
         }),
       );
 
-      return `${this.publicUrl}/${key}`;
+      this.logger.log(
+        `Uploaded "${file.originalname}" to Cloudflare R2: ${key}`,
+      );
+      return key;
     } catch (error) {
       this.logger.error(
         `Failed to upload image to Cloudflare R2: ${error instanceof Error ? error.message : String(error)}`,
@@ -114,6 +139,62 @@ export class StorageService {
       throw new InternalServerErrorException(
         "Failed to upload image to object storage",
       );
+    }
+  }
+
+  async resolveImageUrl(
+    storedUrlOrKey: string | null,
+    expiresIn = 86400, // 24 hours
+  ): Promise<string | null> {
+    if (!storedUrlOrKey) {
+      return null;
+    }
+
+    // Local uploads URL or relative URL
+    if (
+      storedUrlOrKey.startsWith("http://localhost:") ||
+      storedUrlOrKey.startsWith("http://127.0.0.1:") ||
+      storedUrlOrKey.startsWith("/uploads/")
+    ) {
+      return storedUrlOrKey;
+    }
+
+    // Placeholder or offline fallback mode
+    if (this.isPlaceholder || !this.s3Client) {
+      if (
+        storedUrlOrKey.startsWith("http://") ||
+        storedUrlOrKey.startsWith("https://")
+      ) {
+        return storedUrlOrKey;
+      }
+      return `${this.localBaseUrl}/uploads/${storedUrlOrKey.replace(/^\/+/, "")}`;
+    }
+
+    // Real Cloudflare R2: extract object key from stored URL or key
+    let key = storedUrlOrKey;
+    if (
+      storedUrlOrKey.startsWith("http://") ||
+      storedUrlOrKey.startsWith("https://")
+    ) {
+      try {
+        const parsed = new URL(storedUrlOrKey);
+        key = parsed.pathname.replace(/^\/+/, "");
+      } catch {
+        key = storedUrlOrKey;
+      }
+    }
+
+    try {
+      const command = new GetObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      });
+      return await getSignedUrl(this.s3Client, command, { expiresIn });
+    } catch (err) {
+      this.logger.error(
+        `Failed to generate presigned URL for key "${key}": ${err instanceof Error ? err.message : String(err)}`,
+      );
+      return storedUrlOrKey;
     }
   }
 }

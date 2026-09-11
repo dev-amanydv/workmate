@@ -52,8 +52,20 @@ describe("StorageService", () => {
     } as Express.Multer.File;
 
     const url = await storage.uploadImage(validFile, "posts");
-    assert.ok(url.startsWith("https://pub-workmate.r2.dev/posts/"));
+    assert.ok(url.startsWith("http://localhost:4000/uploads/posts/"));
     assert.ok(url.endsWith(".jpg"));
+  });
+
+  it("resolves stored local and placeholder keys properly", async () => {
+    const localUrl = "http://localhost:4000/uploads/posts/abc.jpg";
+    assert.equal(await storage.resolveImageUrl(localUrl), localUrl);
+
+    const nullResult = await storage.resolveImageUrl(null);
+    assert.equal(nullResult, null);
+
+    const placeholderKey = "posts/abc.jpg";
+    const resolved = await storage.resolveImageUrl(placeholderKey);
+    assert.equal(resolved, "http://localhost:4000/uploads/posts/abc.jpg");
   });
 });
 
@@ -78,7 +90,8 @@ describe("PostsService", () => {
     };
 
     const mockStorage = {
-      uploadImage: async () => "https://pub-workmate.r2.dev/posts/test.jpg",
+      uploadImage: async () => "posts/test.jpg",
+      resolveImageUrl: async (url: string | null) => url ? `https://signed.example.com/${url}` : null,
     };
 
     const service = new PostsService(mockPrisma as any, mockStorage as any);
