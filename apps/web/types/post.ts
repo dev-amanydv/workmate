@@ -1,6 +1,7 @@
 export interface AuthorSummary {
   id: string;
   name: string;
+  role?: string;
   avatarUrl: string | null;
   isFollowing?: boolean;
 }
@@ -12,8 +13,8 @@ export interface Post {
   content: string;
   imageUrl: string | null;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   likesCount: number;
   isLiked: boolean;
+  isMock?: boolean;
 }
-
