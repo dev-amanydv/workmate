@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Avatar } from "../ui/avatar";
 import { WorkmateLogo } from "../brand/logo";
 import { LogoutButton } from "../logout-button";
 
@@ -122,21 +123,12 @@ export function FeedHeader({
               aria-label="Account menu"
             >
               <div className="relative h-7 w-7 rounded overflow-hidden border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center shrink-0">
-                {userAvatar && !imageError ? (
-                  <Image
-                    src={userAvatar}
-                    alt={displayName}
-                    width={28}
-                    height={28}
-                    className="h-full w-full object-cover"
-                    unoptimized={userAvatar.startsWith("http")}
-                    onError={() => setImageError(true)}
-                  />
-                ) : (
-                  <span className="text-xs font-semibold text-[#184A45]">
-                    {userInitial}
-                  </span>
-                )}
+                <Avatar
+                  src={userAvatar}
+                  alt={displayName}
+                  size={28}
+                  className="h-full w-full object-cover"
+                />
               </div>
               <span className="hidden sm:inline text-xs font-medium text-[#17191A] max-w-[100px] truncate">
                 {displayName}

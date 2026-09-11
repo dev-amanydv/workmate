@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Avatar } from "@/components/ui/avatar";
 import { apiFetch } from "../../lib/api/client";
 import { formatRelativeTime } from "../../lib/utils/time";
 import type { Post } from "../../types/post";
@@ -24,7 +25,6 @@ export function FeedPostCard({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showShareToast, setShowShareToast] = useState(false);
-  const [imageError, setImageError] = useState(false);
 
   const isAuthor = Boolean(currentUserId && post.authorId === currentUserId);
   const displayTime = formatRelativeTime(post.createdAt);
@@ -119,23 +119,15 @@ export function FeedPostCard({
         <div className="flex items-center gap-3">
           <Link
             href={`/profile/${post.author.id || post.authorId}`}
-            className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center hover:opacity-90 transition"
+            className="shrink-0 hover:opacity-90 transition"
           >
-            {avatarUrl && !imageError ? (
-              <Image
-                src={avatarUrl}
-                alt={post.author.name}
-                width={40}
-                height={40}
-                className="h-full w-full object-cover"
-                unoptimized={avatarUrl.startsWith("http")}
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <span className="text-sm font-semibold text-[#184A45]">
-                {authorInitial}
-              </span>
-            )}
+            <Avatar
+              src={avatarUrl}
+              alt={post.author.name}
+              fallbackName={post.author.name}
+              size={40}
+              className="h-10 w-10 rounded-md border border-[#E6E5E0]"
+            />
           </Link>
           <div>
             <div className="flex items-center gap-2">

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Avatar } from "@/components/ui/avatar";
 
 export interface Conversation {
   id: string;
@@ -86,22 +86,14 @@ export function ConversationsList({
               >
                 {/* Avatar */}
                 <div className="relative flex-shrink-0">
-                  <div className="h-11 w-11 rounded-full overflow-hidden border border-slate-200 bg-blue-50 flex items-center justify-center shadow-xs">
-                    {other?.avatarUrl ? (
-                      <Image
-                        src={other.avatarUrl}
-                        alt={other.name}
-                        width={44}
-                        height={44}
-                        className="h-full w-full object-cover"
-                        unoptimized={other.avatarUrl.startsWith("http")}
-                      />
-                    ) : (
-                      <span className="text-sm font-bold text-blue-600">
-                        {other?.name.charAt(0).toUpperCase() ?? "?"}
-                      </span>
-                    )}
-                  </div>
+                  <Avatar
+                    src={other?.avatarUrl}
+                    alt={other?.name || "User"}
+                    fallbackName={other?.name}
+                    size={44}
+                    rounded="full"
+                    className="h-11 w-11 border border-slate-200"
+                  />
                 </div>
 
                 {/* Info */}

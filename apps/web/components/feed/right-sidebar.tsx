@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Avatar } from "../ui/avatar";
 import { apiFetch } from "../../lib/api/client";
 
 export interface SuggestedUser {
@@ -173,20 +174,12 @@ export function RightSidebar({
                     className="flex items-center gap-2.5 min-w-0 hover:opacity-85 transition"
                   >
                     <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center">
-                      {user.avatarUrl ? (
-                        <Image
-                          src={user.avatarUrl}
-                          alt={user.name}
-                          width={32}
-                          height={32}
-                          className="h-full w-full object-cover"
-                          unoptimized={user.avatarUrl.startsWith("http")}
-                        />
-                      ) : (
-                        <span className="text-xs font-semibold text-[#184A45]">
-                          {(user.name || "U").charAt(0).toUpperCase()}
-                        </span>
-                      )}
+                      <Avatar
+                        src={user.avatarUrl}
+                        alt={user.name}
+                        size={32}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-[#17191A] truncate hover:text-[#184A45] transition">

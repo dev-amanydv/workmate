@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Avatar } from "@/components/ui/avatar";
 import { apiFetch } from "../../lib/api/client";
 import type { Post } from "../../types/post";
 
@@ -164,20 +165,13 @@ export function PostCard({
       {/* Post Header: Author, Date, Follow, Edit/Delete */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[#E6E5E0] bg-[#EEF4F3] text-sm font-semibold text-[#184A45]">
-            {post.author?.avatarUrl ? (
-              <Image
-                src={post.author.avatarUrl}
-                alt={post.author.name}
-                width={40}
-                height={40}
-                className="h-full w-full object-cover"
-                unoptimized
-              />
-            ) : (
-              <span>{authorInitial}</span>
-            )}
-          </div>
+          <Avatar
+            src={post.author?.avatarUrl}
+            alt={post.author?.name || "Author"}
+            fallbackName={post.author?.name}
+            size={40}
+            className="h-10 w-10 rounded-md border border-[#E6E5E0] shrink-0"
+          />
 
           <div className="min-w-0">
             <div className="flex items-center gap-2">

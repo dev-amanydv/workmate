@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import { Avatar } from "@/components/ui/avatar";
 import { apiFetch } from "../../lib/api/client";
 import { formatRelativeTime } from "../../lib/utils/time";
 import type { UserProfile } from "../../types/user";
@@ -16,7 +16,6 @@ export function UserCard({ user, isRecentBadge = false }: UserCardProps) {
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);
   const [isToggling, setIsToggling] = useState(false);
   const [followersCount, setFollowersCount] = useState(user.followersCount);
-  const [imageError, setImageError] = useState(false);
 
   const toggleFollow = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -80,23 +79,13 @@ export function UserCard({ user, isRecentBadge = false }: UserCardProps) {
       <Link href={`/profile/${user.id}`} className="group/profile block">
         <div className="flex items-start gap-3.5">
           {/* Avatar */}
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center">
-            {user.avatarUrl && !imageError ? (
-              <Image
-                src={user.avatarUrl}
-                alt={user.name}
-                width={48}
-                height={48}
-                className="h-full w-full object-cover"
-                unoptimized={user.avatarUrl.startsWith("http")}
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <span className="text-sm font-semibold text-[#184A45]">
-                {userInitial}
-              </span>
-            )}
-          </div>
+          <Avatar
+            src={user.avatarUrl}
+            alt={user.name}
+            fallbackName={user.name}
+            size={48}
+            className="h-12 w-12 rounded-md border border-[#E6E5E0] shrink-0"
+          />
 
           {/* Name, Email, Bio */}
           <div className="min-w-0 flex-1">

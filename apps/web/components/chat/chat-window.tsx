@@ -8,7 +8,7 @@ import {
   type FormEvent,
   type KeyboardEvent,
 } from "react";
-import Image from "next/image";
+import { Avatar } from "@/components/ui/avatar";
 import type { Socket } from "socket.io-client";
 import { ChatBubble } from "./chat-bubble";
 import { TypingIndicator } from "./typing-indicator";
@@ -240,21 +240,15 @@ export function ChatWindow({
     <div className="flex flex-col h-full bg-[#F8FAFC]">
       {/* Header */}
       <div className="flex items-center gap-3 px-5 py-3.5 bg-white border-b border-slate-100 shadow-xs flex-shrink-0">
-        <div className="relative h-10 w-10 rounded-full overflow-hidden border border-slate-200 bg-blue-50 flex items-center justify-center shadow-xs">
-          {other?.avatarUrl ? (
-            <Image
-              src={other.avatarUrl}
-              alt={other.name}
-              width={40}
-              height={40}
-              className="h-full w-full object-cover"
-              unoptimized={other.avatarUrl.startsWith("http")}
-            />
-          ) : (
-            <span className="text-sm font-bold text-blue-600">
-              {other?.name.charAt(0).toUpperCase() ?? "?"}
-            </span>
-          )}
+        <div className="relative">
+          <Avatar
+            src={other?.avatarUrl}
+            alt={other?.name || "User"}
+            fallbackName={other?.name}
+            size={40}
+            rounded="full"
+            className="h-10 w-10 border border-slate-200"
+          />
           <span className="absolute bottom-0.5 right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-white" />
         </div>
         <div className="flex-1 min-w-0">

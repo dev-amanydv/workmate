@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import { Avatar } from "@/components/ui/avatar";
 
 interface CreatePostPromptProps {
   userAvatar?: string | null;
@@ -13,29 +12,16 @@ export function CreatePostPrompt({
   userAvatar,
   userName = "You",
 }: CreatePostPromptProps) {
-  const [imageError, setImageError] = useState(false);
-  const userInitial = (userName || "P").charAt(0).toUpperCase();
-
   return (
     <div className="rounded-xl border border-[#E6E5E0] bg-white p-4 transition-colors hover:border-[#D5D3CC]">
       <div className="flex items-center gap-3">
-        <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center">
-          {userAvatar && !imageError ? (
-            <Image
-              src={userAvatar}
-              alt={userName}
-              width={36}
-              height={36}
-              className="h-full w-full object-cover"
-              unoptimized={userAvatar.startsWith("http")}
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <span className="text-xs font-semibold text-[#184A45]">
-              {userInitial}
-            </span>
-          )}
-        </div>
+        <Avatar
+          src={userAvatar}
+          alt={userName}
+          fallbackName={userName}
+          size={36}
+          className="h-9 w-9 rounded-md border border-[#E6E5E0] shrink-0"
+        />
 
         <Link
           href="/posts/create"

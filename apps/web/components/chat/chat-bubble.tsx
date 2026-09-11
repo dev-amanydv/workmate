@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Avatar } from "@/components/ui/avatar";
 import type { ChatMessage } from "../../lib/socket";
 
 interface ChatBubbleProps {
@@ -37,20 +37,18 @@ export function ChatBubble({ message, isMine, showAvatar = true }: ChatBubblePro
 
   return (
     <div className="flex items-end gap-2 px-1 group animate-in fade-in slide-in-from-bottom-1 duration-200">
-      <div className="flex-shrink-0 h-7 w-7 rounded-full overflow-hidden border border-slate-200 shadow-xs bg-blue-50 flex items-center justify-center">
-        {showAvatar && message.sender.avatarUrl ? (
-          <Image
+      <div className="flex-shrink-0">
+        {showAvatar ? (
+          <Avatar
             src={message.sender.avatarUrl}
             alt={message.sender.name}
-            width={28}
-            height={28}
-            className="h-full w-full object-cover"
-            unoptimized={message.sender.avatarUrl.startsWith("http")}
+            fallbackName={message.sender.name}
+            size={28}
+            rounded="full"
+            className="h-7 w-7 border border-slate-200"
           />
         ) : (
-          <span className="text-[10px] font-bold text-blue-600">
-            {message.sender.name.charAt(0).toUpperCase()}
-          </span>
+          <div className="h-7 w-7" />
         )}
       </div>
       <div className="max-w-[70%] flex flex-col gap-1">

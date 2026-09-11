@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import { Avatar } from "@/components/ui/avatar";
 import { apiFetch } from "../../lib/api/client";
 import type { UserProfile } from "../../types/user";
 
@@ -23,7 +23,6 @@ export function UserListItem({
 }: UserListItemProps) {
   const [isFollowing, setIsFollowing] = useState(user.isFollowing);
   const [isToggling, setIsToggling] = useState(false);
-  const [imageError, setImageError] = useState(false);
 
   const toggleFollow = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -67,23 +66,13 @@ export function UserListItem({
           className="flex items-center gap-3.5 flex-1 min-w-0 group"
         >
           {/* Avatar */}
-          <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-md border border-[#E6E5E0] bg-[#EEF4F3] flex items-center justify-center">
-            {user.avatarUrl && !imageError ? (
-              <Image
-                src={user.avatarUrl}
-                alt={user.name}
-                width={44}
-                height={44}
-                className="h-full w-full object-cover"
-                unoptimized={user.avatarUrl.startsWith("http")}
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <span className="text-sm font-semibold text-[#184A45]">
-                {userInitial}
-              </span>
-            )}
-          </div>
+          <Avatar
+            src={user.avatarUrl}
+            alt={user.name}
+            fallbackName={user.name}
+            size={44}
+            className="h-11 w-11 rounded-md border border-[#E6E5E0] shrink-0"
+          />
 
           {/* Middle Info: Name, Bio, Mutual Connections */}
           <div className="min-w-0 flex-1">
@@ -99,19 +88,14 @@ export function UserListItem({
             <div className="flex items-center gap-2 mt-1">
               <div className="flex -space-x-1.5 overflow-hidden shrink-0">
                 {mutualAvatars.slice(0, 3).map((av, idx) => (
-                  <div
+                  <Avatar
                     key={idx}
-                    className="relative h-4 w-4 rounded-full overflow-hidden border border-white bg-slate-200"
-                  >
-                    <Image
-                      src={av}
-                      alt="Mutual"
-                      width={16}
-                      height={16}
-                      className="h-full w-full object-cover"
-                      unoptimized={av.startsWith("http")}
-                    />
-                  </div>
+                    src={av}
+                    alt="Mutual"
+                    fallbackName="M"
+                    size={16}
+                    className="h-4 w-4 rounded-full border border-white"
+                  />
                 ))}
               </div>
               <span className="text-[11px] text-[#8A8D90] font-normal truncate">
