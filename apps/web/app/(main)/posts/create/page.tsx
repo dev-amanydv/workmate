@@ -1,34 +1,52 @@
-"use client";
+import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { CreatePostView } from "../../../../components/posts/create-post-view";
+import type { SuggestedUser } from "../../../../components/feed/right-sidebar";
+import { ApiError, apiFetch } from "../../../../lib/api/client";
+import type { UserProfile } from "../../../../types/user";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { CreatePostForm } from "../../../../components/posts/create-post-form";
+export const metadata: Metadata = {
+  title: "Create a Post | Workmate",
+  description: "Share an update, idea, or question with your network.",
+};
 
-export default function CreatePostPage() {
-  const router = useRouter();
+export default async function CreatePostPage() {
+  const headersList = await headers();
+  const cookieHeader = headersList.get("cookie") ?? "";
 
-  const handlePostCreated = () => {
-    router.push("/feed");
-    router.refresh();
-  };
+  let currentUser: UserProfile | null = null;
+  try {
+    currentUser = await apiFetch<UserProfile>("/users/me", {
+      headers: { Cookie: cookieHeader },
+      cache: "no-store",
+    });
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      redirect("/login");
+    }
+    currentUser = null;
+  }
+
+  let suggestedUsers: SuggestedUser[] = [];
+  try {
+    const res = await apiFetch<any>("/users/suggested", {
+      headers: { Cookie: cookieHeader },
+      cache: "no-store",
+    });
+    if (Array.isArray(res)) {
+      suggestedUsers = res;
+    } else if (res && Array.isArray(res.data)) {
+      suggestedUsers = res.data;
+    }
+  } catch {
+    suggestedUsers = [];
+  }
 
   return (
-    <div className="mx-auto max-w-2xl py-4">
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/feed"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition shadow-2xs"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-          </Link>
-          <h1 className="text-xl font-bold text-slate-900">Create a Post</h1>
-        </div>
-      </div>
-
-      <CreatePostForm onPostCreated={handlePostCreated} />
-    </div>
+    <CreatePostView
+      currentUser={currentUser}
+      suggestedUsers={suggestedUsers}
+    />
   );
 }

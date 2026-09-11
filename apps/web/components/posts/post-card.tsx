@@ -337,7 +337,7 @@ export function PostCard({
         >
           <svg
             className={`h-4 w-4 ${
-              isLiked ? "fill-[#9E3B27] text-[#9E3B27]" : "fill-none stroke-current"
+              isLiked ? "text-[#9E3B27]" : "fill-none stroke-current"
             }`}
             viewBox="0 0 24 24"
             strokeWidth={1.75}

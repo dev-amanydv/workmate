@@ -98,9 +98,6 @@ export function UserListItem({
                   />
                 ))}
               </div>
-              <span className="text-[11px] text-[#8A8D90] font-normal truncate">
-                {displayMutualCount} mutual colleague{displayMutualCount === 1 ? "" : "s"}
-              </span>
             </div>
           </div>
         </Link>

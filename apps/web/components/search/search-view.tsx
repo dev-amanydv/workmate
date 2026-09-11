@@ -243,10 +243,6 @@ export function SearchView({
       {/* Center Search Card: Scrolls independently */}
       <div className="h-full overflow-y-auto no-scrollbar py-6 px-1 min-w-0 pb-12">
         <div className="rounded-xl border border-[#E6E5E0] bg-white p-6 sm:p-8">
-          {/* Overline */}
-          <p className="text-[11px] font-semibold tracking-wider text-[#6C6F71] uppercase">
-            MEMBER DIRECTORY
-          </p>
 
           {/* Title */}
           <h1 className="text-2xl sm:text-3xl font-bold text-[#17191A] tracking-tight mt-1 mb-2">
@@ -315,75 +311,7 @@ export function SearchView({
           </form>
 
           {/* Navigation Tabs (People, Posts, Companies, Hashtags, Filters) */}
-          <div className="mt-6 border-b border-slate-100 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <button
-                type="button"
-                onClick={() => setActiveTab("people")}
-                className={`pb-3 text-xs font-semibold uppercase tracking-wider transition relative ${
-                  activeTab === "people"
-                    ? "text-[#184A45] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#184A45]"
-                    : "text-[#6C6F71] hover:text-[#17191A]"
-                }`}
-              >
-                People
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("posts")}
-                className={`pb-3 text-xs font-semibold uppercase tracking-wider transition relative ${
-                  activeTab === "posts"
-                    ? "text-[#184A45] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#184A45]"
-                    : "text-[#6C6F71] hover:text-[#17191A]"
-                }`}
-              >
-                Posts
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("companies")}
-                className={`pb-3 text-xs font-semibold uppercase tracking-wider transition relative ${
-                  activeTab === "companies"
-                    ? "text-[#184A45] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#184A45]"
-                    : "text-[#6C6F71] hover:text-[#17191A]"
-                }`}
-              >
-                Teams
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("hashtags")}
-                className={`pb-3 text-xs font-semibold uppercase tracking-wider transition relative ${
-                  activeTab === "hashtags"
-                    ? "text-[#184A45] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#184A45]"
-                    : "text-[#6C6F71] hover:text-[#17191A]"
-                }`}
-              >
-                Topics
-              </button>
-            </div>
-
-            {/* Filters Button */}
-            <button
-              type="button"
-              className="flex items-center gap-1.5 pb-3 text-xs font-semibold text-slate-500 hover:text-slate-800 transition cursor-pointer"
-            >
-              <svg
-                className="w-4 h-4 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.75}
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"
-                />
-              </svg>
-              <span>Filters</span>
-            </button>
-          </div>
+        
 
           {/* Section Heading: Suggested for you / Search Results */}
           <div className="pt-6 pb-2 flex items-center justify-between">

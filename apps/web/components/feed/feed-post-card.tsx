@@ -241,13 +241,13 @@ export function FeedPostCard({
           disabled={isTogglingLike}
           className={`flex items-center gap-2 rounded-lg px-4 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
             isLiked
-              ? "text-[#9E3B27] bg-[#FAF0EE] font-semibold"
+              ? "text-[#9E3B27]  font-semibold"
               : "text-[#484B4D] hover:text-[#9E3B27] hover:bg-[#F5F4F0]"
           }`}
         >
           <svg
             className={`w-4 h-4 ${
-              isLiked ? "fill-[#9E3B27] stroke-[#9E3B27]" : "fill-none stroke-current"
+              isLiked ? "fill-[#9E3B27] " : "fill-none stroke-current"
             }`}
             strokeWidth={1.75}
             viewBox="0 0 24 24"
@@ -259,9 +259,7 @@ export function FeedPostCard({
             />
           </svg>
           <span>{isLiked ? "Liked" : "Like"}</span>
-          {likesCount > 0 && (
-            <span className="ml-1 text-[11px] opacity-80">({likesCount})</span>
-          )}
+          
         </button>
 
         <button

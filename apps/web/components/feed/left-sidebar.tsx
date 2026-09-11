@@ -154,7 +154,7 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
             onClick={handleCopyInvite}
             className="w-full rounded-lg bg-[#184A45] hover:bg-[#133D39] text-white px-3.5 py-2 text-xs font-semibold transition cursor-pointer text-center"
           >
-            {copiedInvite ? "Invite link copied" : "Invite colleagues"}
+            {copiedInvite ? "Link copied!" : "Invite colleagues"}
           </button>
         </div>
       </div>
