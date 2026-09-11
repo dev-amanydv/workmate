@@ -65,7 +65,12 @@ export class ChatService {
       },
     });
 
-    return convs.map((c) => ({
+    return convs.map((c: {
+      id: string;
+      updatedAt: Date;
+      participants: Array<{ user: { id: string; name: string; avatarUrl: string | null } }>;
+      messages: Array<{ id: string; content: string; senderId: string; createdAt: Date }>;
+    }) => ({
       id: c.id,
       updatedAt: c.updatedAt,
       otherUser: c.participants[0]?.user ?? null,

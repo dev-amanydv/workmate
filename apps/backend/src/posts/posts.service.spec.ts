@@ -5,6 +5,7 @@ import { ConfigService } from "@nestjs/config";
 import { StorageService } from "../storage/storage.service";
 import { PostsService } from "./posts.service";
 import { FollowsService } from "../follows/follows.service";
+import { UsersController } from "../users/users.controller";
 
 describe("StorageService", () => {
   const config = new ConfigService({
@@ -284,5 +285,97 @@ describe("FollowsService", () => {
     assert.equal(unfollowRes.success, true);
     assert.equal(unfollowRes.isFollowing, false);
     assert.equal(followDeleted, true);
+  });
+});
+
+describe("PostsService - findAll with authorId", () => {
+  it("filters posts by authorId", async () => {
+    let capturedWhere: any = null;
+    const mockPrisma = {
+      post: {
+        findMany: async (args: any) => {
+          capturedWhere = args.where;
+          return [
+            {
+              id: "p1",
+              authorId: "author-abc",
+              content: "Hello",
+              imageUrl: null,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              author: { id: "author-abc", name: "Author", avatarUrl: null },
+              _count: { likes: 0 },
+            },
+          ];
+        },
+      },
+    };
+    const mockStorage = {
+      resolveImageUrl: async (url: any) => url,
+    };
+
+    const service = new PostsService(mockPrisma as any, mockStorage as any);
+    const result = await service.findAll("current-user", { authorId: "author-abc" });
+
+    assert.deepEqual(capturedWhere, { authorId: "author-abc" });
+    assert.equal(result.posts.length, 1);
+    assert.equal(result.posts[0].authorId, "author-abc");
+  });
+});
+
+describe("UsersController", () => {
+  it("returns user profile with counts and isFollowing", async () => {
+    const mockPrisma = {
+      user: {
+        findUnique: async (args: any) => {
+          if (args.where.id === "user-target") {
+            return {
+              id: "user-target",
+              email: "target@example.com",
+              name: "Target User",
+              bio: "Developer",
+              avatarUrl: "https://avatar.png",
+              createdAt: new Date(),
+              _count: {
+                followers: 5,
+                following: 3,
+                posts: 10,
+              },
+              followers: [{ id: "f-1" }],
+            };
+          }
+          return null;
+        },
+      },
+    };
+
+    const controller = new UsersController(mockPrisma as any);
+    const result = await controller.getUserProfile(
+      { id: "current-user" } as any,
+      "user-target",
+    );
+
+    assert.equal(result.data.id, "user-target");
+    assert.equal(result.data.name, "Target User");
+    assert.equal(result.data.bio, "Developer");
+    assert.equal(result.data.followersCount, 5);
+    assert.equal(result.data.followingCount, 3);
+    assert.equal(result.data.postsCount, 10);
+    assert.equal(result.data.isFollowing, true);
+    assert.equal(result.data.isSelf, false);
+  });
+
+  it("throws NotFoundException if user not found", async () => {
+    const mockPrisma = {
+      user: {
+        findUnique: async () => null,
+      },
+    };
+
+    const controller = new UsersController(mockPrisma as any);
+    await assert.rejects(
+      () => controller.getUserProfile({ id: "current-user" } as any, "non-existent"),
+      NotFoundException,
+    );
   });
 });

@@ -22,3 +22,48 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+
+/* Chat animations */
+@keyframes typingBounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.fade-in {
+  animation-name: fadeInSlideUp;
+}
+
+.slide-in-from-bottom-1 {
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+}
+
+.slide-in-from-bottom-2 {
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+}
+
+.duration-200 {
+  animation-duration: 0.2s;
+}

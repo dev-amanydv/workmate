@@ -13,6 +13,7 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
 
   const isHome = pathname === "/feed" || pathname === "/";
   const isCreate = pathname === "/posts/create" || pathname === "/create";
+  const isMessages = pathname === "/chat" || pathname.startsWith("/chat/");
 
   return (
     <aside className="w-full flex flex-col gap-6">
@@ -54,18 +55,18 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
         {/* Messages */}
         <Link
           href="/chat"
-          className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition"
+          className={`flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold transition ${
+            isMessages
+              ? "bg-[#EEF2FF] text-[#2563EB]"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+          }`}
         >
           <div className="flex items-center gap-3.5">
-            <svg className="w-5 h-5 shrink-0 text-slate-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <svg className="w-5 h-5 shrink-0" fill={isMessages ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isMessages ? 0 : 2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.502 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
             </svg>
             <span>Messages</span>
           </div>
-          {/* Badge: 3 */}
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[11px] font-bold text-white shadow-2xs">
-            3
-          </span>
         </Link>
 
         {/* Create Post (replaced Notifications, Network, Bookmarks as requested) */}

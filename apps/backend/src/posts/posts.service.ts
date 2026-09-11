@@ -66,11 +66,13 @@ export class PostsService {
     params?: {
       cursor?: string;
       limit?: number;
+      authorId?: string;
     },
   ): Promise<{ posts: PostResponseDto[]; nextCursor: string | null }> {
     const limit = Math.min(Math.max(params?.limit ?? 20, 1), 50);
 
     const posts = await this.prisma.post.findMany({
+      where: params?.authorId ? { authorId: params.authorId } : undefined,
       take: limit + 1,
       cursor: params?.cursor ? { id: params.cursor } : undefined,
       skip: params?.cursor ? 1 : 0,

@@ -40,6 +40,7 @@ export class PostsController {
     @CurrentUser() user: User,
     @Query("cursor") cursor?: string,
     @Query("limit") limit?: string,
+    @Query("authorId") authorId?: string,
   ): Promise<{
     data: PostResponseDto[];
     meta: { nextCursor: string | null };
@@ -48,6 +49,7 @@ export class PostsController {
     const result = await this.postsService.findAll(user?.id, {
       cursor,
       limit: parsedLimit,
+      authorId,
     });
     return {
       data: result.posts,
