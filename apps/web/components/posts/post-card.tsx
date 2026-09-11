@@ -357,6 +357,75 @@ export function PostCard({
           </span>
         )}
       </div>
+
+      {showDeleteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-xs p-4 animate-in fade-in duration-150"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isDeleting) setShowDeleteModal(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`delete-post-title-${post.id}`}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-[#E6E5E0] bg-white p-6 shadow-[0_20px_50px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.05)] transition-all animate-in zoom-in-95 duration-150 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#FAF0EE] text-[#9E3B27] mb-4">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+              </svg>
+            </div>
+
+            <h3 id={`delete-post-title-${post.id}`} className="text-base font-bold text-[#17191A]">
+              Delete post?
+            </h3>
+            <p className="mt-1.5 text-xs text-[#6C6F71] leading-relaxed px-2">
+              This action cannot be undone. This post will be permanently removed from your feed and profile.
+            </p>
+
+            {deleteError && (
+              <div className="mt-3 rounded-lg bg-[#FAF0EE] border border-[#EACEC8] p-2 text-xs text-[#9E3B27]">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="mt-6 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleConfirmDelete();
+                }}
+                disabled={isDeleting}
+                className="w-full rounded-lg bg-[#9E3B27] hover:bg-[#863120] py-2.5 text-xs font-semibold text-white shadow-xs transition disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                {isDeleting ? (
+                  <>
+                    <div className="h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <span>Delete post</span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowDeleteModal(false);
+                }}
+                disabled={isDeleting}
+                className="w-full rounded-lg border border-[#E6E5E0] bg-white hover:bg-[#F5F4F0] py-2.5 text-xs font-semibold text-[#17191A] transition cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </article>
   );
 }
