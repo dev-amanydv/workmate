@@ -28,6 +28,9 @@ function buildMariaDbConfig(databaseUrl: string): PoolConfig | string {
       ""
     ).toLowerCase();
     const sslParam = (parsed.searchParams.get("ssl") || "").toLowerCase();
+    const sslAccept = (
+      parsed.searchParams.get("sslaccept") || ""
+    ).toLowerCase();
 
     const isCloudHost =
       parsed.hostname.includes("aivencloud.com") ||
@@ -42,6 +45,8 @@ function buildMariaDbConfig(databaseUrl: string): PoolConfig | string {
       sslMode === "verify-full" ||
       sslParam === "true" ||
       sslParam === "1" ||
+      sslAccept === "accept_invalid_certs" ||
+      sslAccept === "strict" ||
       isCloudHost;
 
     const config: PoolConfig = {
