@@ -152,7 +152,7 @@ export function RightSidebar({
             href="/search"
             className="text-xs font-medium text-[#184A45] hover:underline transition"
           >
-            Directory
+            Search
           </Link>
         </div>
 
