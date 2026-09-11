@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { SearchView } from "../../../components/search/search-view";
 import type { SuggestedUser } from "../../../components/feed/right-sidebar";
 import { ApiError, apiFetch } from "../../../lib/api/client";
+import { getCurrentUser } from "../../../lib/api/user";
 import type { UserProfile } from "../../../types/user";
 
 export const metadata: Metadata = {
@@ -22,64 +23,47 @@ export default async function SearchPage({
   const headersList = await headers();
   const cookieHeader = headersList.get("cookie") ?? "";
 
-  let currentUser: UserProfile | null = null;
-  try {
-    currentUser = await apiFetch<UserProfile>("/users/me", {
+  const [currentUser, recentRaw, searchRaw, suggestedRaw] = await Promise.all([
+    getCurrentUser(cookieHeader),
+    apiFetch<any>("/users/recent?limit=12", {
       headers: { Cookie: cookieHeader },
       cache: "no-store",
-    });
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
-      redirect("/login");
-    }
-    currentUser = null;
+    }).catch(() => null),
+    query
+      ? apiFetch<any>(`/users/search?q=${encodeURIComponent(query)}`, {
+          headers: { Cookie: cookieHeader },
+          cache: "no-store",
+        }).catch(() => null)
+      : Promise.resolve(null),
+    apiFetch<any>("/users/suggested", {
+      headers: { Cookie: cookieHeader },
+      cache: "no-store",
+    }).catch(() => null),
+  ]);
+
+  if (!currentUser) {
+    redirect("/login");
   }
 
   let recentUsers: UserProfile[] = [];
-  try {
-    const res = await apiFetch<any>("/users/recent?limit=12", {
-      headers: { Cookie: cookieHeader },
-      cache: "no-store",
-    });
-    if (Array.isArray(res)) {
-      recentUsers = res;
-    } else if (res && Array.isArray(res.data)) {
-      recentUsers = res.data;
-    }
-  } catch {
-    recentUsers = [];
+  if (Array.isArray(recentRaw)) {
+    recentUsers = recentRaw;
+  } else if (recentRaw && Array.isArray(recentRaw.data)) {
+    recentUsers = recentRaw.data;
   }
 
   let searchResults: UserProfile[] = [];
-  if (query) {
-    try {
-      const res = await apiFetch<any>(`/users/search?q=${encodeURIComponent(query)}`, {
-        headers: { Cookie: cookieHeader },
-        cache: "no-store",
-      });
-      if (Array.isArray(res)) {
-        searchResults = res;
-      } else if (res && Array.isArray(res.data)) {
-        searchResults = res.data;
-      }
-    } catch {
-      searchResults = [];
-    }
+  if (Array.isArray(searchRaw)) {
+    searchResults = searchRaw;
+  } else if (searchRaw && Array.isArray(searchRaw.data)) {
+    searchResults = searchRaw.data;
   }
 
   let suggestedUsers: SuggestedUser[] = [];
-  try {
-    const res = await apiFetch<any>("/users/suggested", {
-      headers: { Cookie: cookieHeader },
-      cache: "no-store",
-    });
-    if (Array.isArray(res)) {
-      suggestedUsers = res;
-    } else if (res && Array.isArray(res.data)) {
-      suggestedUsers = res.data;
-    }
-  } catch {
-    suggestedUsers = [];
+  if (Array.isArray(suggestedRaw)) {
+    suggestedUsers = suggestedRaw;
+  } else if (suggestedRaw && Array.isArray(suggestedRaw.data)) {
+    suggestedUsers = suggestedRaw.data;
   }
 
   return (

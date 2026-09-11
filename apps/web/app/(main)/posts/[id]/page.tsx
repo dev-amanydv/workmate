@@ -6,6 +6,7 @@ import { LeftSidebar } from "../../../../components/feed/left-sidebar";
 import { RightSidebar, type SuggestedUser } from "../../../../components/feed/right-sidebar";
 import { PostDetailView } from "../../../../components/posts/post-detail-view";
 import { ApiError, apiFetch } from "../../../../lib/api/client";
+import { getCurrentUser } from "../../../../lib/api/user";
 import type { Post } from "../../../../types/post";
 import type { UserProfile } from "../../../../types/user";
 
@@ -23,49 +24,27 @@ export default async function PostDetailPage({
   const headersList = await headers();
   const cookieHeader = headersList.get("cookie") ?? "";
 
-  let user: UserProfile;
-  try {
-    user = await apiFetch<UserProfile>("/users/me", {
-      headers: {
-        Cookie: cookieHeader,
-      },
+  const [user, post, suggestedRaw] = await Promise.all([
+    getCurrentUser(cookieHeader),
+    apiFetch<Post>(`/posts/${id}`, {
+      headers: { Cookie: cookieHeader },
       cache: "no-store",
-    });
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 401) {
-      redirect("/login");
-    }
+    }).catch(() => null),
+    apiFetch<any>("/users/suggested", {
+      headers: { Cookie: cookieHeader },
+      cache: "no-store",
+    }).catch(() => null),
+  ]);
+
+  if (!user) {
     redirect("/login");
   }
 
-  let post: Post | null = null;
-  try {
-    post = await apiFetch<Post>(`/posts/${id}`, {
-      headers: {
-        Cookie: cookieHeader,
-      },
-      cache: "no-store",
-    });
-  } catch {
-    post = null;
-  }
-
   let suggestedUsers: SuggestedUser[] = [];
-  try {
-    const res = await apiFetch<any>("/users/suggested", {
-      headers: {
-        Cookie: cookieHeader,
-      },
-      cache: "no-store",
-    });
-
-    if (Array.isArray(res)) {
-      suggestedUsers = res;
-    } else if (res && Array.isArray(res.data)) {
-      suggestedUsers = res.data;
-    }
-  } catch {
-    suggestedUsers = [];
+  if (Array.isArray(suggestedRaw)) {
+    suggestedUsers = suggestedRaw;
+  } else if (suggestedRaw && Array.isArray(suggestedRaw.data)) {
+    suggestedUsers = suggestedRaw.data;
   }
 
   if (!post) {

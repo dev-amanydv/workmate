@@ -11,6 +11,8 @@ interface UserProfile {
   avatarUrl: string | null;
 }
 
+import { getCurrentUser } from "../../lib/api/user";
+
 export const metadata: Metadata = {
   title: "Workmate",
   description: "A more human professional network",
@@ -24,17 +26,7 @@ export default async function MainLayout({
   const headersList = await headers();
   const cookieHeader = headersList.get("cookie") ?? "";
 
-  let user: UserProfile | null = null;
-  try {
-    user = await apiFetch<UserProfile>("/users/me", {
-      headers: {
-        Cookie: cookieHeader,
-      },
-      cache: "no-store",
-    });
-  } catch {
-    user = null;
-  }
+  const user = await getCurrentUser(cookieHeader);
 
   return (
     <div className="h-screen h-[100dvh] flex flex-col bg-[#FBFBFA] text-[#17191A] antialiased overflow-hidden">

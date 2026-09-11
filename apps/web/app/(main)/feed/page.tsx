@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { FeedView } from "../../../components/feed/feed-view";
 import type { SuggestedUser } from "../../../components/feed/right-sidebar";
 import { apiFetch } from "../../../lib/api/client";
+import { getCurrentUser } from "../../../lib/api/user";
 import type { Post } from "../../../types/post";
 
 interface UserProfile {
@@ -59,59 +60,36 @@ export default async function FeedPage({ searchParams }: FeedPageProps) {
   const headersList = await headers();
   const cookieHeader = headersList.get("cookie") ?? "";
 
-  let user: UserProfile | null = null;
+  const [user, postsRaw, suggestedRaw] = await Promise.all([
+    getCurrentUser(cookieHeader),
+    apiFetch<any>("/posts", {
+      headers: { Cookie: cookieHeader },
+      cache: "no-store",
+    }).catch(() => null),
+    apiFetch<any>("/users/suggested", {
+      headers: { Cookie: cookieHeader },
+      cache: "no-store",
+    }).catch(() => null),
+  ]);
+
   let initialPosts: Post[] = [];
-  let suggestedUsers: SuggestedUser[] = [];
-
-  try {
-    user = await apiFetch<UserProfile>("/users/me", {
-      headers: {
-        Cookie: cookieHeader,
-      },
-      cache: "no-store",
-    });
-  } catch {
-    user = null;
-  }
-
-  try {
-    const res = await apiFetch<any>("/posts", {
-      headers: {
-        Cookie: cookieHeader,
-      },
-      cache: "no-store",
-    });
-
-    if (Array.isArray(res)) {
-      initialPosts = res;
-    } else if (res && Array.isArray(res.data)) {
-      initialPosts = res.data;
-    } else if (res && Array.isArray(res.posts)) {
-      initialPosts = res.posts;
-    }
-  } catch {
-    initialPosts = [];
+  if (Array.isArray(postsRaw)) {
+    initialPosts = postsRaw;
+  } else if (postsRaw && Array.isArray(postsRaw.data)) {
+    initialPosts = postsRaw.data;
+  } else if (postsRaw && Array.isArray(postsRaw.posts)) {
+    initialPosts = postsRaw.posts;
   }
 
   if (!showEmpty && initialPosts.length === 0) {
     initialPosts = SAMPLE_POSTS;
   }
 
-  try {
-    const res = await apiFetch<any>("/users/suggested", {
-      headers: {
-        Cookie: cookieHeader,
-      },
-      cache: "no-store",
-    });
-
-    if (Array.isArray(res)) {
-      suggestedUsers = res;
-    } else if (res && Array.isArray(res.data)) {
-      suggestedUsers = res.data;
-    }
-  } catch {
-    suggestedUsers = [];
+  let suggestedUsers: SuggestedUser[] = [];
+  if (Array.isArray(suggestedRaw)) {
+    suggestedUsers = suggestedRaw;
+  } else if (suggestedRaw && Array.isArray(suggestedRaw.data)) {
+    suggestedUsers = suggestedRaw.data;
   }
 
   return (

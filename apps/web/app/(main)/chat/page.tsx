@@ -10,33 +10,21 @@ interface UserProfile {
   avatarUrl: string | null;
 }
 
+import { getCurrentUser } from "../../../lib/api/user";
+
 export default async function ChatPage() {
   const headersList = await headers();
   const cookieHeader = headersList.get("cookie") ?? "";
 
-  let user: UserProfile | null = null;
-  let conversations: Conversation[] = [];
-
-  try {
-    user = await apiFetch<UserProfile>("/users/me", {
+  const [user, convRaw] = await Promise.all([
+    getCurrentUser(cookieHeader),
+    apiFetch<Conversation[]>("/chat/conversations", {
       headers: { Cookie: cookieHeader },
       cache: "no-store",
-    });
-  } catch {
-    user = null;
-  }
+    }).catch(() => []),
+  ]);
 
-  if (user) {
-    try {
-      const res = await apiFetch<Conversation[]>("/chat/conversations", {
-        headers: { Cookie: cookieHeader },
-        cache: "no-store",
-      });
-      conversations = Array.isArray(res) ? res : [];
-    } catch {
-      conversations = [];
-    }
-  }
+  const conversations = Array.isArray(convRaw) ? convRaw : [];
 
   return (
     <ChatView
