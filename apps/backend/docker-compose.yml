@@ -17,6 +17,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - default
 
   backend:
     build:
@@ -58,7 +60,16 @@ services:
         condition: service_healthy
     volumes:
       - backend-uploads:/app/apps/backend/uploads
+    networks:
+      - default
+      - workmate-network
+
 
 volumes:
   mysql-data:
   backend-uploads:
+
+networks:
+  default:
+  workmate-network:
+    external: true
