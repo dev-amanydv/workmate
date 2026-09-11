@@ -4,6 +4,7 @@ import { Logger, RequestMethod, ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
+import { IoAdapter } from "@nestjs/platform-socket.io";
 import fs from "node:fs";
 import path from "node:path";
 import compression from "compression";
@@ -36,6 +37,8 @@ async function bootstrap(): Promise<void> {
   );
   app.use(compression());
   app.use(cookieParser());
+
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   app.useStaticAssets(uploadsDir, {
     prefix: "/uploads/",

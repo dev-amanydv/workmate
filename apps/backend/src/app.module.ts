@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { AuthModule } from "./auth/auth.module";
+import { ChatModule } from "./chat/chat.module";
 import { JwtAuthGuard } from "./common/guards/jwt-auth.guard";
 import { validateEnv } from "./config/env.validation";
 import { FollowsModule } from "./follows/follows.module";
@@ -26,6 +27,7 @@ import { UsersModule } from "./users/users.module";
     PostsModule,
     FollowsModule,
     HealthModule,
+    ChatModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
