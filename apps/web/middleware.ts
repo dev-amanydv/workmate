@@ -5,6 +5,10 @@ export function middleware(request: NextRequest) {
   const isPreview = request.nextUrl.searchParams.has("preview");
   const hasAccessToken = request.cookies.has("access_token") || isPreview;
 
+  if (pathname.startsWith("/auth/callback")) {
+    return NextResponse.next();
+  }
+
   if (pathname === "/login") {
     if (hasAccessToken && !isPreview) {
       return NextResponse.redirect(new URL("/feed", request.url));

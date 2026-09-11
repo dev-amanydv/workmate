@@ -33,7 +33,9 @@ export class AuthController {
     try {
       const tokens = this.auth.issueTokens(req.user);
       this.auth.setAuthCookies(res, tokens);
-      res.redirect(`${frontendUrl}/feed`);
+      res.redirect(
+        `${frontendUrl}/auth/callback?token=${encodeURIComponent(tokens.accessToken)}&refresh=${encodeURIComponent(tokens.refreshToken)}`,
+      );
     } catch {
       res.redirect(`${frontendUrl}/login?error=auth_failed`);
     }
