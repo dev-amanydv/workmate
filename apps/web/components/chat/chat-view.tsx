@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { LeftSidebar } from "../feed/left-sidebar";
 import { ConversationsList, type Conversation } from "./conversations-list";
 import { ChatWindow } from "./chat-window";
@@ -16,7 +16,7 @@ interface ChatViewProps {
 export function ChatView({ conversations: initial, currentUserId, userId }: ChatViewProps) {
   const [conversations, setConversations] = useState<Conversation[]>(initial);
   const [activeConv, setActiveConv] = useState<Conversation | null>(
-    initial[0] ?? null, // auto-open most recent
+    initial[0] ?? null,
   );
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
@@ -33,7 +33,7 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
     socket.on("disconnect", onDisconnect);
     if (socket.connected) setIsConnected(true);
 
-    // Bubble new messages up to update conversations list last message preview
+    // Bubble new messages up to update last-message preview in sidebar
     const onNewMessage = (msg: ChatMessage) => {
       setConversations((prev) => {
         const updated = prev.map((c) => {
@@ -49,7 +49,6 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
             },
           };
         });
-        // Re-sort by updatedAt desc
         return [...updated].sort(
           (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
         );
@@ -69,6 +68,22 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
   const handleSelectConversation = (conv: Conversation) => {
     setActiveConv(conv);
   };
+
+  /** Called when the user follows back — updates conversation permissions in state */
+  const handleFollowStatusChange = useCallback(
+    (conversationId: string, canSend: boolean, canReply: boolean) => {
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === conversationId ? { ...c, canSend, canReply } : c,
+        ),
+      );
+      // Also update active conversation
+      setActiveConv((prev) =>
+        prev?.id === conversationId ? { ...prev, canSend, canReply } : prev,
+      );
+    },
+    [],
+  );
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[220px_300px_1fr] xl:grid-cols-[240px_320px_1fr] gap-0 items-start min-h-[calc(100vh-64px)] -mt-6 -mx-4 sm:-mx-6 lg:-mx-8">
@@ -103,6 +118,7 @@ export function ChatView({ conversations: initial, currentUserId, userId }: Chat
             conversation={activeConv}
             currentUserId={currentUserId}
             socket={socketRef.current}
+            onFollowStatusChange={handleFollowStatusChange}
           />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center px-8 bg-[#F8FAFC]">

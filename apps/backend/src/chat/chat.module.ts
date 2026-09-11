@@ -8,7 +8,7 @@ import { PrismaModule } from "../prisma/prisma.module";
 @Module({
   imports: [
     PrismaModule,
-    JwtModule.register({}), // secrets injected per-call from ConfigService
+    JwtModule.register({}),
   ],
   controllers: [ChatController],
   providers: [ChatGateway, ChatService],

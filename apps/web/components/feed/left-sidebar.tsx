@@ -12,8 +12,10 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
   const pathname = usePathname();
 
   const isHome = pathname === "/feed" || pathname === "/";
+  const isSearch = pathname === "/search" || pathname.startsWith("/search");
   const isCreate = pathname === "/posts/create" || pathname === "/create";
   const isMessages = pathname === "/chat" || pathname.startsWith("/chat/");
+  const isProfile = pathname === "/profile" || pathname.startsWith("/profile/");
 
   return (
     <aside className="w-full flex flex-col gap-6">
@@ -44,9 +46,19 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
         {/* Search */}
         <Link
           href="/search"
-          className="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition"
+          className={`flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold transition ${
+            isSearch
+              ? "bg-[#EEF2FF] text-[#2563EB]"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+          }`}
         >
-          <svg className="w-5 h-5 shrink-0 text-slate-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <svg
+            className="w-5 h-5 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={isSearch ? 2.5 : 2}
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
           <span>Search</span>
@@ -87,9 +99,19 @@ export function LeftSidebar({ userId }: LeftSidebarProps) {
         {/* Profile */}
         <Link
           href={userId ? `/profile/${userId}` : "/profile"}
-          className="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 transition"
+          className={`flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold transition ${
+            isProfile
+              ? "bg-[#EEF2FF] text-[#2563EB]"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+          }`}
         >
-          <svg className="w-5 h-5 shrink-0 text-slate-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <svg
+            className="w-5 h-5 shrink-0"
+            fill={isProfile ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth={isProfile ? 0 : 2}
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
           </svg>
           <span>Profile</span>

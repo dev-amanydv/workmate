@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from "@nestjs/common";
+import { WsException } from "@nestjs/websockets";
 import type { Request, Response } from "express";
 
 interface ErrorResponseBody {
@@ -21,6 +22,36 @@ export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost): void {
+    if (host.getType() === "ws") {
+      const wsContext = host.switchToWs();
+      const client = wsContext.getClient();
+      const message =
+        exception instanceof WsException
+          ? exception.getError()
+          : exception instanceof HttpException
+            ? exception.message
+            : exception instanceof Error
+              ? exception.message
+              : "Internal server error";
+
+      this.logger.error(
+        `[WS Error]`,
+        exception instanceof Error ? exception.stack : String(exception),
+      );
+
+      if (client && typeof client.emit === "function") {
+        client.emit("exception", {
+          status: "error",
+          message,
+        });
+      }
+      return;
+    }
+
+    if (host.getType() !== "http") {
+      return;
+    }
+
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
@@ -32,7 +63,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
-        `${request.method} ${request.url} -> ${status}`,
+        `${request?.method} ${request?.url} -> ${status}`,
         exception instanceof Error ? exception.stack : String(exception),
       );
     }

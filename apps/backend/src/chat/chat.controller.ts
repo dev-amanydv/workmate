@@ -24,7 +24,7 @@ export class ChatController {
     return this.chatService.getConversations(req.user.id);
   }
 
-  /** POST /api/chat/conversations  body: { recipientId } */
+  
   @Post("conversations")
   @HttpCode(HttpStatus.OK)
   async getOrCreateConversation(
@@ -50,5 +50,13 @@ export class ChatController {
   ) {
     const takeNum = take ? Math.min(parseInt(take, 10), 100) : 50;
     return this.chatService.getMessages(conversationId, req.user.id, cursor, takeNum);
+  }
+
+  @Get("follow-status/:userId")
+  async getFollowStatus(
+    @Req() req: Request & { user: User },
+    @Param("userId") targetUserId: string,
+  ) {
+    return this.chatService.getFollowStatus(req.user.id, targetUserId);
   }
 }

@@ -2,6 +2,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
   SubscribeMessage,
+  OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
   ConnectedSocket,
@@ -23,6 +24,13 @@ interface AuthSocket extends Socket {
   userName: string;
 }
 
+/** Convert any error (including NestJS HTTP exceptions) into a WsException */
+function toWsException(err: unknown, fallback: string): WsException {
+  if (err instanceof WsException) return err;
+  if (err instanceof Error) return new WsException(err.message || fallback);
+  return new WsException(fallback);
+}
+
 @WebSocketGateway({
   cors: {
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
@@ -30,12 +38,11 @@ interface AuthSocket extends Socket {
   },
   namespace: "/chat",
 })
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server!: Server;
 
   private readonly logger = new Logger(ChatGateway.name);
-  /** Map of userId -> Set of socketIds (for multi-tab support) */
   private readonly onlineUsers = new Map<string, Set<string>>();
 
   constructor(
@@ -45,27 +52,37 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly prisma: PrismaService,
   ) {}
 
-  async handleConnection(client: Socket) {
-    try {
-      const user = await this.authenticateSocket(client);
-      (client as AuthSocket).userId = user.id;
-      (client as AuthSocket).userName = user.name;
-
-      // Track online users
-      if (!this.onlineUsers.has(user.id)) {
-        this.onlineUsers.set(user.id, new Set());
+  afterInit(server: Server) {
+    server.use(async (client, next) => {
+      try {
+        const user = await this.authenticateSocket(client);
+        (client as AuthSocket).userId = user.id;
+        (client as AuthSocket).userName = user.name;
+        client.data.userId = user.id;
+        client.data.userName = user.name;
+        next();
+      } catch (err) {
+        this.logger.warn(`Handshake auth failed: ${err instanceof Error ? err.message : String(err)}`);
+        next(new Error("Authentication failed"));
       }
-      this.onlineUsers.get(user.id)!.add(client.id);
+    });
+  }
 
-      this.logger.log(`User ${user.name} (${user.id}) connected: ${client.id}`);
-    } catch {
-      client.emit("error", { message: "Authentication failed" });
-      client.disconnect(true);
+  handleConnection(client: Socket) {
+    const userId = (client as AuthSocket).userId || client.data?.userId;
+    const userName = (client as AuthSocket).userName || client.data?.userName;
+
+    if (userId) {
+      if (!this.onlineUsers.has(userId)) {
+        this.onlineUsers.set(userId, new Set());
+      }
+      this.onlineUsers.get(userId)!.add(client.id);
+      this.logger.log(`User ${userName} (${userId}) connected: ${client.id}`);
     }
   }
 
   handleDisconnect(client: Socket) {
-    const userId = (client as AuthSocket).userId;
+    const userId = (client as AuthSocket).userId || client.data?.userId;
     if (userId) {
       const sockets = this.onlineUsers.get(userId);
       if (sockets) {
@@ -78,21 +95,52 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  private async resolveUser(client: Socket): Promise<{ id: string; name: string }> {
+    let userId = (client as AuthSocket).userId || client.data?.userId;
+    let userName = (client as AuthSocket).userName || client.data?.userName;
+
+    if (!userId) {
+      const user = await this.authenticateSocket(client);
+      userId = user.id;
+      userName = user.name;
+      (client as AuthSocket).userId = user.id;
+      (client as AuthSocket).userName = user.name;
+      client.data.userId = user.id;
+      client.data.userName = user.name;
+    }
+
+    return { id: userId, name: userName };
+  }
+
   @SubscribeMessage("join_conversation")
   async handleJoinConversation(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { conversationId: string },
   ) {
-    const userId = (client as AuthSocket).userId;
-    if (!userId) throw new WsException("Not authenticated");
+    const user = await this.resolveUser(client);
+    const userId = user.id;
 
     try {
-      // Verify user is a participant before allowing join
-      await this.chatService.getConversation(data.conversationId, userId);
+      // Verify the user is a participant — can be sender OR receiver
+      const participant = await this.prisma.conversationParticipant.findUnique({
+        where: {
+          conversationId_userId: {
+            conversationId: data.conversationId,
+            userId,
+          },
+        },
+      });
+
+      if (!participant) {
+        throw new WsException("Not a participant in this conversation");
+      }
+
       await client.join(`conversation:${data.conversationId}`);
       this.logger.debug(`${userId} joined room conversation:${data.conversationId}`);
-    } catch {
-      throw new WsException("Cannot join conversation");
+      return { success: true };
+    } catch (err) {
+      this.logger.error(`handleJoinConversation error:`, err);
+      throw toWsException(err, "Cannot join conversation");
     }
   }
 
@@ -102,6 +150,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { conversationId: string },
   ) {
     void client.leave(`conversation:${data.conversationId}`);
+    return { success: true };
   }
 
   @SubscribeMessage("send_message")
@@ -109,8 +158,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { conversationId: string; content: string },
   ) {
-    const userId = (client as AuthSocket).userId;
-    if (!userId) throw new WsException("Not authenticated");
+    const user = await this.resolveUser(client);
+    const userId = user.id;
 
     const content = data.content?.trim();
     if (!content) throw new WsException("Message content is required");
@@ -123,27 +172,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         content,
       );
 
-      // Broadcast to everyone in the room (including sender for confirmation)
       this.server
         .to(`conversation:${data.conversationId}`)
         .emit("new_message", message);
 
       return { success: true };
-    } catch (err: unknown) {
-      throw new WsException(
-        err instanceof Error ? err.message : "Failed to send message",
-      );
+    } catch (err) {
+      throw toWsException(err, "Failed to send message");
     }
   }
 
   @SubscribeMessage("typing_start")
-  handleTypingStart(
+  async handleTypingStart(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { conversationId: string },
   ) {
-    const userId = (client as AuthSocket).userId;
-    const userName = (client as AuthSocket).userName;
-    if (!userId) return;
+    const user = await this.resolveUser(client);
+    const userId = user.id;
+    const userName = user.name;
 
     client.to(`conversation:${data.conversationId}`).emit("typing", {
       conversationId: data.conversationId,
@@ -154,13 +200,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage("typing_stop")
-  handleTypingStop(
+  async handleTypingStop(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { conversationId: string },
   ) {
-    const userId = (client as AuthSocket).userId;
-    const userName = (client as AuthSocket).userName;
-    if (!userId) return;
+    const user = await this.resolveUser(client);
+    const userId = user.id;
+    const userName = user.name;
 
     client.to(`conversation:${data.conversationId}`).emit("typing", {
       conversationId: data.conversationId,
@@ -175,11 +221,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private async authenticateSocket(client: Socket) {
-    const cookieHeader = client.handshake.headers.cookie ?? "";
+    const cookieHeader =
+      (client.handshake.headers.cookie as string) ||
+      (client.handshake.headers.Cookie as string) ||
+      "";
     const cookies = parseCookie(cookieHeader);
-    const token = cookies[ACCESS_TOKEN_COOKIE];
+    const authHeader = client.handshake.headers.authorization as string | undefined;
+    const bearerToken = authHeader?.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : undefined;
 
-    if (!token) throw new Error("No auth token");
+    const token =
+      cookies[ACCESS_TOKEN_COOKIE] ||
+      (client.handshake.auth?.token as string | undefined) ||
+      bearerToken;
+
+    if (!token) {
+      throw new Error(`No auth token found in cookie or handshake`);
+    }
 
     const secret = this.config.get<string>("JWT_ACCESS_SECRET", "");
     if (!secret) throw new Error("Auth not configured");

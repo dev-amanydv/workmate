@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { LogoutButton } from "../logout-button";
 
 interface FeedHeaderProps {
@@ -14,12 +15,23 @@ export function FeedHeader({
   userName,
   userAvatar,
 }: FeedHeaderProps) {
+  const router = useRouter();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [imageError, setImageError] = useState(false);
 
   const displayName = userName || "You";
   const userInitial = displayName.charAt(0).toUpperCase();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = searchQuery.trim();
+    if (trimmed) {
+      router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+    } else {
+      router.push("/search");
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
@@ -40,28 +52,42 @@ export function FeedHeader({
 
         {/* Center: Search Bar */}
         <div className="flex-1 max-w-lg mx-6 hidden md:block">
-          <div className="relative flex items-center">
-            <span className="absolute left-3.5 text-slate-400 pointer-events-none">
+          <form onSubmit={handleSearch} className="relative flex items-center">
+            <button
+              type="submit"
+              className="absolute left-3.5 text-slate-400 hover:text-blue-600 transition"
+              aria-label="Submit search"
+            >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
-            </span>
+            </button>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for people, posts, or topics..."
+              placeholder="Search for people by name or email..."
               className="w-full bg-[#F1F5F9]/80 hover:bg-[#E2E8F0]/60 focus:bg-white text-sm text-slate-800 placeholder-slate-400 rounded-xl pl-10 pr-14 py-2 border border-transparent focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition"
             />
             <div className="absolute right-3 flex items-center gap-0.5 px-1.5 py-0.5 rounded-md border border-slate-200 bg-white text-[11px] font-medium text-slate-400 shadow-2xs pointer-events-none">
               <span className="text-xs leading-none">⌘</span>
               <span>K</span>
             </div>
-          </div>
+          </form>
         </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-3 sm:gap-4">
+          {/* Mobile search icon */}
+          <Link
+            href="/search"
+            className="md:hidden p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition"
+            aria-label="Search"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+          </Link>
           {/* Sun / Theme toggle icon */}
           <button
             type="button"

@@ -319,7 +319,7 @@ describe("PostsService - findAll with authorId", () => {
 
     assert.deepEqual(capturedWhere, { authorId: "author-abc" });
     assert.equal(result.posts.length, 1);
-    assert.equal(result.posts[0].authorId, "author-abc");
+    assert.equal(result.posts[0]?.authorId, "author-abc");
   });
 });
 
@@ -377,5 +377,72 @@ describe("UsersController", () => {
       () => controller.getUserProfile({ id: "current-user" } as any, "non-existent"),
       NotFoundException,
     );
+  });
+
+  it("returns recent users with counts and follow status", async () => {
+    let capturedQuery: any = null;
+    const mockPrisma = {
+      user: {
+        findMany: async (args: any) => {
+          capturedQuery = args;
+          return [
+            {
+              id: "user-1",
+              email: "recent@example.com",
+              name: "Recent User",
+              bio: "Designer",
+              avatarUrl: null,
+              createdAt: new Date(),
+              _count: { followers: 2, following: 1, posts: 3 },
+              followers: [{ id: "f-1" }],
+            },
+          ];
+        },
+      },
+    };
+
+    const controller = new UsersController(mockPrisma as any);
+    const result = await controller.recent({ id: "current-user" } as any, "5");
+
+    assert.equal(capturedQuery.take, 5);
+    assert.deepEqual(capturedQuery.orderBy, { createdAt: "desc" });
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0]?.name, "Recent User");
+    assert.equal(result.data[0]?.email, "recent@example.com");
+    assert.equal(result.data[0]?.isFollowing, true);
+    assert.equal(result.data[0]?.isSelf, false);
+  });
+
+  it("searches users by name or email", async () => {
+    let capturedQuery: any = null;
+    const mockPrisma = {
+      user: {
+        findMany: async (args: any) => {
+          capturedQuery = args;
+          return [
+            {
+              id: "user-2",
+              email: "alex@workmate.com",
+              name: "Alex Smith",
+              bio: null,
+              avatarUrl: null,
+              createdAt: new Date(),
+              _count: { followers: 0, following: 0, posts: 0 },
+              followers: [],
+            },
+          ];
+        },
+      },
+    };
+
+    const controller = new UsersController(mockPrisma as any);
+    const result = await controller.search({ id: "current-user" } as any, "Alex");
+
+    assert.deepEqual(capturedQuery.where.AND[1], {
+      OR: [{ name: { contains: "Alex" } }, { email: { contains: "Alex" } }],
+    });
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0]?.name, "Alex Smith");
+    assert.equal(result.data[0]?.isFollowing, false);
   });
 });

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { apiFetch } from "../../lib/api/client";
 import { formatRelativeTime } from "../../lib/utils/time";
 import type { Post } from "../../types/post";
@@ -125,7 +126,10 @@ export function FeedPostCard({
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-slate-100 shadow-2xs bg-blue-50 flex items-center justify-center">
+          <Link
+            href={`/profile/${post.author.id || post.authorId}`}
+            className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-slate-100 shadow-2xs bg-blue-50 flex items-center justify-center hover:opacity-90 transition"
+          >
             {avatarUrl && !imageError ? (
               <Image
                 src={avatarUrl}
@@ -141,12 +145,15 @@ export function FeedPostCard({
                 {authorInitial}
               </span>
             )}
-          </div>
+          </Link>
           <div>
             <div className="flex items-center gap-1.5">
-              <h3 className="text-sm font-bold text-slate-900 hover:text-blue-600 transition cursor-pointer">
+              <Link
+                href={`/profile/${post.author.id || post.authorId}`}
+                className="text-sm font-bold text-slate-900 hover:text-blue-600 transition"
+              >
                 {post.author.name}
-              </h3>
+              </Link>
               <span className="text-xs text-slate-400">•</span>
               <span className="text-xs text-slate-400">{displayTime}</span>
             </div>

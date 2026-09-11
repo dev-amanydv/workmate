@@ -137,7 +137,10 @@ export function RightSidebar({
 
               return (
                 <div key={user.id} className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5 min-w-0">
+                  <Link
+                    href={`/profile/${user.id}`}
+                    className="flex items-center gap-2.5 min-w-0 hover:opacity-85 transition"
+                  >
                     <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-slate-100 shadow-2xs bg-blue-50 flex items-center justify-center">
                       {user.avatarUrl ? (
                         <Image
@@ -154,15 +157,15 @@ export function RightSidebar({
                         </span>
                       )}
                     </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate">
-                      {user.name}
-                    </p>
-                    <p className="text-[11px] text-slate-400 truncate">
-                      {user.role}
-                    </p>
-                  </div>
-                </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-slate-900 truncate hover:text-blue-600 transition">
+                        {user.name}
+                      </p>
+                      <p className="text-[11px] text-slate-400 truncate">
+                        {user.role}
+                      </p>
+                    </div>
+                  </Link>
 
                 <button
                   type="button"

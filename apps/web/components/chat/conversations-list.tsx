@@ -16,6 +16,10 @@ export interface Conversation {
     senderId: string;
     createdAt: string;
   } | null;
+  /** Current user follows the other person (can initiate/send) */
+  canSend: boolean;
+  /** Both follow each other (full bidirectional messaging) */
+  canReply: boolean;
 }
 
 interface ConversationsListProps {
