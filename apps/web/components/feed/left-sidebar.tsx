@@ -8,7 +8,7 @@ interface LeftSidebarProps {
   userId?: string;
 }
 
-export function LeftSidebar({ userId = "user-aman" }: LeftSidebarProps) {
+export function LeftSidebar({ userId }: LeftSidebarProps) {
   const pathname = usePathname();
 
   const isHome = pathname === "/feed" || pathname === "/";

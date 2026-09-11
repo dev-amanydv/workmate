@@ -11,17 +11,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Allow viewing feed and post creation with mock data
-  if (
-    pathname === "/" ||
-    pathname.startsWith("/feed") ||
-    pathname.startsWith("/posts/create")
-  ) {
-    return NextResponse.next();
-  }
-
   if (!hasAccessToken) {
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/feed", request.url));
   }
 
   return NextResponse.next();

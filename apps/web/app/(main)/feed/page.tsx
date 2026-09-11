@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { FeedView } from "../../../components/feed/feed-view";
+import type { SuggestedUser } from "../../../components/feed/right-sidebar";
 import { apiFetch } from "../../../lib/api/client";
 import type { Post } from "../../../types/post";
 
@@ -12,21 +13,13 @@ interface UserProfile {
   createdAt: string;
 }
 
-const DEFAULT_USER: UserProfile = {
-  id: "user-aman",
-  email: "aman@workmate.dev",
-  name: "Aman",
-  bio: "Building delightful digital experiences.",
-  avatarUrl: "/mock/avatar-aman.jpg",
-  createdAt: "2024-01-01T00:00:00.000Z",
-};
-
 export default async function FeedPage() {
   const headersList = await headers();
   const cookieHeader = headersList.get("cookie") ?? "";
 
-  let user: UserProfile = DEFAULT_USER;
+  let user: UserProfile | null = null;
   let initialPosts: Post[] = [];
+  let suggestedUsers: SuggestedUser[] = [];
 
   try {
     user = await apiFetch<UserProfile>("/users/me", {
@@ -36,7 +29,7 @@ export default async function FeedPage() {
       cache: "no-store",
     });
   } catch {
-    user = DEFAULT_USER;
+    user = null;
   }
 
   try {
@@ -58,12 +51,30 @@ export default async function FeedPage() {
     initialPosts = [];
   }
 
+  try {
+    const res = await apiFetch<any>("/users/suggested", {
+      headers: {
+        Cookie: cookieHeader,
+      },
+      cache: "no-store",
+    });
+
+    if (Array.isArray(res)) {
+      suggestedUsers = res;
+    } else if (res && Array.isArray(res.data)) {
+      suggestedUsers = res.data;
+    }
+  } catch {
+    suggestedUsers = [];
+  }
+
   return (
     <FeedView
-      userName={user.name || "Aman"}
-      userAvatar={user.avatarUrl || "/mock/avatar-aman.jpg"}
-      userId={user.id}
+      userName={user?.name}
+      userAvatar={user?.avatarUrl}
+      userId={user?.id}
       initialPosts={initialPosts}
+      initialSuggestedUsers={suggestedUsers}
     />
   );
 }

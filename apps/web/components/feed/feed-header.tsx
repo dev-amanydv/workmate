@@ -7,15 +7,19 @@ import { LogoutButton } from "../logout-button";
 
 interface FeedHeaderProps {
   userName?: string;
-  userAvatar?: string;
+  userAvatar?: string | null;
 }
 
 export function FeedHeader({
-  userName = "Aman",
-  userAvatar = "/mock/avatar-aman.jpg",
+  userName,
+  userAvatar,
 }: FeedHeaderProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [imageError, setImageError] = useState(false);
+
+  const displayName = userName || "You";
+  const userInitial = displayName.charAt(0).toUpperCase();
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
@@ -102,14 +106,22 @@ export function FeedHeader({
               className="flex items-center gap-1.5 p-1 rounded-full hover:ring-2 hover:ring-slate-200 transition focus:outline-none"
               aria-expanded={showProfileMenu}
             >
-              <div className="relative h-8 w-8 rounded-full overflow-hidden border border-slate-200 shadow-2xs">
-                <Image
-                  src={userAvatar}
-                  alt={userName}
-                  width={32}
-                  height={32}
-                  className="h-full w-full object-cover"
-                />
+              <div className="relative h-8 w-8 rounded-full overflow-hidden border border-slate-200 shadow-2xs bg-blue-50 flex items-center justify-center">
+                {userAvatar && !imageError ? (
+                  <Image
+                    src={userAvatar}
+                    alt={displayName}
+                    width={32}
+                    height={32}
+                    className="h-full w-full object-cover"
+                    unoptimized={userAvatar.startsWith("http")}
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <span className="text-xs font-bold text-blue-600">
+                    {userInitial}
+                  </span>
+                )}
               </div>
               <svg
                 className={`w-3.5 h-3.5 text-slate-500 transition-transform duration-200 ${showProfileMenu ? "rotate-180" : ""}`}
@@ -126,7 +138,7 @@ export function FeedHeader({
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-slate-100 bg-white py-2 shadow-xl ring-1 ring-black/5 z-50">
                 <div className="px-4 py-2 border-b border-slate-100">
-                  <p className="text-sm font-semibold text-slate-800">{userName}</p>
+                  <p className="text-sm font-semibold text-slate-800">{displayName}</p>
                   <p className="text-xs text-slate-400">Signed in</p>
                 </div>
                 <Link

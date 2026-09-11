@@ -9,33 +9,9 @@ export interface SuggestedUser {
   id: string;
   name: string;
   role: string;
-  avatarUrl: string;
+  avatarUrl?: string | null;
   isFollowing?: boolean;
 }
-
-const DEFAULT_SUGGESTED_USERS: SuggestedUser[] = [
-  {
-    id: "neha",
-    name: "Neha Verma",
-    role: "Frontend Developer",
-    avatarUrl: "/mock/avatar-neha.jpg",
-    isFollowing: false,
-  },
-  {
-    id: "arjun",
-    name: "Arjun Kapoor",
-    role: "Product Designer",
-    avatarUrl: "/mock/avatar-arjun.jpg",
-    isFollowing: false,
-  },
-  {
-    id: "sneha",
-    name: "Sneha Iyer",
-    role: "Software Engineer",
-    avatarUrl: "/mock/avatar-sneha.jpg",
-    isFollowing: false,
-  },
-];
 
 interface RightSidebarProps {
   userName?: string;
@@ -43,8 +19,8 @@ interface RightSidebarProps {
 }
 
 export function RightSidebar({
-  userName = "Aman",
-  suggestedUsers = DEFAULT_SUGGESTED_USERS,
+  userName = "You",
+  suggestedUsers = [],
 }: RightSidebarProps) {
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
@@ -84,16 +60,17 @@ export function RightSidebar({
         }));
       }
     } catch {
-      // If error (e.g. unauthenticated or mock user ID), keep the state responsive
+      // Revert optimistic state on error
+      setFollowingMap((prev) => ({
+        ...prev,
+        [userId]: prevFollowing,
+      }));
     } finally {
       setTogglingMap((prev) => ({ ...prev, [userId]: false }));
     }
   };
 
-  const usersToDisplay =
-    suggestedUsers && suggestedUsers.length > 0
-      ? suggestedUsers
-      : DEFAULT_SUGGESTED_USERS;
+  const usersToDisplay = suggestedUsers;
 
   return (
     <aside className="w-full flex flex-col gap-5">
@@ -148,29 +125,35 @@ export function RightSidebar({
           </Link>
         </div>
 
-        <div className="space-y-4">
-          {usersToDisplay.map((user) => {
-            const isFollowing = followingMap[user.id] ?? false;
-            const isToggling = togglingMap[user.id] ?? false;
+        {usersToDisplay.length === 0 ? (
+          <p className="text-xs text-slate-400 py-2 text-center">
+            No recommendations right now.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {usersToDisplay.map((user) => {
+              const isFollowing = followingMap[user.id] ?? false;
+              const isToggling = togglingMap[user.id] ?? false;
 
-            return (
-              <div key={user.id} className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-slate-100 shadow-2xs bg-blue-50 flex items-center justify-center">
-                    {user.avatarUrl ? (
-                      <Image
-                        src={user.avatarUrl}
-                        alt={user.name}
-                        width={36}
-                        height={36}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-xs font-bold text-blue-600">
-                        {user.name.charAt(0).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
+              return (
+                <div key={user.id} className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-slate-100 shadow-2xs bg-blue-50 flex items-center justify-center">
+                      {user.avatarUrl ? (
+                        <Image
+                          src={user.avatarUrl}
+                          alt={user.name}
+                          width={36}
+                          height={36}
+                          className="h-full w-full object-cover"
+                          unoptimized={user.avatarUrl.startsWith("http")}
+                        />
+                      ) : (
+                        <span className="text-xs font-bold text-blue-600">
+                          {(user.name || "U").charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-slate-900 truncate">
                       {user.name}
@@ -197,7 +180,8 @@ export function RightSidebar({
             );
           })}
         </div>
-      </div>
+      )}
+    </div>
 
       {/* 4. Meaningful Connections Promo Card */}
       <div className="relative overflow-hidden rounded-2xl border border-blue-100/70 bg-gradient-to-br from-[#EAF2FE] via-[#F4F8FE] to-[#DFECFE] p-5 shadow-xs flex items-center justify-between gap-4">

@@ -26,33 +26,15 @@ export function FeedPostCard({
   const [imageError, setImageError] = useState(false);
 
   const isAuthor = Boolean(currentUserId && post.authorId === currentUserId);
-  const isMock = Boolean(post.isMock);
 
   // Determine display time
-  const displayTime =
-    isMock && post.id === "mock-rohan-mehta"
-      ? "2h ago"
-      : isMock && post.id === "mock-priya-sharma"
-      ? "5h ago"
-      : formatRelativeTime(post.createdAt);
+  const displayTime = formatRelativeTime(post.createdAt);
 
   // Determine author role
-  const authorRole =
-    post.author.role ||
-    (isMock && post.id === "mock-rohan-mehta"
-      ? "Senior Software Engineer at Stripe"
-      : isMock && post.id === "mock-priya-sharma"
-      ? "Product Manager at Google"
-      : "Workmate Member");
+  const authorRole = post.author.role || "Workmate Member";
 
   // Determine avatar
-  const avatarUrl =
-    post.author.avatarUrl ||
-    (isMock && post.id === "mock-rohan-mehta"
-      ? "/mock/avatar-rohan.jpg"
-      : isMock && post.id === "mock-priya-sharma"
-      ? "/mock/avatar-priya.jpg"
-      : null);
+  const avatarUrl = post.author.avatarUrl || null;
 
   const authorInitial = (post.author.name || "U").charAt(0).toUpperCase();
 
@@ -70,27 +52,23 @@ export function FeedPostCard({
     setIsLiked(nextLiked);
     setLikesCount(nextCount);
 
-    if (!isMock) {
-      try {
-        const res = await apiFetch<{
-          success: boolean;
-          isLiked: boolean;
-          likesCount: number;
-        }>(`/posts/${post.id}/like`, {
-          method: prevLiked ? "DELETE" : "POST",
-        });
-        if (res && typeof res.isLiked === "boolean") {
-          setIsLiked(res.isLiked);
-          setLikesCount(res.likesCount);
-        }
-      } catch {
-        // Revert optimistic state on network error
-        setIsLiked(prevLiked);
-        setLikesCount(prevCount);
-      } finally {
-        setIsTogglingLike(false);
+    try {
+      const res = await apiFetch<{
+        success: boolean;
+        isLiked: boolean;
+        likesCount: number;
+      }>(`/posts/${post.id}/like`, {
+        method: prevLiked ? "DELETE" : "POST",
+      });
+      if (res && typeof res.isLiked === "boolean") {
+        setIsLiked(res.isLiked);
+        setLikesCount(res.likesCount);
       }
-    } else {
+    } catch {
+      // Revert optimistic state on network error
+      setIsLiked(prevLiked);
+      setLikesCount(prevCount);
+    } finally {
       setIsTogglingLike(false);
     }
   };
@@ -98,9 +76,7 @@ export function FeedPostCard({
   // Handle Share: copy permalink
   const handleShare = () => {
     if (typeof window !== "undefined") {
-      const shareUrl = isMock
-        ? window.location.href
-        : `${window.location.origin}/posts/${post.id}`;
+      const shareUrl = `${window.location.origin}/posts/${post.id}`;
       navigator.clipboard?.writeText(shareUrl);
       setShowShareToast(true);
       setTimeout(() => setShowShareToast(false), 2000);
@@ -114,11 +90,9 @@ export function FeedPostCard({
 
     setIsDeleting(true);
     try {
-      if (!isMock) {
-        await apiFetch(`/posts/${post.id}`, { method: "DELETE" });
-      }
+      await apiFetch(`/posts/${post.id}`, { method: "DELETE" });
       onPostDeleted?.(post.id);
-    } catch (err) {
+    } catch {
       alert("Failed to delete post. Please try again.");
     } finally {
       setIsDeleting(false);
@@ -128,28 +102,20 @@ export function FeedPostCard({
 
   // Determine Reactions string
   let reactionsText: string;
-  if (isMock && post.id === "mock-rohan-mehta") {
-    reactionsText = isLiked ? "You, Priya and 420 others" : "Priya and 420 others";
-  } else if (isMock && post.id === "mock-priya-sharma") {
-    reactionsText = isLiked ? "You, Priya and 138 others" : "Priya and 138 others";
+  if (isLiked) {
+    reactionsText =
+      likesCount <= 1
+        ? "You liked this"
+        : `You and ${likesCount - 1} ${likesCount - 1 === 1 ? "other" : "others"}`;
   } else {
-    if (isLiked) {
-      reactionsText =
-        likesCount <= 1
-          ? "You liked this"
-          : `You and ${likesCount - 1} ${likesCount - 1 === 1 ? "other" : "others"}`;
-    } else {
-      reactionsText = `${likesCount} ${likesCount === 1 ? "like" : "likes"}`;
-    }
+    reactionsText =
+      likesCount > 0
+        ? `${likesCount} ${likesCount === 1 ? "like" : "likes"}`
+        : "Be the first to like";
   }
 
   // Determine stats text
-  const statsText =
-    isMock && post.id === "mock-rohan-mehta"
-      ? "56 comments • 18 shares"
-      : isMock && post.id === "mock-priya-sharma"
-      ? "24 comments • 6 shares"
-      : "18 shares";
+  const statsText = likesCount > 0 ? `${likesCount} ${likesCount === 1 ? "like" : "likes"}` : "";
 
   // Split text content into paragraphs
   const paragraphs = post.content.split("\n\n").filter(Boolean);
@@ -167,6 +133,7 @@ export function FeedPostCard({
                 width={40}
                 height={40}
                 className="h-full w-full object-cover"
+                unoptimized={avatarUrl.startsWith("http")}
                 onError={() => setImageError(true)}
               />
             ) : (

@@ -16,5 +16,5 @@ export interface Post {
   updatedAt?: string;
   likesCount: number;
   isLiked: boolean;
-  isMock?: boolean;
 }
+
